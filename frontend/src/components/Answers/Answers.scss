@@ -1,0 +1,35 @@
+@import "../../variables.scss";
+
+.answers__menu {
+  display: flex;
+  padding: 15px 25px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+}
+
+.answers__menu-item {
+  margin-right: 25px;
+}
+
+.answers__menu-item-link {
+  color: map-get($colors, app-text);
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.answers__menu-item-link_active {
+  color: map-get($colors, app-secondary);
+}
+
+.answers__inner {
+  padding: 15px 25px;
+  margin-top: 15px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+}

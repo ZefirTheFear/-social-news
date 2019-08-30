@@ -1,0 +1,114 @@
+@import "../../variables.scss";
+
+.new-post {
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+
+.new-post__title {
+  border-radius: map-get($border-radii, main);
+}
+
+.new-post__title-input {
+  background: map-get($colors, app-secondary-bg);
+  width: 100%;
+  height: 100%;
+  padding: 10px 25px;
+  border: 1px solid map-get($colors, border);
+  outline: 0;
+  color: map-get($colors, app-text);
+  font-size: 1.5rem;
+
+  &:focus {
+    border: 1px solid map-get($colors, app-secondary);
+  }
+}
+
+.new-post__title-input_invalid,
+.new-post__content_invalid,
+.new-post__tags_invalid {
+  border: 1px solid map-get($colors, app-red) !important;
+}
+
+.new-post__invalid-feedback {
+  margin-top: 5px;
+  color: map-get($colors, app-red);
+  font-size: 0.8rem;
+}
+
+.new-post__content {
+  margin-top: 15px;
+  padding: 15px 10px 15px 25px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+}
+
+.new-post__tags {
+  margin-top: 15px;
+  padding: 10px 25px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+}
+
+.new-post__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.new-post__add-tag {
+  display: flex;
+  align-items: center;
+}
+
+.new-post__tag-input {
+  max-width: 80%;
+  padding: 5px 10px;
+  color: map-get($colors, app-text);
+  background: map-get($colors, app-main);
+  border: 1px solid transparent;
+  outline: 0;
+  border-radius: map-get($border-radii, main);
+
+  &:focus {
+    border: 1px solid map-get($colors, app-secondary);
+  }
+}
+
+.new-post__add-tag-btn {
+  margin-left: 5px;
+  padding: 5px 10px;
+  color: map-get($colors, app-text);
+  background: map-get($colors, app-main);
+  border: 0;
+  outline: 0;
+  border-radius: map-get($border-radii, main);
+  cursor: pointer;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f067";
+    font-weight: 900;
+  }
+}
+
+.new-post__submit-btn {
+  margin: 15px 0;
+  padding: 5px 10px;
+  color: #fff;
+  background: map-get($colors, app-secondary);
+  border: 0;
+  outline: 0;
+  border-radius: map-get($border-radii, main);
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken(map-get($colors, app-secondary), 10%);
+  }
+}

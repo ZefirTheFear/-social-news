@@ -1,0 +1,31 @@
+@import "../../variables.scss";
+
+.backdrop {
+  z-index: 5000;
+  display: block;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: map-get($colors, app-secondary);
+  animation: backdrop-fadein 0.3s forwards;
+
+  @keyframes backdrop-fadein {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes backdrop-fadeout {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}

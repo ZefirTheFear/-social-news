@@ -1,0 +1,68 @@
+@import "../../variables.scss";
+
+.comments {
+  padding: 15px 25px;
+}
+
+.comments_comment {
+  padding-bottom: 10px;
+}
+
+.comments__opened-internal-comments {
+  display: flex;
+}
+.comments__closed-internal-comments {
+  display: none;
+  cursor: default;
+}
+
+.comments__close-reply {
+  color: lighten(map-get($colors, border), 10%);
+
+  &:hover {
+    color: lighten(map-get($colors, border), 20%);
+  }
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f146";
+    font-weight: 400;
+    cursor: pointer;
+  }
+}
+
+.comments__open-reply {
+  display: flex;
+  color: lighten(map-get($colors, border), 10%);
+  cursor: pointer;
+
+  &:hover {
+    color: lighten(map-get($colors, border), 20%);
+  }
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0fe";
+    font-weight: 400;
+    margin-right: 5px;
+  }
+}
+
+.comments__reply-comment-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.comments__reply-comment-border {
+  width: 1px;
+  background: map-get($colors, border);
+  margin-top: 5px;
+  height: 100%;
+}
+
+.comments__reply-comment-body {
+  margin-left: 5px;
+  width: 100%;
+}

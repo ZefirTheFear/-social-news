@@ -1,0 +1,215 @@
+@import "../../_variables.scss";
+
+.header {
+  width: 100%;
+  height: map-get($heights, header);
+  z-index: 1000;
+  border-bottom: 1px solid map-get($colors, border);
+}
+
+.header_theme_dark {
+  background: map-get($colors, header-theme-dark);
+}
+
+.header__inner {
+  max-width: 1100px;
+  width: 90%;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 575px) {
+    width: 96%;
+  }
+}
+
+.header__logo {
+  height: map-get($heights, header) * 0.8;
+  border: 2px solid map-get($colors, border);
+  border-radius: 25px;
+  overflow: hidden;
+  margin-right: 50px;
+}
+
+.header__logo-img {
+  height: map-get($heights, header) * 0.8 - 2px;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+.header__logo-img-mobile {
+  display: none;
+  height: map-get($heights, header) * 0.8 - 2px;
+
+  @media (max-width: 767px) {
+    display: inline;
+  }
+}
+
+.header-menu {
+  display: flex;
+
+  @media (max-width: 991px) {
+    display: none;
+  }
+}
+
+.header-menu__item {
+  margin-right: 32px;
+}
+
+.header-menu__item-link {
+  text-transform: uppercase;
+  font-weight: 500;
+  color: map-get($colors, app-text);
+  cursor: pointer;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.header-menu__item-link_active {
+  color: map-get($colors, app-secondary);
+}
+
+.header-menu__item_active {
+  color: map-get($colors, app-secondary);
+}
+
+.header-menu-mobile {
+  display: none;
+  cursor: pointer;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0c9";
+    font-weight: 900;
+    font-size: 30px;
+  }
+
+  @media (max-width: 991px) {
+    display: block;
+  }
+}
+
+.header__right-menu {
+  margin-left: auto;
+}
+
+.header-right-menu {
+  display: flex;
+  align-items: center;
+}
+
+.header-right-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  cursor: pointer;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+  background: map-get($colors, header-secondary-bg);
+  color: map-get($colors, app-text);
+}
+
+.header-right-menu__search-form {
+  transition: all 0.3s ease-out;
+
+  &:hover {
+    .search-form__button {
+      color: map-get($colors, app-secondary);
+    }
+  }
+
+  @media (max-width: 991px) {
+    display: none;
+  }
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.search-form__input {
+  width: 0px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  transition: all 0.3s ease-out;
+  color: map-get($colors, app-text);
+}
+
+.search-form__button {
+  width: 36px;
+  cursor: pointer;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: map-get($colors, app-text);
+  outline: none;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f002";
+    font-weight: 900;
+    font-size: 15px;
+  }
+}
+
+.header-right-menu__notifications {
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0f3";
+    font-weight: 900;
+    font-size: 16px;
+  }
+}
+
+.header-right-menu__notifications-link {
+  text-decoration: none;
+  color: map-get($colors, app-text);
+}
+
+.header-right-menu__avatar {
+  display: none;
+  overflow: hidden;
+
+  @media (max-width: 991px) {
+    display: flex;
+  }
+}
+
+.header-right-menu__img {
+  height: 100%;
+}
+
+.header-right-menu__login {
+  display: none;
+  width: auto;
+  padding: 0 5px;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+
+  @media (max-width: 991px) {
+    display: flex;
+  }
+}

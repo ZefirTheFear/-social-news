@@ -1,0 +1,5 @@
+@import "../../variables.scss";
+
+.auth-form {
+  background: map-get($colors, app-secondary-bg);
+}

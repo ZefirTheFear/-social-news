@@ -1,0 +1,41 @@
+@import "../../variables.scss";
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow-y: auto;
+  z-index: 4999;
+}
+
+.modal__inner {
+  position: absolute;
+  max-width: 500px;
+  width: 75%;
+  top: 0;
+  left: 0;
+  min-height: 100%;
+  z-index: 5001;
+  background: map-get($colors, app-main);
+  clip-path: ellipse(100% 150% at 0% 30%);
+  animation: modal__inner-fadein 0.3s forwards;
+
+  @keyframes modal__inner-fadein {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 0;
+    }
+  }
+  @keyframes modal__inner-fadeout {
+    0% {
+      left: 0;
+    }
+    100% {
+      left: -100%;
+    }
+  }
+}

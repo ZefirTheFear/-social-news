@@ -1,0 +1,47 @@
+@import "../../variables.scss";
+
+.register {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.register__header {
+  margin-bottom: 20px;
+}
+
+.register__form {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+}
+
+.register__form-button {
+  color: #fff;
+  background: map-get($colors, app-secondary);
+  border: 0;
+  outline: 0;
+  padding: 6px;
+  border-radius: map-get($border-radii, main);
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken(map-get($colors, app-secondary), 10%);
+  }
+}
+
+.register__login {
+  margin-top: 15px;
+  text-transform: uppercase;
+  color: map-get($colors, app-secondary);
+  cursor: pointer;
+
+  &:hover {
+    color: darken(map-get($colors, app-secondary), 10%);
+  }
+}

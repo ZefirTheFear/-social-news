@@ -1,0 +1,25 @@
+@import "../../variables.scss";
+
+.content-img-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.content-img-container__img-block {
+  display: flex;
+  flex: 1;
+  background: map-get($colors, app-main);
+}
+
+.content-img-container__img {
+  max-width: 100%;
+  // vertical-align: top;
+}
+
+.content-img-container__remove {
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  margin-left: 15px;
+}

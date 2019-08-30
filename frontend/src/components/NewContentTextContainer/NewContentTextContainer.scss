@@ -1,0 +1,172 @@
+@import "../../variables.scss";
+
+b {
+  font-weight: bold;
+}
+
+i {
+  font-style: italic;
+}
+
+a {
+  text-decoration: none;
+  color: red;
+}
+
+div[contenteditable="true"] {
+  height: auto;
+}
+
+[contenteditable="true"]:empty:before {
+  content: attr(data-placeholder);
+  display: block;
+}
+
+.content-text-container {
+  display: flex;
+  align-items: center;
+  max-width: calc(100% - 27.25px);
+  flex: 1;
+  // word-wrap: break-word;
+}
+
+.content-text-container__txt {
+  max-width: calc(100% - 25.762px);
+  flex: 1;
+  padding: 3px 0;
+  word-wrap: break-word;
+  // word-break: break-all;
+  // white-space: pre-wrap;
+  background-color: map-get($colors, app-main);
+  color: map-get($colors, app-text);
+  text-align: left;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.content-text-container__remove {
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+.content-text-container__editor {
+  display: none;
+  position: absolute;
+  background: map-get($colors, app-main);
+}
+
+.content-text-container__editor-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: map-get($colors, app-secondary-bg);
+  border: 0;
+  outline: 0;
+  color: map-get($colors, app-text);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+    background: map-get($colors, app-main);
+  }
+}
+
+.content-text-container__editor-bold {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f032";
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+
+.content-text-container__editor-italic {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f033";
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+
+.content-text-container__editor-strike {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0cc";
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+.content-text-container__editor-underline {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0cd";
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+.content-text-container__editor-link {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0c1";
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+
+.content-text-container__editor-link-url {
+  position: relative;
+}
+
+.content-text-container__editor-url {
+  display: none;
+  position: absolute;
+  top: 0;
+  transform: translateY(-105%);
+}
+
+.content-text-container__editor-url-input {
+  border: 0;
+  outline: 0;
+  background: map-get($colors, app-secondary-bg);
+  color: map-get($colors, app-text);
+  max-width: 150px;
+}
+
+.content-text-container__editor-url-input-confirm,
+.content-text-container__editor-url-input-cancel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0;
+  outline: 0;
+  background: map-get($colors, app-secondary-bg);
+  color: map-get($colors, app-text);
+  cursor: pointer;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.content-text-container__editor-url-input-confirm {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f00c";
+    font-weight: 900;
+  }
+}
+.content-text-container__editor-url-input-cancel {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f00d";
+    font-weight: 900;
+  }
+}

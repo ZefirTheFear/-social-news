@@ -1,0 +1,121 @@
+@import "../../variables.scss";
+
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.login__header {
+  margin-bottom: 20px;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  padding: 6px;
+  border: 1px solid map-get($colors, border);
+  outline: none;
+  color: map-get($colors, app-text);
+
+  &:focus {
+    border: 1px solid map-get($colors, app-secondary);
+  }
+}
+
+.input_invalid {
+  border: 1px solid map-get($colors, app-red);
+}
+
+.input__invalid-feedback {
+  width: 100%;
+  margin-top: 5px;
+  font-size: 90%;
+  color: map-get($colors, app-red);
+}
+
+.input-group__password {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input__password {
+  padding-right: 25px;
+}
+
+.input-group__type-toggle {
+  position: relative;
+  width: 0;
+}
+
+.input-group__show-chars {
+  position: relative;
+  left: -25px;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f06e";
+    font-weight: 400;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.input-group__hide-chars {
+  position: relative;
+  left: -25px;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f070";
+    font-weight: 400;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.login__form-button {
+  color: #fff;
+  background: map-get($colors, app-secondary);
+  border: 0;
+  outline: 0;
+  padding: 6px;
+  border-radius: map-get($border-radii, main);
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken(map-get($colors, app-secondary), 10%);
+  }
+}
+
+.login__register {
+  margin-top: 15px;
+  text-transform: uppercase;
+  color: map-get($colors, app-secondary);
+  cursor: pointer;
+
+  &:hover {
+    color: darken(map-get($colors, app-secondary), 10%);
+  }
+}

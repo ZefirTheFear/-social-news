@@ -1,0 +1,22 @@
+$colors: (
+  app-main: rgb(23, 28, 32),
+  // app-secondary: rgb(255, 72, 0),
+  app-secondary: rgb(195, 0, 255),
+  app-secondary-bg: rgb(33, 38, 42),
+  app-text: rgb(166, 166, 166),
+  text-selection: rgba(69, 96, 53, 0.99),
+  header-theme-dark: rgb(31, 35, 39),
+  header-secondary-bg: #2a2e32,
+  border: #393d41,
+  app-green: #629924,
+  // app-red: #c33,
+  app-red: #dc3545
+);
+
+$heights: (
+  header: 64px
+);
+
+$border-radii: (
+  main: 2px
+);

@@ -1,0 +1,228 @@
+@import "../../../variables.scss";
+
+.comment {
+  padding: 5px;
+  border: 1px solid map-get($colors, border);
+}
+
+.comment__header {
+  display: flex;
+  align-items: center;
+}
+
+.comment__rating {
+  display: flex;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.comment__rating-value {
+  margin-right: 15px;
+  cursor: default;
+}
+
+.comment__rating-up-symbol {
+  position: relative;
+  top: -1px;
+  margin-right: 5px;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0d8";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-green);
+  }
+}
+
+.comment__rating-down-symbol {
+  position: relative;
+  top: -1px;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0d7";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-red);
+  }
+}
+
+.comment__rating-up-symbol_liked {
+  color: map-get($colors, app-green);
+}
+
+.comment__rating-up-symbol_disliked {
+  color: map-get($colors, app-red);
+}
+
+.comment__user-info {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.comment__user-avatar {
+  margin-right: 10px;
+}
+
+.comment__user-avatar-link-img {
+  display: flex;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.comment__user-name {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.comment__user-name-link {
+  color: map-get($colors, app-text);
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.comment__time {
+  font-weight: 300;
+  font-size: 0.9rem;
+  cursor: default;
+}
+
+.comment__edit-form {
+  margin-top: 10px;
+}
+
+.comment__edit-submit-btn,
+.comment__edit-cancel-btn {
+  padding: 5px;
+  margin-top: 10px;
+  border-radius: map-get($border-radii, main);
+  border: 0;
+  outline: 0;
+  background: map-get($colors, app-secondary);
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 300;
+  cursor: pointer;
+
+  &:hover {
+    background: darken(map-get($colors, app-secondary), 10%);
+  }
+}
+
+.comment__edit-submit-btn {
+  margin-right: 10px;
+}
+
+.comment__content {
+  margin: 5px 0 10px 0;
+}
+
+.comment__text-block {
+  margin-bottom: 10px;
+}
+
+.comment__img-block {
+  margin-bottom: 10px;
+}
+
+.comment__img-block-img {
+  max-width: 100%;
+}
+
+.comment__reply {
+  display: flex;
+}
+
+.comment__reply-btn {
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: map-get($colors, app-secondary);
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    color: darken(map-get($colors, app-secondary), 10%);
+  }
+}
+
+.comment__admin-btns {
+  margin-left: auto;
+}
+
+.comment__edit-btn {
+  padding: 0 10px 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: map-get($colors, app-text);
+  transition: all 0.2s;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f044";
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.comment__delete-btn {
+  padding: 0 10px 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: map-get($colors, app-text);
+  transition: all 0.2s;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f2ed";
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.comment__reply-block {
+  margin-top: 10px;
+}
+
+.comment__reply-submit {
+  padding: 5px;
+  margin-top: 10px;
+  border-radius: map-get($border-radii, main);
+  border: 0;
+  outline: 0;
+  background: map-get($colors, app-secondary);
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 300;
+  cursor: pointer;
+
+  &:hover {
+    background: darken(map-get($colors, app-secondary), 10%);
+  }
+}

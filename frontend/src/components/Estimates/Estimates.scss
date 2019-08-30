@@ -1,0 +1,47 @@
+@import "../../variables.scss";
+
+.estimates__menu {
+  display: flex;
+  padding: 15px 25px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+
+  @media (min-width: 768px) {
+    margin-left: 70px;
+  }
+
+  @media (max-width: 767px) {
+    padding: 10px 10px;
+  }
+}
+
+.estimates__menu-item {
+  margin-right: 25px;
+}
+
+.estimates__menu-item-link {
+  color: map-get($colors, app-text);
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+
+  @media (max-width: 767px) {
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
+}
+
+.estimates__menu-item-link_active {
+  color: map-get($colors, app-secondary);
+}
+
+.estimates__inner {
+  margin-top: 15px;
+  // padding: 15px 25px;
+  // background: map-get($colors, app-secondary-bg);
+  // border: 1px solid map-get($colors, border);
+}

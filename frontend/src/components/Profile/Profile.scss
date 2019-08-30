@@ -1,0 +1,178 @@
+@import "../../variables.scss";
+
+.porfile__info {
+  padding: 15px 25px;
+  border: 1px solid map-get($colors, border);
+  border-bottom: 0;
+  border-radius: map-get($border-radii, main);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: map-get($colors, app-secondary-bg);
+
+  @media (min-width: 768px) {
+    margin-left: 70px;
+  }
+}
+
+.profile__header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid map-get($colors, border);
+}
+
+.profile__avatar {
+  margin-right: 25px;
+}
+
+.profile__img {
+  width: 128px;
+  border-radius: 50%;
+}
+
+.profile__user {
+  max-width: 50%;
+}
+
+.profile__user-settings {
+  margin-left: auto;
+}
+
+.profile__user-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+}
+
+.profile__subscribe,
+.profile__ignore {
+  padding: 6px;
+  text-transform: uppercase;
+  background: map-get($colors, app-green);
+  border: 0;
+  outline: 0;
+  color: #fff;
+  border-radius: map-get($border-radii, main);
+  cursor: pointer;
+}
+
+.profile__subscribe {
+  &:hover {
+    background: darken(map-get($colors, app-green), 10%);
+  }
+}
+
+.profile__subscribe_subscribed {
+  background: map-get($colors, app-red);
+
+  &:hover {
+    background: darken(map-get($colors, app-red), 10%);
+  }
+}
+
+.profile__ignore {
+  margin-top: 10px;
+  background: map-get($colors, app-red);
+
+  &:hover {
+    background: darken(map-get($colors, app-red), 10%);
+  }
+}
+
+.profile__ignore_ignored {
+  background: map-get($colors, app-green);
+
+  &:hover {
+    background: darken(map-get($colors, app-green), 10%);
+  }
+}
+
+.profile__nickname {
+  font-size: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile__createdAt {
+  margin-top: 10px;
+}
+
+.profile__statistics {
+  display: flex;
+  padding: 15px 0;
+  border-bottom: 1px solid map-get($colors, border);
+}
+
+.profile__statistics-item {
+  margin-right: 35px;
+  cursor: default;
+}
+
+.profile__statistics-item-value {
+  font-size: 24px;
+}
+
+.profile__statistics-item-label {
+  margin-top: 5px;
+}
+
+.profile__extra-info {
+  padding-top: 15px;
+}
+
+.profile__likes {
+  color: map-get($colors, app-green);
+}
+
+.profile__dislikes {
+  color: map-get($colors, app-red);
+}
+
+.profile__status {
+  margin-top: 10px;
+}
+
+.profile__note {
+  background: map-get($colors, app-main);
+
+  @media (min-width: 768px) {
+    margin-left: 70px;
+  }
+}
+
+.profile__note-textarea {
+  display: flex;
+  width: 100%;
+  padding: 15px 25px;
+  background: transparent;
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  outline: 0;
+  color: map-get($colors, app-text);
+  resize: none;
+  font: inherit;
+  overflow: hidden;
+
+  &:focus {
+    border: 1px solid map-get($colors, app-secondary);
+  }
+}
+
+.profile__bottom-border {
+  height: 2px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+  border-top: 0;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+
+  @media (min-width: 768px) {
+    margin-left: 70px;
+  }
+}
+
+.profile__posts {
+  margin-top: 30px;
+}

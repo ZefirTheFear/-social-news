@@ -1,0 +1,63 @@
+@import "../../variables.scss";
+
+.notes {
+  padding: 0 25px;
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+  background: map-get($colors, app-secondary-bg);
+}
+
+.notes__note {
+  padding: 15px 0;
+  border-bottom: 1px solid map-get($colors, border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.notes__note-inner {
+  display: flex;
+  align-items: center;
+}
+
+.notes__remove-note {
+  line-height: 20px;
+  font-size: 25px;
+  margin-left: auto;
+  cursor: pointer;
+  // padding-bottom: 1px;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.notes__user-avatar {
+  display: flex;
+  width: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.notes__username {
+  color: map-get($colors, app-text);
+  cursor: pointer;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.notes__body {
+  width: 100%;
+  resize: none;
+  font: inherit;
+  overflow: hidden;
+  background: transparent;
+  color: map-get($colors, app-text);
+  border: 0;
+  outline: 0;
+  margin-top: 10px;
+}

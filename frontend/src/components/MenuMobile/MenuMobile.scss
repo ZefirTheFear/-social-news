@@ -1,0 +1,60 @@
+@import "../../variables.scss";
+
+.menu-mobile {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: map-get($colors, app-main);
+}
+
+.menu-mobile__item {
+  margin-bottom: 50px;
+}
+
+.menu-mobile__item-link {
+  color: map-get($colors, app-text);
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.menu-mobile__item-search-form {
+  max-width: 300px;
+  width: 90%;
+  background: map-get($colors, header-secondary-bg);
+  border-radius: 15px;
+}
+
+.search-form-mobile {
+  display: flex;
+  justify-content: space-around;
+}
+
+.search-form-mobile__input {
+  width: 75%;
+  padding: 10px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: map-get($colors, app-text);
+}
+
+.search-form-mobile__button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: map-get($colors, app-text);
+  outline: none;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f002";
+    font-weight: 900;
+    font-size: 15px;
+  }
+}

@@ -1,0 +1,335 @@
+@import "../../../variables.scss";
+
+.post {
+  display: flex;
+  align-items: flex-start;
+}
+
+.post__rating-block {
+  position: sticky;
+  top: 10px;
+  text-align: center;
+  margin-right: 20px;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+.post__rating-up {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0d8";
+    font-weight: 900;
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-green);
+  }
+}
+
+.post__rating-up_liked {
+  color: map-get($colors, app-green);
+}
+
+.post__rating {
+  font-size: 1.5rem;
+  cursor: default;
+  width: 50px;
+}
+
+.post__rating-down {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0d7";
+    font-weight: 900;
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-red);
+  }
+}
+
+.post__rating-down_disliked {
+  color: map-get($colors, app-red);
+}
+
+.post-inner {
+  width: 100%;
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+  overflow: hidden;
+}
+
+.post-inner__main {
+  padding: 15px 25px;
+  background: map-get($colors, app-secondary-bg);
+}
+
+.post-inner__title {
+  margin-bottom: 20px;
+}
+
+.post-inner__title-link {
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: darken(map-get($colors, app-text), 20%);
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.post-inner__tags {
+  margin-bottom: 20px;
+}
+
+.post-inner__tag-link {
+  text-decoration: none;
+  color: darken(map-get($colors, app-text), 20%);
+  font-size: 0.85rem;
+  margin-right: 15px;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+// .post-inner__content {
+//   margin-top: 1rem;
+// }
+
+.post-inner__content-text {
+  // display: flex;
+  // flex: 1;
+  width: 100%;
+  padding: 0;
+  margin-top: 1rem;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: map-get($colors, app-text);
+  border: 0;
+  outline: 0;
+  font-family: "Roboto";
+}
+
+.post-inner__content-img {
+  margin-top: 1rem;
+}
+
+.post-inner__img {
+  max-width: 100%;
+}
+
+.post-inner__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 25px;
+  border-top: 1px solid map-get($colors, border);
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+}
+
+.post-inner__footer-left-side {
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    justify-content: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid map-get($colors, border);
+  }
+}
+
+.post-inner__mobile-rating-block {
+  display: none;
+  align-items: center;
+  margin-right: 30px;
+
+  @media (max-width: 767px) {
+    display: flex;
+    margin-right: auto;
+  }
+}
+
+.post-inner__mobile-rating-up {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0d8";
+    font-weight: 900;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-green);
+  }
+}
+
+.post-inner__mobile-rating-up_liked {
+  color: map-get($colors, app-green);
+}
+
+.post-inner__mobile-rating {
+  display: flex;
+  justify-content: center;
+  margin: 0 10px;
+  cursor: default;
+  font-size: 1.4rem;
+}
+
+.post-inner__mobile-rating-down {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0d7";
+    font-weight: 900;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-red);
+  }
+}
+
+.post-inner__mobile-rating-down_disliked {
+  color: map-get($colors, app-red);
+}
+
+.post-inner__footer-saves-amount,
+.post-inner__footer-comments-amount {
+  cursor: default;
+  margin-right: 5px;
+}
+
+.post-inner__footer-save-post {
+  margin-right: 20px;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0c7";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.post-inner__footer-save-post_saved {
+  color: map-get($colors, app-secondary);
+}
+
+.post-inner__footer-comments-link {
+  text-decoration: none;
+  color: map-get($colors, app-text);
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f4ad";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.post-inner__footer-right-side {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
+}
+
+.post-inner__user-info {
+  max-width: 150px;
+  width: 50%;
+  margin-right: 10px;
+  text-align: right;
+}
+
+.post-inner__user-info-item {
+  margin: 5px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-inner__user-info-item-link {
+  text-decoration: none;
+  color: map-get($colors, app-text);
+  font-weight: 500;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.post-inner__time {
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+.post-inner__avatar {
+  height: 30px;
+}
+
+.post-inner__avatar-img {
+  height: 100%;
+  border-radius: 50%;
+}
+
+.post-inner__admin-btns {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.post-inner__edit-link {
+  text-decoration: none;
+  color: map-get($colors, app-text);
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f044";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.post-inner__delete-post {
+  margin-left: 10px;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f2ed";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
