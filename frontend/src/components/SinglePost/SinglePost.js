@@ -1,22 +1,19 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-import UserContext from "../../context/userContext";
-import Comments from "../Comments/Comments";
-import ContentMaker from "../ContentMaker/ContentMaker";
 import Post from "../Posts/Post/Post";
+import AddComment from "../AddComment/AddComment";
+import Comments from "../Comments/Comments";
 
 import "./SinglePost.scss";
 
 const SinglePost = props => {
-  const comments = useRef();
+  const commentsEl = useRef();
 
-  const userContext = useContext(UserContext);
-
-  const [newCommentData, setNewCommentData] = useState([]);
-  const [parentCommentId, setParentCommentId] = useState(null);
+  const [comments, setComments] = useState([]);
 
   const [post, setPost] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPost, setIsLoadingPost] = useState(true);
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   const postId = props.match.params.postTitle.split("--")[0];
@@ -26,7 +23,7 @@ const SinglePost = props => {
       .then(res => {
         if (res.status === 404) {
           setNotFound(true);
-          setIsLoading(false);
+          setIsLoadingPost(false);
           return;
         } else if (res.status === 200) {
           return res.json();
@@ -42,7 +39,7 @@ const SinglePost = props => {
         }
         console.log(resData);
         setPost(resData);
-        setIsLoading(false);
+        setIsLoadingPost(false);
       })
       .catch(error => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,7 +57,7 @@ const SinglePost = props => {
         }, 500);
       };
       const scrollToElement = () => {
-        const element = comments.current;
+        const element = commentsEl.current;
 
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
@@ -87,103 +84,34 @@ const SinglePost = props => {
     }
   }, [props.location.hash]);
 
-  const createCommentHandler = e => {
-    e.preventDefault();
-    console.log("content", newCommentData);
-
-    const textBlocksArray = [];
-    const imgBlocksArray = [];
-    const dataOrder = [];
-
-    newCommentData.forEach(item => {
-      if (item.type === "text") {
-        if (item.content !== "") {
-          textBlocksArray.push(item.content);
-          dataOrder.push({ type: "text", key: item.key });
-        }
-      } else {
-        imgBlocksArray.push(item.content);
-        dataOrder.push({ type: "img", key: item.key });
-      }
-    });
-
-    console.log("textBlocksArray", textBlocksArray);
-    console.log("imgBlocksArray", imgBlocksArray);
-    console.log("dataOrder", dataOrder);
-    console.log("parentCommentId", parentCommentId);
-
-    const formData = new FormData();
-    formData.append("textBlocksArray", JSON.stringify(textBlocksArray));
-    for (let index = 0; index < imgBlocksArray.length; index++) {
-      formData.append("imgBlocksArray", imgBlocksArray[index]);
-    }
-    formData.append("content", JSON.stringify(dataOrder));
-
-    if (parentCommentId) {
-      formData.append("parentCommentId", parentCommentId);
-    }
-
-    fetch(`http://localhost:5001/posts/${postId}/add-comment`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "POST",
-      body: formData
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 201 || res.status === 422) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
+  useEffect(() => {
+    fetch(`http://localhost:5001/posts/${postId}/comments`)
+      .then(res => res.json())
       .then(resData => {
         console.log(resData);
-        if (resData.errors) {
-          // setErrors(resData.errors);
-        } else {
-          setNewCommentData([]);
-        }
+        setComments(resData);
+        setIsLoadingComments(false);
       })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+      .catch(error => console.log(error));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const sendContentMakerStateHandler = content => {
-    setNewCommentData(content);
-  };
-
-  return isLoading ? (
-    <div>Loading...</div>
+  return isLoadingPost ? (
+    <div>Loading Post...</div>
   ) : !notFound ? (
     <div className="single-post">
       <Post post={post} />
 
-      <div className="single-post__comments" ref={comments}>
-        <Comments
-          postId={postId}
-          createCommentHandler={createCommentHandler}
-          sendContentMakerStateHandler={sendContentMakerStateHandler}
-          setParentCommentId={setParentCommentId}
-        />
+      <div className="single-post__comments" ref={commentsEl}>
+        {isLoadingComments ? (
+          <div>Loading comments...</div>
+        ) : comments.length > 0 ? (
+          <Comments comments={comments} />
+        ) : (
+          <h4 className="single-post__no-comments">Комментариев пока нет. Станьте первым.</h4>
+        )}
         <div className="single-post__add-comment">
-          <div className="single-post__add-comment-offer">
-            Добавьте комментарий, используя форму ниже...
-          </div>
-          <form
-            className="single-post__add-comment-form"
-            onSubmit={createCommentHandler}
-            noValidate
-          >
-            <ContentMaker sendContentMakerStateHandler={sendContentMakerStateHandler} />
-            <button type="submit" className="single-post__add-comment-btn">
-              Отправить
-            </button>
-          </form>
+          <AddComment postId={postId} />
         </div>
       </div>
     </div>

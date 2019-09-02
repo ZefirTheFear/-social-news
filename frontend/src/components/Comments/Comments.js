@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import Comment from "./Comment/Comment";
 
 import "./Comments.scss";
 
 const Comments = props => {
-  const [fetchedComments, setFetchedComments] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [fetchedComments, setFetchedComments] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [parentCommentId, setParentCommentId] = useState(null);
   const [commentIdForReply, setCommentIdForReply] = useState(null);
 
-  useEffect(() => {
-    fetch(`http://localhost:5001/posts/${props.postId}/comments`)
-      .then(res => res.json())
-      .then(resData => {
-        console.log(resData);
-        setFetchedComments(resData);
-        setIsLoading(false);
-      })
-      .catch(error => console.log(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   fetch(`http://localhost:5001/posts/${props.postId}/comments`)
+  //     .then(res => res.json())
+  //     .then(resData => {
+  //       console.log(resData);
+  //       setFetchedComments(resData);
+  //       setIsLoading(false);
+  //     })
+  //     .catch(error => console.log(error));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const openReplyBlockHandler = commentId => {
     setCommentIdForReply(commentId);
-    props.setParentCommentId(commentId);
+    // setParentCommentId(commentId);
   };
 
   const hideInternalComment = e => {
@@ -54,8 +55,8 @@ const Comments = props => {
             <div className="comments_comment">
               <Comment
                 comment={comment}
-                createCommentHandler={props.createCommentHandler}
-                sendContentMakerStateHandler={props.sendContentMakerStateHandler}
+                // createCommentHandler={props.createCommentHandler}
+                // sendContentMakerStateHandler={props.sendContentMakerStateHandler}
                 commentIdForReply={commentIdForReply}
                 openReplyBlockHandler={openReplyBlockHandler}
               />
@@ -72,7 +73,7 @@ const Comments = props => {
                     <div className="comments__reply-comment-border" />
                   </div>
                   <div className="comments__reply-comment-body">
-                    {getCommentsByIdsAndMount(comment.children, fetchedComments)}
+                    {getCommentsByIdsAndMount(comment.children, props.comments)}
                   </div>
                 </div>
                 <div className="comments__closed-internal-comments">
@@ -93,13 +94,7 @@ const Comments = props => {
     });
   };
 
-  return isLoading ? (
-    <div>Loading...</div>
-  ) : fetchedComments.length > 0 ? (
-    <div className="comments">{mountCommentsHandler(fetchedComments)}</div>
-  ) : (
-    <h4>Комментариев пока нет. Станьте первым.</h4>
-  );
+  return <div className="comments">{mountCommentsHandler(props.comments)}</div>;
 };
 
 export default Comments;

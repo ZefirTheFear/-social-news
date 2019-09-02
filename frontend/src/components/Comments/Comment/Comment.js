@@ -3,6 +3,7 @@ import parse from "html-react-parser";
 import { Link } from "react-router-dom";
 
 import ContentMaker from "../../ContentMaker/ContentMaker";
+import AddComment from "../../AddComment/AddComment";
 
 import UserContext from "../../../context/userContext";
 
@@ -234,14 +235,6 @@ const Comment = props => {
     setEditCommentData(content);
   };
 
-  const addReplyComment = e => {
-    props.createCommentHandler(e);
-    props.openReplyBlockHandler(null);
-    setTimeout(() => {
-      fetchComment();
-    }, 1000);
-  };
-
   return comment ? (
     <div className="comment">
       <div className="comment__header">
@@ -340,12 +333,7 @@ const Comment = props => {
 
       {props.commentIdForReply === comment._id ? (
         <div className="comment__reply-block">
-          <form className="comment__reply-form" onSubmit={addReplyComment} noValidate>
-            <ContentMaker sendContentMakerStateHandler={props.sendContentMakerStateHandler} />
-            <button type="submit" className="comment__reply-submit">
-              отправить
-            </button>
-          </form>
+          <AddComment postId={comment.postId} parentCommentId={comment._id} />
         </div>
       ) : null}
     </div>

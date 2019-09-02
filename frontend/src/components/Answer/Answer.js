@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import cloneDeep from "clone-deep";
 
-import Comment from "../Comments/Comment/Comment";
+import CommentC from "../Comments/Comment/Comment";
 
 import "./Answer.scss";
 
@@ -21,7 +21,7 @@ const Answer = props => {
   return (
     <div className="Answer">
       <h6>{props.answer.postId.title}</h6>
-      {!comment ? <div>Loading...</div> : <Comment comment={comment} />}
+      {!comment ? <div>Loading...</div> : <CommentC comment={comment} />}
     </div>
   );
 };

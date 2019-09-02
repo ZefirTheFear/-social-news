@@ -11,29 +11,11 @@
   }
 }
 
+.single-post__no-comments {
+  padding: 15px 25px;
+}
+
 .single-post__add-comment {
   padding: 15px 25px;
   border-top: 1px solid map-get($colors, border);
-}
-
-.single-post__add-comment-offer {
-  margin-bottom: 10px;
-  cursor: default;
-}
-
-.single-post__add-comment-btn {
-  margin-top: 10px;
-  padding: 5px 10px;
-  text-transform: uppercase;
-  background: map-get($colors, app-secondary);
-  color: #fff;
-  border: 0;
-  outline: 0;
-  border-radius: map-get($border-radii, main);
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: darken(map-get($colors, app-secondary), 10%);
-  }
 }
