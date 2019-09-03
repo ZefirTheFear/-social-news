@@ -34,7 +34,7 @@ const AnswersPosts = () => {
   ) : (
     <div className="answers-posts">
       {answers.map(answer => {
-        return <Answer answer={answer} key={answer._id} />;
+        return answer ? <Answer answer={answer} key={answer[0]._id} /> : null;
       })}
     </div>
   );

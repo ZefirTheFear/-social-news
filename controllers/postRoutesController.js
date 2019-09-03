@@ -631,8 +631,8 @@ exports.deleteComment = async (req, res) => {
 
       console.log(comment.children.length);
       if (comment.children.length > 0) {
-        comment.children.forEach(async chilCom => {
-          await delCom(chilCom, targetComId);
+        comment.children.forEach(async childCom => {
+          await delCom(childCom, targetComId);
         });
       } else {
         comment.body.forEach(item => {

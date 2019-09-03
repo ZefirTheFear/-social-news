@@ -1,27 +1,19 @@
-import React, { useState, useEffect } from "react";
-import cloneDeep from "clone-deep";
+import React, { useEffect } from "react";
 
-import CommentC from "../Comments/Comment/Comment";
+import Comments from "../Comments/Comments";
 
 import "./Answer.scss";
 
 const Answer = props => {
-  const [comment, setComment] = useState(null);
-
   useEffect(() => {
-    const newAnswer = cloneDeep(props.answer);
-    newAnswer.postId = newAnswer.postId._id;
-    // console.log(newAnswer);
-    setComment(newAnswer);
-    // setIsLoading(false);
-
+    console.log("answer", props.answer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="Answer">
-      <h6>{props.answer.postId.title}</h6>
-      {!comment ? <div>Loading...</div> : <CommentC comment={comment} />}
+    <div className="answer">
+      <h6>{props.answer[0].postId.title}</h6>
+      {!props.answer ? <div>Loading...</div> : <Comments comments={props.answer} />}
     </div>
   );
 };

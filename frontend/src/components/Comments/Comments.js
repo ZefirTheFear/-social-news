@@ -5,26 +5,10 @@ import Comment from "./Comment/Comment";
 import "./Comments.scss";
 
 const Comments = props => {
-  // const [fetchedComments, setFetchedComments] = useState([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [parentCommentId, setParentCommentId] = useState(null);
   const [commentIdForReply, setCommentIdForReply] = useState(null);
-
-  // useEffect(() => {
-  //   fetch(`http://localhost:5001/posts/${props.postId}/comments`)
-  //     .then(res => res.json())
-  //     .then(resData => {
-  //       console.log(resData);
-  //       setFetchedComments(resData);
-  //       setIsLoading(false);
-  //     })
-  //     .catch(error => console.log(error));
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   const openReplyBlockHandler = commentId => {
     setCommentIdForReply(commentId);
-    // setParentCommentId(commentId);
   };
 
   const hideInternalComment = e => {
@@ -55,8 +39,6 @@ const Comments = props => {
             <div className="comments_comment">
               <Comment
                 comment={comment}
-                // createCommentHandler={props.createCommentHandler}
-                // sendContentMakerStateHandler={props.sendContentMakerStateHandler}
                 commentIdForReply={commentIdForReply}
                 openReplyBlockHandler={openReplyBlockHandler}
               />
@@ -82,7 +64,6 @@ const Comments = props => {
                       открыть ответы
                     </div>
                   </div>
-                  {/* <div className="comments__show-replies">открыть ответы</div> */}
                 </div>
               </React.Fragment>
             ) : null}
