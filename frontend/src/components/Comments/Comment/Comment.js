@@ -333,7 +333,10 @@ const Comment = props => {
 
       {props.commentIdForReply === comment._id ? (
         <div className="comment__reply-block">
-          <AddComment postId={comment.postId} parentCommentId={comment._id} />
+          <AddComment
+            postId={comment.postId._id ? comment.postId._id : comment.postId}
+            parentCommentId={comment._id}
+          />
         </div>
       ) : null}
     </div>

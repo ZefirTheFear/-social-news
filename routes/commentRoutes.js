@@ -5,6 +5,8 @@ const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
-router.get("/answers-posts", isAuth, commentRoutesController.getPostAnswers);
+router.get("/answers-posts", isAuth, commentRoutesController.getPostsAnswers);
+
+router.get("/answers-comments", isAuth, commentRoutesController.getCommentsAnswers);
 
 module.exports = router;
