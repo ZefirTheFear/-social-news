@@ -1,0 +1,17 @@
+@import "../../_variables.scss";
+
+.answer {
+  padding: 5px;
+  border: 1px solid map-get($colors, border);
+}
+
+.answer__post-title {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: map-get($colors, app-secondary);
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}

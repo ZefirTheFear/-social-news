@@ -1,0 +1,42 @@
+@import "../../_variables.scss";
+
+.my-comment {
+  padding: 5px;
+  border: 1px solid map-get($colors, border);
+}
+
+.my-comment__post-title {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: map-get($colors, app-secondary);
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.my-comment__show-parent,
+.my-comment__hide-parent {
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.my-comment__show-parent {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f0fe";
+    font-weight: 900;
+    font-size: 16px;
+    color: #fff;
+  }
+}
+.my-comment__hide-parent {
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f146";
+    font-weight: 900;
+    font-size: 16px;
+    color: #fff;
+  }
+}

@@ -725,7 +725,9 @@ exports.getComment = async (req, res) => {
   const commentId = req.params.commentId;
 
   try {
-    const comment = await Comment.findById(commentId).populate("creator", "name avatar");
+    const comment = await Comment.findById(commentId)
+      .populate("creator", "name avatar")
+      .populate("postId", "title");
     if (!comment) {
       return res.json("There is no comments");
     }

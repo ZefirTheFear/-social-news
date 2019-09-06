@@ -118,7 +118,7 @@ const Dashboard = props => {
         </div>
         <div className="dashboard__profile-content-item" onClick={props.hideDashboard}>
           <NavLink
-            to="/comments"
+            to="/my-comments"
             className="dashboard__profile-content-item-link"
             activeClassName="dashboard__profile-content-item-link_active"
           >

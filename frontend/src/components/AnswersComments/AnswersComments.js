@@ -32,9 +32,13 @@ const AnswersComments = () => {
   return isLoading ? (
     <div>Loading...</div>
   ) : (
-    <div className="answers-posts">
+    <div className="answers-comments">
       {answers.map(answer => {
-        return answer ? <Answer answer={answer} key={answer[0]._id} /> : null;
+        return answer ? (
+          <div className="answers-comments__answer" key={answer[0]._id}>
+            <Answer answer={answer} isOpenThread={true} />
+          </div>
+        ) : null;
       })}
     </div>
   );

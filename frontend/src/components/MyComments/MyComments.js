@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useContext } from "react";
 
-import Answer from "../Answer/Answer";
+import MyComment from "../MyComment/MyComment";
 
 import UserContext from "../../context/userContext";
 
-import "./AnswersPosts.scss";
+import "./MyComments.scss";
 
-const AnswersPosts = () => {
+const MyComments = () => {
   const userContext = useContext(UserContext);
 
-  const [answers, setAnswers] = useState([]);
+  const [myComment, setMyComment] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://localhost:5001/comments/answers-posts", {
+    fetch("http://localhost:5001/comments/my-comments", {
       headers: {
         Authorization: userContext.token
       }
@@ -22,7 +22,7 @@ const AnswersPosts = () => {
       .then(res => res.json())
       .then(resData => {
         console.log(resData);
-        setAnswers(resData);
+        setMyComment(resData);
         setIsLoading(false);
       })
       .catch(error => console.log(error));
@@ -32,11 +32,11 @@ const AnswersPosts = () => {
   return isLoading ? (
     <div>Loading...</div>
   ) : (
-    <div className="answers-posts">
-      {answers.map(answer => {
-        return answer ? (
-          <div className="answers-posts__answer" key={answer[0]._id}>
-            <Answer answer={answer} isOpenThread={false} />
+    <div className="answers-comments">
+      {myComment.map(myComment => {
+        return myComment ? (
+          <div className="answers-comments__answer" key={myComment[0]._id}>
+            <MyComment myComment={myComment} isOpenThread={false} />
           </div>
         ) : null;
       })}
@@ -44,4 +44,4 @@ const AnswersPosts = () => {
   );
 };
 
-export default AnswersPosts;
+export default MyComments;

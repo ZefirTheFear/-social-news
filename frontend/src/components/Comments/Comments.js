@@ -11,6 +11,14 @@ const Comments = props => {
     setCommentIdForReply(commentId);
   };
 
+  // const hideInternalComment = e => {
+  //   e.currentTarget.parentNode.parentNode.style.display = "none";
+  //   e.currentTarget.parentNode.parentNode.nextSibling.style.display = "flex";
+  // };
+  // const showInternalComment = e => {
+  //   e.currentTarget.parentNode.parentNode.style.display = "none";
+  //   e.currentTarget.parentNode.parentNode.previousSibling.style.display = "flex";
+  // };
   const hideInternalComment = e => {
     e.currentTarget.parentNode.parentNode.style.display = "none";
     e.currentTarget.parentNode.parentNode.nextSibling.style.display = "flex";
@@ -45,7 +53,10 @@ const Comments = props => {
             </div>
             {comment.children.length > 0 ? (
               <React.Fragment>
-                <div className="comments__opened-internal-comments">
+                <div
+                  className="comments__opened-internal-comments"
+                  style={props.isOpenThread ? { display: "flex" } : { display: "none" }}
+                >
                   <div className="comments__reply-comment-controls">
                     <div
                       className="comments__close-reply"
@@ -58,7 +69,10 @@ const Comments = props => {
                     {getCommentsByIdsAndMount(comment.children, props.comments)}
                   </div>
                 </div>
-                <div className="comments__closed-internal-comments">
+                <div
+                  className="comments__closed-internal-comments"
+                  style={props.isOpenThread ? { display: "none" } : { display: "flex" }}
+                >
                   <div className="comments__reply-comment-controls">
                     <div className="comments__open-reply" onClick={showInternalComment}>
                       открыть ответы

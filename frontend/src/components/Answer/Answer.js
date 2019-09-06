@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import Comments from "../Comments/Comments";
 
@@ -12,8 +13,20 @@ const Answer = props => {
 
   return (
     <div className="answer">
-      <h6>{props.answer[0].postId.title}</h6>
-      {!props.answer ? <div>Loading...</div> : <Comments comments={props.answer} />}
+      <Link
+        to={`/post/${props.answer[0].postId._id}--${props.answer[0].postId.title.replace(
+          / /g,
+          "_"
+        )}`}
+        className="answer__post-link"
+      >
+        <h6 className="answer__post-title">{props.answer[0].postId.title}</h6>
+      </Link>
+      {!props.answer ? (
+        <div>Loading...</div>
+      ) : (
+        <Comments comments={props.answer} isOpenThread={props.isOpenThread} />
+      )}
     </div>
   );
 };

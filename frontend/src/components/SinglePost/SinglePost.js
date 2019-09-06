@@ -102,11 +102,13 @@ const SinglePost = props => {
     <div className="single-post">
       <Post post={post} />
 
-      <div className="single-post__comments" ref={commentsEl}>
+      <div className="single-post__comments-block" ref={commentsEl}>
         {isLoadingComments ? (
           <div>Loading comments...</div>
         ) : comments.length > 0 ? (
-          <Comments comments={comments} />
+          <div className="single-post__comments">
+            <Comments comments={comments} isOpenThread={true} />
+          </div>
         ) : (
           <h4 className="single-post__no-comments">Комментариев пока нет. Станьте первым.</h4>
         )}

@@ -11,6 +11,7 @@ import Profile from "../Profile/Profile";
 import Sidebar from "../Sidebar/Sidebar";
 import NotFound from "../../pages/NotFoundPage/NotFound";
 import Answers from "../Answers/Answers";
+import MyComments from "../MyComments/MyComments";
 import Estimates from "../Estimates/Estimates";
 import SavedPosts from "../SavedPosts/SavedPosts";
 import SubsList from "../SubsList/SubsList";
@@ -33,6 +34,7 @@ const AppInner = propss => {
           <Route path="/@:username" component={Profile} />
 
           <Route path="/answers" component={Answers} />
+          <Route path="/my-comments" exact component={MyComments} />
           <Route path="/estimates" component={Estimates} />
           <Route path="/saved" exact component={SavedPosts} />
           <Route path="/subs-list" exact component={SubsList} />

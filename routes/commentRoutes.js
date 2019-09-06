@@ -9,4 +9,6 @@ router.get("/answers-posts", isAuth, commentRoutesController.getPostsAnswers);
 
 router.get("/answers-comments", isAuth, commentRoutesController.getCommentsAnswers);
 
+router.get("/my-comments", isAuth, commentRoutesController.getMyComments);
+
 module.exports = router;

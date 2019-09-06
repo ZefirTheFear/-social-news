@@ -1,9 +1,5 @@
 @import "../../variables.scss";
 
-.comments {
-  padding: 15px 25px;
-}
-
 .comments_comment {
   padding-bottom: 10px;
 }
@@ -12,7 +8,8 @@
   display: flex;
 }
 .comments__closed-internal-comments {
-  display: none;
+  // display: none;
+  display: flex;
   cursor: default;
 }
 
