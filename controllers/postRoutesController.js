@@ -219,6 +219,22 @@ exports.getNewPosts = async (req, res) => {
   }
 };
 
+exports.getSubsPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    const subsPosts = await Post.find({ creator: { $in: [user.subscribeTo] } }).populate(
+      "creator",
+      "name avatar"
+    );
+    if (subsPosts.length === 0) {
+      return res.json("There is no posts");
+    }
+    res.status(200).json(subsPosts);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.getSavedPosts = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
