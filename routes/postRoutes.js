@@ -14,6 +14,8 @@ router.get("/best", postRoutesController.getBestPosts);
 
 router.get("/new", postRoutesController.getNewPosts);
 
+router.get("/desired/:desired", postRoutesController.getDesiredPosts);
+
 router.get("/subs", isAuth, postRoutesController.getSubsPosts);
 
 router.get("/saved", isAuth, postRoutesController.getSavedPosts);

@@ -7,6 +7,7 @@ import Posts from "../Posts/Posts";
 import BestPosts from "../BestPosts/BestPosts";
 import NewPosts from "../NewPosts/NewPosts";
 import SubsPosts from "../SubsPosts/SubsPosts";
+import Search from "../Search/Search";
 import SinglePost from "../SinglePost/SinglePost";
 import Profile from "../Profile/Profile";
 import Sidebar from "../Sidebar/Sidebar";
@@ -32,6 +33,7 @@ const AppInner = propss => {
           <Route path="/best" exact component={BestPosts} />
           <Route path="/new" exact component={NewPosts} />
           <Route path="/subs" exact component={SubsPosts} />
+          <Route path="/search/:desired" component={Search} />
           <Route path="/post/:postTitle" component={SinglePost} />
           <Route path="/@:username" component={Profile} />
 

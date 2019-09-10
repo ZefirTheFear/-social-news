@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, withRouter } from "react-router-dom";
 
 import "./Navbar.scss";
 
@@ -65,9 +65,8 @@ const Navbar = props => {
     if (!searchInputValue.trim()) {
       return console.log("empty");
     }
-    console.log("in dev");
-    // TODO поиск
-    setSearchInputValue("");
+    props.history.push(`/search/${searchInputValue}`);
+    // setSearchInputValue("");
   };
 
   const showMenuMobile = e => {
@@ -262,4 +261,4 @@ const Navbar = props => {
   );
 };
 
-export default Navbar;
+export default withRouter(Navbar);

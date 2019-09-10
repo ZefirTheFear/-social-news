@@ -219,6 +219,28 @@ exports.getNewPosts = async (req, res) => {
   }
 };
 
+exports.getDesiredPosts = async (req, res) => {
+  const desired = req.params.desired;
+  try {
+    const posts = await Post.find()
+      .populate("creator", "name avatar")
+      .sort({ createdAt: -1 });
+    if (!posts) {
+      return res.json("There is no posts");
+    }
+    const desiredPosts = posts.filter(post => {
+      for (const tag of post.tags) {
+        if (tag.includes(desired)) {
+          return true;
+        }
+      }
+    });
+    res.status(200).json(desiredPosts);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.getSubsPosts = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
