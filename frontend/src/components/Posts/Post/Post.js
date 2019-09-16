@@ -266,7 +266,11 @@ const Post = props => {
             </div>
             <div className="post-inner__avatar">
               <Link className="post-inner__avatar-link" to={`/@${post.creator.name}`}>
-                <img className="post-inner__avatar-img" src={post.creator.avatar} alt="avatar" />
+                <img
+                  className="post-inner__avatar-img"
+                  src={"http://localhost:5001/" + post.creator.avatar}
+                  alt="avatar"
+                />
               </Link>
             </div>
             {userContext.user &&

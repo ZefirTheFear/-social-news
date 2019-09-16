@@ -18,11 +18,18 @@ const userSchema = new Schema(
     },
     avatar: {
       type: String,
-      default: "https://cs.pikabu.ru/images/def_avatar/def_avatar_80.png"
+      default: "uploads/avatars/default_avatar.png"
     },
     status: {
       type: String,
       default: "user"
+    },
+    sex: {
+      type: String,
+      default: "nd"
+    },
+    aboutMe: {
+      type: String
     },
     rating: {
       type: Number,

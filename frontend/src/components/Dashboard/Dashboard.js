@@ -60,7 +60,11 @@ const Dashboard = props => {
             to={`/@${user.name}`}
             onClick={props.hideDashboard}
           >
-            <img className="dashboard__img" src={user.avatar} alt="avatar" />
+            <img
+              className="dashboard__img"
+              src={"http://localhost:5001/" + user.avatar}
+              alt="avatar"
+            />
           </Link>
         </div>
         <div className="dashboard__user-info">
@@ -79,7 +83,7 @@ const Dashboard = props => {
           </div>
         </div>
         <div className="dashboard__settings">
-          <div className="dashboard__settings-symbol" title="Настройки" />
+          <Link to="/settings" className="dashboard__settings-symbol" title="Настройки" />
         </div>
       </div>
       <div className="dashboard__profile-info">

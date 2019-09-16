@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const { body } = require("express-validator/check");
 
 const User = require("../models/User");
@@ -8,6 +9,27 @@ const userRoutesController = require("../controllers/userRoutesController");
 const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/avatars/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname);
+  }
+});
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 
 // @route     POST /users/register
 // @ desc     Register user
@@ -80,5 +102,13 @@ router.get("/get-subscribe-to", isAuth, userRoutesController.getSubscribeTo);
 router.get("/get-ignore-list", isAuth, userRoutesController.getIgnoreList);
 
 router.get("/get-notes", isAuth, userRoutesController.getNotes);
+
+router.post("/change-avatar", isAuth, upload.single("avatar"), userRoutesController.changeAvatar);
+
+router.patch("/delete-avatar", isAuth, userRoutesController.deleteAvatar);
+
+router.patch("/change-sex", isAuth, userRoutesController.changeSex);
+
+router.patch("/set-about-me-note", isAuth, userRoutesController.setAboutMeNote);
 
 module.exports = router;

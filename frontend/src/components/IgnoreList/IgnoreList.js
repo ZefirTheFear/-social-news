@@ -76,7 +76,11 @@ const IgnoreList = () => {
               &times;
             </div>
             <Link to={`/@${user.name}`}>
-              <img className="ignore-list__user-avatar" src={user.avatar} alt="ava" />
+              <img
+                className="ignore-list__user-avatar"
+                src={"http://localhost:5001/" + user.avatar}
+                alt="ava"
+              />
             </Link>
             <Link className="ignore-list__username" to={`/@${user.name}`}>
               {user.name}

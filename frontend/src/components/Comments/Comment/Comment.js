@@ -272,7 +272,7 @@ const Comment = props => {
           <div className="comment__user-avatar">
             <Link to={`/@${comment.creator.name}`} className="comment__user-avatar-link">
               <img
-                src={comment.creator.avatar}
+                src={"http://localhost:5001/" + comment.creator.avatar}
                 className="comment__user-avatar-link-img"
                 alt="avatar"
               />

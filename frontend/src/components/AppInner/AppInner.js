@@ -19,8 +19,9 @@ import SavedPosts from "../SavedPosts/SavedPosts";
 import SubsList from "../SubsList/SubsList";
 import IgnoreList from "../IgnoreList/IgnoreList";
 import Notes from "../Notes/Notes";
+import Settings from "../ProfileSettings/ProfileSettings";
 
-const AppInner = propss => {
+const AppInner = props => {
   return (
     <div className="app-inner">
       <div className="app-inner__main">
@@ -28,7 +29,7 @@ const AppInner = propss => {
           <Route
             path="/"
             exact
-            render={props => <Posts {...props} isLogoClicked={propss.isLogoClicked} />}
+            render={propss => <Posts {...propss} isLogoClicked={props.isLogoClicked} />}
           />
           <Route path="/best" exact component={BestPosts} />
           <Route path="/new" exact component={NewPosts} />
@@ -37,6 +38,7 @@ const AppInner = propss => {
           <Route path="/post/:postTitle" component={SinglePost} />
           <Route path="/@:username" component={Profile} />
 
+          {props.isAuth ? <Route path="/settings" exact component={Settings} /> : null}
           <Route path="/answers" component={Answers} />
           <Route path="/my-comments" exact component={MyComments} />
           <Route path="/estimates" component={Estimates} />
@@ -49,7 +51,7 @@ const AppInner = propss => {
         </Switch>
       </div>
       <div className="app-inner__sidebar">
-        <Sidebar logoutHandler={propss.logoutHandler} />
+        <Sidebar logoutHandler={props.logoutHandler} />
       </div>
     </div>
   );

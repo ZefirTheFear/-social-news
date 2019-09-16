@@ -20,6 +20,9 @@ const App = () => {
   const [isAuth, setIsAuth] = useState(localStorage.getItem("isAuth") ? true : false);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  // const [isAuth, setIsAuth] = useState(false);
+  // const [token, setToken] = useState(null);
+  // const [user, setUser] = useState(null);
 
   const [isLogoClicked, setIsLogoClicked] = useState(0);
 
@@ -120,7 +123,12 @@ const App = () => {
             <Route
               path="/"
               render={props => (
-                <AppInner {...props} logoutHandler={logoutHandler} isLogoClicked={isLogoClicked} />
+                <AppInner
+                  {...props}
+                  isAuth={isAuth}
+                  logoutHandler={logoutHandler}
+                  isLogoClicked={isLogoClicked}
+                />
               )}
             />
           </Switch>

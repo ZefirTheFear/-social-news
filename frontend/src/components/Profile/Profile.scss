@@ -15,33 +15,79 @@
 }
 
 .profile__header {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: fit-content(0);
+  grid-template-areas:
+    "avatar user buttons"
+    "about about about";
   padding-bottom: 15px;
   border-bottom: 1px solid map-get($colors, border);
+  align-items: center;
+
+  @media (max-width: 767px) {
+    grid-template-columns: auto;
+    grid-template-areas:
+      "avatar buttons buttons"
+      "user user user"
+      "about about about";
+    justify-items: center;
+  }
 }
 
 .profile__avatar {
-  margin-right: 25px;
+  grid-area: avatar;
 }
 
 .profile__img {
   width: 128px;
+  max-width: 20vw;
   border-radius: 50%;
 }
 
 .profile__user {
-  max-width: 50%;
+  max-width: 40vw;
+  margin: 0 15px;
+  grid-area: user;
 }
 
 .profile__user-settings {
-  margin-left: auto;
+  grid-area: buttons;
+  justify-self: end;
+  color: inherit;
+  cursor: pointer;
+
+  @media (max-width: 767px) {
+    justify-self: auto;
+  }
+}
+
+.profile__settings-symbol {
+  transition: all 0.3s;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f013";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+    transform: rotate(90deg);
+  }
 }
 
 .profile__user-buttons {
   display: flex;
   flex-direction: column;
-  margin-left: auto;
+  justify-self: end;
+  grid-area: buttons;
+  align-self: center;
+
+  @media (max-width: 767px) {
+    justify-self: auto;
+  }
 }
 
 .profile__subscribe,
@@ -97,14 +143,29 @@
   margin-top: 10px;
 }
 
+.profile__about-user {
+  margin-top: 10px;
+  grid-area: about;
+
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: map-get($colors, app-text);
+  resize: none;
+  font: inherit;
+  overflow: hidden;
+}
+
 .profile__statistics {
   display: flex;
-  padding: 15px 0;
+  flex-wrap: wrap;
+  padding: 15px 0 5px 0;
   border-bottom: 1px solid map-get($colors, border);
 }
 
 .profile__statistics-item {
-  margin-right: 35px;
+  margin: 0 35px 10px 0;
   cursor: default;
 }
 

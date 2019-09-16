@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 
+import { Link } from "react-router-dom";
+
 import Post from "../Posts/Post/Post";
 import NotFound from "../../pages/NotFoundPage/NotFound";
 
@@ -13,7 +15,8 @@ import "./Profile.scss";
 const Profile = props => {
   const userContext = useContext(UserContext);
 
-  const textarea = useRef();
+  const userNote = useRef();
+  const aboutMe = useRef();
 
   const [user, setUser] = useState(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
@@ -86,7 +89,9 @@ const Profile = props => {
   }, [user]);
 
   useEffect(() => {
-    if (user) {
+    if (user && userContext.user) {
+      aboutMe.current.style.height = "auto";
+      aboutMe.current.style.height = aboutMe.current.scrollHeight + "px";
       setNote("");
       const userNote = userContext.user.notesAboutUsers.find(note => note.userId === user._id);
       if (userNote) {
@@ -99,8 +104,8 @@ const Profile = props => {
 
   useEffect(() => {
     if (note) {
-      textarea.current.style.height = "auto";
-      textarea.current.style.height = textarea.current.scrollHeight + "px";
+      userNote.current.style.height = "auto";
+      userNote.current.style.height = userNote.current.scrollHeight + "px";
     }
   }, [note]);
 
@@ -154,17 +159,17 @@ const Profile = props => {
 
   const onChangeNote = e => {
     setNote(e.target.value);
-    textarea.current.style.height = "auto";
-    textarea.current.style.height = e.currentTarget.scrollHeight + "px";
+    userNote.current.style.height = "auto";
+    userNote.current.style.height = e.currentTarget.scrollHeight + "px";
   };
 
   const saveNote = () => {
-    if (note === initialUserNote) {
+    if (note.trim() === initialUserNote) {
       return;
     }
     const noteData = {
       notedUserId: user._id,
-      noteBody: note
+      noteBody: note.trim()
     };
     fetch(`http://localhost:5001/users/set-note`, {
       headers: {
@@ -200,15 +205,23 @@ const Profile = props => {
       <div className="porfile__info">
         <div className="profile__header">
           <div className="profile__avatar">
-            <img className="profile__img" src={user.avatar} alt="avatar" />
+            <img
+              className="profile__img"
+              src={"http://localhost:5001/" + user.avatar}
+              alt="avatar"
+            />
           </div>
           <div className="profile__user">
             <div className="profile__nickname">{user.name}</div>
-            <div className="profile__createdAt">ZTFник {timeFormatterFull(user.createdAt)}</div>
+            <div className="profile__createdAt">
+              ZTFни{user.sex === "w" ? "ца" : "к"} {timeFormatterFull(user.createdAt)}
+            </div>
           </div>
           {userContext.isAuth ? (
             userContext.user._id === user._id ? (
-              <div className="profile__user-settings">settings</div>
+              <Link to="/settings" className="profile__user-settings">
+                <div className="profile__settings-symbol" title="Настройки" />
+              </Link>
             ) : (
               <div className="profile__user-buttons">
                 <button
@@ -228,6 +241,13 @@ const Profile = props => {
               </div>
             )
           ) : null}
+          <textarea
+            className="profile__about-user"
+            value={user.aboutMe}
+            rows="1"
+            readOnly
+            ref={aboutMe}
+          />
         </div>
         <div className="profile__statistics">
           <div className="profile__statistics-item">
@@ -290,7 +310,7 @@ const Profile = props => {
             onChange={onChangeNote}
             onBlur={saveNote}
             placeholder="Заметка об этом пользователе. Будет видна только Вам. Нажмите, чтобы ввести текст"
-            ref={textarea}
+            ref={userNote}
           />
         </div>
       ) : (

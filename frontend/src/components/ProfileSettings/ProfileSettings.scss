@@ -1,0 +1,144 @@
+@import "../../variables.scss";
+
+.settings {
+  display: grid;
+  grid-template-columns: fit-content(0);
+  grid-template-areas:
+    "name name"
+    "avatar sex"
+    "avatar note";
+  gap: 20px;
+  align-items: center;
+  padding: 15px 25px;
+  background: map-get($colors, app-secondary-bg);
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+
+  @media (max-width: 767px) {
+    grid-template-columns: auto;
+    grid-template-areas:
+      "name"
+      "avatar"
+      "sex"
+      "note";
+  }
+}
+
+.settings__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80vw;
+  grid-area: name;
+  font-size: 2rem;
+
+  @media (max-width: 767px) {
+    justify-self: center;
+  }
+}
+
+.settings__image-block {
+  position: relative;
+  grid-area: avatar;
+
+  @media (max-width: 767px) {
+    justify-self: center;
+  }
+}
+
+.settings__img {
+  width: 256px;
+  max-width: 80vw;
+  border-radius: 50%;
+}
+
+.settings__change-img-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent;
+  color: inherit;
+  outline: 0;
+  border: 0;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f044";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.settings__delete-img-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+  color: inherit;
+  outline: 0;
+  border: 0;
+
+  &::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f2ed";
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+}
+
+.settings__sex {
+  grid-area: sex;
+}
+
+.settings__label {
+  margin-bottom: 5px;
+}
+
+.settings__sex-selector {
+  width: 200px;
+  padding: 5px;
+  font-family: inherit;
+  background: map-get($colors, app-secondary-bg);
+  color: inherit;
+  outline: 0;
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+  cursor: pointer;
+
+  &:focus {
+    border: 1px solid map-get($colors, app-secondary);
+  }
+}
+
+.settings__about-me {
+  grid-area: note;
+}
+
+.settings__about-me-textarea {
+  // display: flex;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  outline: 0;
+  color: map-get($colors, app-text);
+  resize: none;
+  font: inherit;
+  overflow: hidden;
+
+  &:focus {
+    border: 1px solid map-get($colors, app-secondary);
+  }
+}

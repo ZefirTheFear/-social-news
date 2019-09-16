@@ -1,10 +1,43 @@
 const express = require("express");
+const multer = require("multer");
 const { body } = require("express-validator/check");
 
 const postRoutesController = require("../controllers/postRoutesController");
 const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
+
+// Для multer
+const fileStorage = multer.diskStorage({
+  // конфижим multer.
+  destination: (req, file, cb) => {
+    // фция, которая определяет где сохраняем
+    cb(null, "uploads/images/");
+  },
+  filename: (req, file, cb) => {
+    // фция, которая определяет как сохраняем (название)
+    cb(null, new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname); // дата для уникальности + оригинильное имя файла
+  }
+});
+const fileFilter = (req, file, cb) => {
+  // фция, которая определяет файлы какого типа сохраняем
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
+// app.use(
+//   multer({ storage: fileStorage, fileFilter: fileFilter }).fields([
+//     { name: "imgBlocksArray" },
+//     { name: "newImgBlocksArray" }
+//   ])
+// );
 
 router.get("/", postRoutesController.getPosts);
 
@@ -29,6 +62,7 @@ router.get("/disliked", isAuth, postRoutesController.getDislikedPosts);
 router.post(
   "/new-post",
   isAuth,
+  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
   [
     body("title", "Please use min 1 char and max 30 chars")
       .trim()

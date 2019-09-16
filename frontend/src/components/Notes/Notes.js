@@ -84,7 +84,11 @@ const Notes = () => {
           <div className="notes__note" key={note.user._id}>
             <div className="notes__note-inner">
               <Link to={`/@${note.user.name}`}>
-                <img className="notes__user-avatar" src={note.user.avatar} alt="ava" />
+                <img
+                  className="notes__user-avatar"
+                  src={"http://localhost:5001/" + note.user.avatar}
+                  alt="ava"
+                />
               </Link>
               <Link className="notes__username" to={`/@${note.user.name}`}>
                 {note.user.name}

@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator/check");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const clearImage = require("../utils/clearImage");
 const User = require("../models/User");
 const secretOrPrivateKey = require("../config/keys").secretOrKey;
 
@@ -219,6 +220,58 @@ exports.getNotes = async (req, res) => {
       return res.status(404).json({ error: "there is no notes about users" });
     }
     return res.status(200).json(notes);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.changeAvatar = async (req, res) => {
+  console.log(req.file);
+  try {
+    let user = await User.findById(req.userId);
+    if (user.avatar !== "uploads/avatars/default_avatar.png") {
+      clearImage(user.avatar);
+    }
+    user.avatar = req.file.path;
+    user = await user.save();
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.deleteAvatar = async (req, res) => {
+  console.log(req.file);
+  try {
+    let user = await User.findById(req.userId);
+    if (user.avatar !== "uploads/avatars/default_avatar.png") {
+      clearImage(user.avatar);
+    }
+    user.avatar = "uploads/avatars/default_avatar.png";
+    user = await user.save();
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.changeSex = async (req, res) => {
+  try {
+    let user = await User.findById(req.userId);
+    user.sex = req.body;
+    user = await user.save();
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.setAboutMeNote = async (req, res) => {
+  try {
+    let user = await User.findById(req.userId);
+    user.aboutMe = req.body;
+    user = await user.save();
+    return res.status(200).json(user);
   } catch (error) {
     console.log(error);
   }

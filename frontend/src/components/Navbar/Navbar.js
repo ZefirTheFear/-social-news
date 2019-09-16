@@ -223,7 +223,11 @@ const Navbar = props => {
                   className="header-right-menu__item header-right-menu__avatar"
                   onClick={showDashboard}
                 >
-                  <img className="header-right-menu__img" src={props.user.avatar} alt="avatar" />
+                  <img
+                    className="header-right-menu__img"
+                    src={"http://localhost:5001/" + props.user.avatar}
+                    alt="avatar"
+                  />
                 </div>
               </React.Fragment>
             ) : (
