@@ -29,6 +29,25 @@ const AnswersComments = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    return () => {
+      fetch("http://localhost:5001/users/delete-new-answers-for-comments", {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      })
+        .then(res => res.json())
+        .then(resData => {
+          console.log(resData);
+          localStorage.setItem("user", JSON.stringify(resData));
+          userContext.setUser(resData);
+        })
+        .catch(error => console.log(error));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return isLoading ? (
     <div>Loading...</div>
   ) : (

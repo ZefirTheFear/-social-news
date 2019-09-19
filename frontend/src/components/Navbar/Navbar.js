@@ -216,9 +216,9 @@ const Navbar = props => {
             </div>
             {props.isAuth ? (
               <React.Fragment>
-                <div className="header-right-menu__item header-right-menu__notifications">
+                {/* <div className="header-right-menu__item header-right-menu__notifications">
                   <Link to="/notifications" className="header-right-menu__notifications-link" />
-                </div>
+                </div> */}
                 <div
                   className="header-right-menu__item header-right-menu__avatar"
                   onClick={showDashboard}

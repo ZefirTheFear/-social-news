@@ -94,6 +94,7 @@ router.post(
 router.patch(
   "/:postId/edit",
   isAuth,
+  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
   [
     body("title", "Please use min 1 char and max 30 chars")
       .trim()
@@ -137,6 +138,7 @@ router.get("/:postId/comments", postRoutesController.getComments);
 router.post(
   "/:postId/add-comment",
   isAuth,
+  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
   [
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);
@@ -161,6 +163,7 @@ router.patch("/comments/:commentId/dislike", isAuth, postRoutesController.dislik
 router.patch(
   "/comments/:commentId/edit",
   isAuth,
+  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
   [
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);

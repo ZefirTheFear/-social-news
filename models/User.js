@@ -107,13 +107,12 @@ const userSchema = new Schema(
         ref: "User"
       }
     ],
-    // notesAboutUsers: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "Note"
-    //   }
-    // ]
     notesAboutUsers: [
+      {
+        type: Object
+      }
+    ],
+    newAnswers: [
       {
         type: Object
       }

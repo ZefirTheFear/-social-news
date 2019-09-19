@@ -182,9 +182,9 @@ exports.getPostsByUser = async (req, res) => {
   try {
     const user = await User.findById(userId);
     const posts = await Post.find({ creator: userId }).populate("creator", "name avatar");
-    if (!posts) {
-      return res.json("There is no posts");
-    }
+    // if (!posts) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(posts);
   } catch (error) {
     console.log(error);
@@ -196,9 +196,9 @@ exports.getBestPosts = async (req, res) => {
     const posts = await Post.find()
       .populate("creator", "name avatar")
       .sort({ rating: -1 });
-    if (!posts) {
-      return res.json("There is no posts");
-    }
+    // if (!posts) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(posts);
   } catch (error) {
     console.log(error);
@@ -210,9 +210,9 @@ exports.getNewPosts = async (req, res) => {
     const posts = await Post.find()
       .populate("creator", "name avatar")
       .sort({ createdAt: -1 });
-    if (!posts) {
-      return res.json("There is no posts");
-    }
+    // if (!posts) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(posts);
   } catch (error) {
     console.log(error);
@@ -225,9 +225,9 @@ exports.getDesiredPosts = async (req, res) => {
     const posts = await Post.find()
       .populate("creator", "name avatar")
       .sort({ createdAt: -1 });
-    if (!posts) {
-      return res.json("There is no posts");
-    }
+    // if (!posts) {
+    //   return res.json("There is no posts");
+    // }
     const desiredPosts = posts.filter(post => {
       for (const tag of post.tags) {
         if (tag.includes(desired)) {
@@ -248,9 +248,9 @@ exports.getSubsPosts = async (req, res) => {
       "creator",
       "name avatar"
     );
-    if (subsPosts.length === 0) {
-      return res.json("There is no posts");
-    }
+    // if (subsPosts.length === 0) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(subsPosts);
   } catch (error) {
     console.log(error);
@@ -265,9 +265,9 @@ exports.getSavedPosts = async (req, res) => {
       const savedPost = await Post.findById(post._id).populate("creator", "name avatar");
       savedPosts.unshift(savedPost);
     }
-    if (savedPosts.length === 0) {
-      return res.json("There is no posts");
-    }
+    // if (savedPosts.length === 0) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(savedPosts);
   } catch (error) {
     console.log(error);
@@ -282,9 +282,9 @@ exports.getEstimatedPosts = async (req, res) => {
     })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
-    if (estimatedPosts.length === 0) {
-      return res.json("There is no posts");
-    }
+    // if (estimatedPosts.length === 0) {
+    //   return res.status(404).json("There is no posts");
+    // }
     res.status(200).json(estimatedPosts);
   } catch (error) {
     console.log(error);
@@ -297,9 +297,9 @@ exports.getLikedPosts = async (req, res) => {
     const likedPosts = await Post.find({ _id: { $in: [...user.likedPosts] } })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
-    if (likedPosts.length === 0) {
-      return res.json("There is no posts");
-    }
+    // if (likedPosts.length === 0) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(likedPosts);
   } catch (error) {
     console.log(error);
@@ -312,9 +312,9 @@ exports.getDislikedPosts = async (req, res) => {
     const dislikedPosts = await Post.find({ _id: { $in: [...user.dislikedPosts] } })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
-    if (dislikedPosts.length === 0) {
-      return res.json("There is no posts");
-    }
+    // if (dislikedPosts.length === 0) {
+    //   return res.json("There is no posts");
+    // }
     res.status(200).json(dislikedPosts);
   } catch (error) {
     console.log(error);
@@ -580,6 +580,18 @@ exports.createComment = async (req, res) => {
       comment.children.push(newComment);
       await comment.save();
     }
+    // ----------
+    if (newComment.parentComment) {
+      const parentComment = await Comment.findById(newComment.parentComment);
+      const creator = await User.findById(parentComment.creator);
+      creator.newAnswers.push({ type: "answerForComment" });
+      await creator.save();
+    } else {
+      const creator = await User.findById(post.creator);
+      creator.newAnswers.push({ type: "answerForPost" });
+      await creator.save();
+    }
+    // ----------
     res.status(201).json(newComment);
   } catch (error) {
     console.log(error);

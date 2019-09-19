@@ -39,7 +39,7 @@ const EstimatesAll = () => {
           </div>
         ))
       ) : (
-        <h1>There is no posts yet</h1>
+        <h1>There is no estimated posts yet</h1>
       )}
     </div>
   );

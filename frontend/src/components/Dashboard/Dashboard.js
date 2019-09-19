@@ -113,11 +113,14 @@ const Dashboard = props => {
       <div className="dashboard__profile-content">
         <div className="dashboard__profile-content-item" onClick={props.hideDashboard}>
           <NavLink
-            to="/answers"
+            to="/answers/posts"
             className="dashboard__profile-content-item-link"
             activeClassName="dashboard__profile-content-item-link_active"
           >
             Ответы
+            {userContext.user.newAnswers.length > 0 ? (
+              <span className="dashboard__new-answers">{userContext.user.newAnswers.length}</span>
+            ) : null}
           </NavLink>
         </div>
         <div className="dashboard__profile-content-item" onClick={props.hideDashboard}>

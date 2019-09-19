@@ -276,3 +276,29 @@ exports.setAboutMeNote = async (req, res) => {
     console.log(error);
   }
 };
+
+exports.deleteNewAnswersForPost = async (req, res) => {
+  try {
+    let user = await User.findById(req.userId);
+    user.newAnswers.forEach(answer =>
+      answer.type === "answerForPost" ? user.newAnswers.pull(answer) : null
+    );
+    user = await user.save();
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.deleteNewAnswersForComment = async (req, res) => {
+  try {
+    let user = await User.findById(req.userId);
+    user.newAnswers.forEach(answer =>
+      answer.type === "answerForComment" ? user.newAnswers.pull(answer) : null
+    );
+    user = await user.save();
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};

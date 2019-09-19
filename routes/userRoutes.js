@@ -111,4 +111,12 @@ router.patch("/change-sex", isAuth, userRoutesController.changeSex);
 
 router.patch("/set-about-me-note", isAuth, userRoutesController.setAboutMeNote);
 
+router.patch("/delete-new-answers-for-posts", isAuth, userRoutesController.deleteNewAnswersForPost);
+
+router.patch(
+  "/delete-new-answers-for-comments",
+  isAuth,
+  userRoutesController.deleteNewAnswersForComment
+);
+
 module.exports = router;
