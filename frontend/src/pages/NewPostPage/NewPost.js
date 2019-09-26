@@ -1,5 +1,7 @@
 import React, { useState, useContext } from "react";
 
+import uniqid from "uniqid";
+
 import ContentMaker from "../../components/ContentMaker/ContentMaker";
 import NewPostTagContainer from "../../components/NewPostTagContainer/NewPostTagContainer";
 
@@ -26,10 +28,18 @@ const NewPost = props => {
     setCurrentTag(e.target.value);
   };
 
-  const newTagHandler = e => {
-    if (currentTag.trim().length > 0) {
-      setTags([...tags, { content: currentTag.trim(), key: Date.now() }]);
+  const newTagHandler = () => {
+    if (currentTag.trim().length > 0 && currentTag.trim().length < 300) {
+      for (const tag of tags) {
+        if (tag.content === currentTag.trim()) {
+          return setCurrentTag("");
+        }
+      }
+      setTags([...tags, { content: currentTag.trim(), key: uniqid() }]);
       setCurrentTag("");
+    } else if (currentTag.trim().length > 30) {
+      setCurrentTag("");
+      setErrors({ ...errors, tags: { msg: "Нe более 30 символов в теге" } });
     }
   };
 
@@ -39,12 +49,43 @@ const NewPost = props => {
     setTags(postTags);
   };
 
-  const onSubmit = e => {
+  const createPost = e => {
     e.preventDefault();
-    console.log(e);
     console.log("title", title.trim());
     console.log("content", newPostData);
     console.log("tags", tags);
+
+    const clientErrors = {};
+    if (title.trim().length < 1 || title.trim().length > 30) {
+      clientErrors.title = {
+        msg: "Длина заголовка от 1 до 30 символов"
+      };
+    }
+    if (newPostData.length < 1) {
+      clientErrors.content = {
+        msg: "Нужен контент"
+      };
+    }
+    if (newPostData.length > 5) {
+      clientErrors.content = {
+        msg: "Максимум 5 блоков"
+      };
+    }
+    if (tags.length < 1) {
+      clientErrors.tags = {
+        msg: "Нужен хотя бы 1 тег"
+      };
+    }
+    if (tags.length > 5) {
+      clientErrors.tags = {
+        msg: "Максимум 5 тегов"
+      };
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      return;
+    }
 
     const textBlocksArray = [];
     const imgBlocksArray = [];
@@ -110,9 +151,27 @@ const NewPost = props => {
     setNewPostData(content);
   };
 
+  const focusPostTitle = () => {
+    const newErrors = { ...errors };
+    delete newErrors.title;
+    setErrors(newErrors);
+  };
+
+  const focusPostTag = () => {
+    const newErrors = { ...errors };
+    delete newErrors.tags;
+    setErrors(newErrors);
+  };
+
+  const focusPostContent = () => {
+    const newErrors = { ...errors };
+    delete newErrors.content;
+    setErrors(newErrors);
+  };
+
   return (
     <div className="new-post">
-      <form className="new-post__form" noValidate onSubmit={onSubmit}>
+      <form className="new-post__form" noValidate onSubmit={createPost}>
         <div className="new-post__title">
           <input
             className={
@@ -123,11 +182,15 @@ const NewPost = props => {
             value={title}
             onChange={onChangeTitle}
             autoComplete="off"
+            onFocus={focusPostTitle}
           />
         </div>
         {errors.title ? <div className="new-post__invalid-feedback">{errors.title.msg}</div> : null}
 
-        <div className={"new-post__content" + (errors.content ? " new-post__content_invalid" : "")}>
+        <div
+          className={"new-post__content" + (errors.content ? " new-post__content_invalid" : "")}
+          onClick={focusPostContent}
+        >
           <ContentMaker sendContentMakerStateHandler={sendContentMakerStateHandler} />
         </div>
         {errors.content ? (
@@ -152,6 +215,7 @@ const NewPost = props => {
               autoComplete="off"
               value={currentTag}
               onChange={onChangeCurrentTag}
+              onFocus={focusPostTag}
             />
             <button type="button" className="new-post__add-tag-btn" onClick={newTagHandler} />
           </div>

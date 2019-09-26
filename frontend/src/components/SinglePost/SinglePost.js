@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Post from "../Posts/Post/Post";
 import AddComment from "../AddComment/AddComment";
 import Comments from "../Comments/Comments";
+import Spinner from "../Spinner/Spinner";
 
 import "./SinglePost.scss";
 
@@ -97,14 +98,14 @@ const SinglePost = props => {
   }, []);
 
   return isLoadingPost ? (
-    <div>Loading Post...</div>
+    <Spinner />
   ) : !notFound ? (
     <div className="single-post">
       <Post post={post} />
 
       <div className="single-post__comments-block" ref={commentsEl}>
         {isLoadingComments ? (
-          <div>Loading comments...</div>
+          <Spinner />
         ) : comments.length > 0 ? (
           <div className="single-post__comments">
             <Comments comments={comments} isOpenThread={true} />

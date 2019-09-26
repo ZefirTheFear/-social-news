@@ -64,26 +64,31 @@ router.post(
   isAuth,
   upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
   [
-    body("title", "Please use min 1 char and max 30 chars")
+    body("title", "Длина заголовка от 1 до 30 символов")
       .trim()
       .isLength({ min: 1, max: 30 }),
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);
       if (content.length === 0) {
-        throw new Error("Please add some content");
+        throw new Error("Нужен контент");
       }
       if (content.length > 5) {
-        throw new Error("Please max 5 blocks");
+        throw new Error("Максимум 5 блоков");
       }
       return true;
     }),
     body("tags").custom((value, { req }) => {
-      const content = JSON.parse(value);
-      if (content.length === 0) {
-        throw new Error("Please add some tags");
+      const tags = JSON.parse(value);
+      if (tags.length === 0) {
+        throw new Error("Нужен хотя бы 1 тег");
       }
-      if (content.length > 5) {
-        throw new Error("Please max 5 tags");
+      if (tags.length > 5) {
+        throw new Error("Максимум 5 тегов");
+      }
+      for (const tag of tags) {
+        if (tag.length > 30) {
+          throw new Error("Нe более 30 символов в теге");
+        }
       }
       return true;
     })
@@ -96,26 +101,31 @@ router.patch(
   isAuth,
   upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
   [
-    body("title", "Please use min 1 char and max 30 chars")
+    body("title", "Длина заголовка от 1 до 30 символов")
       .trim()
       .isLength({ min: 1, max: 30 }),
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);
       if (content.length === 0) {
-        throw new Error("Please add some content");
+        throw new Error("Нужен контент");
       }
       if (content.length > 5) {
-        throw new Error("Please max 5 blocks");
+        throw new Error("Максимум 5 блоков");
       }
       return true;
     }),
     body("tags").custom((value, { req }) => {
-      const content = JSON.parse(value);
-      if (content.length === 0) {
-        throw new Error("Please add some tags");
+      const tags = JSON.parse(value);
+      if (tags.length === 0) {
+        throw new Error("Нужен хотя бы 1 тег");
       }
-      if (content.length > 5) {
-        throw new Error("Please max 5 tags");
+      if (tags.length > 5) {
+        throw new Error("Максимум 5 тегов");
+      }
+      for (const tag of tags) {
+        if (tag.length > 30) {
+          throw new Error("Нe более 30 символов в теге");
+        }
       }
       return true;
     })

@@ -4,8 +4,6 @@ import { Route, Switch } from "react-router-dom";
 import "./AppInner.scss";
 
 import Posts from "../Posts/Posts";
-import BestPosts from "../BestPosts/BestPosts";
-import NewPosts from "../NewPosts/NewPosts";
 import SubsPosts from "../SubsPosts/SubsPosts";
 import Search from "../Search/Search";
 import SinglePost from "../SinglePost/SinglePost";
@@ -29,10 +27,24 @@ const AppInner = props => {
           <Route
             path="/"
             exact
-            render={propss => <Posts {...propss} isLogoClicked={props.isLogoClicked} />}
+            render={propss => (
+              <Posts
+                {...propss}
+                isLogoClicked={props.isLogoClicked}
+                requestUrl="http://localhost:5001/posts"
+              />
+            )}
           />
-          <Route path="/best" exact component={BestPosts} />
-          <Route path="/new" exact component={NewPosts} />
+          <Route
+            path="/best"
+            exact
+            render={propss => <Posts {...propss} requestUrl="http://localhost:5001/posts/best" />}
+          />
+          <Route
+            path="/new"
+            exact
+            render={propss => <Posts {...propss} requestUrl="http://localhost:5001/posts/new" />}
+          />
           <Route path="/subs" exact component={SubsPosts} />
           <Route path="/search/:desired" component={Search} />
           <Route path="/post/:postTitle" component={SinglePost} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import cloneDeep from "clone-deep";
+import uniqid from "uniqid";
 
 import NewContentTextContainer from "../NewContentTextContainer/NewContentTextContainer";
 import NewContentImageContainer from "../NewContentImageContainer/NewContentImageContainer";
@@ -28,7 +29,7 @@ const ContentMaker = props => {
 
   // Content Data (TextBlock)
   const addTextBlockHandler = () => {
-    setNewContentData([...newContentData, { type: "text", content: "", key: Date.now() }]);
+    setNewContentData([...newContentData, { type: "text", content: "", key: uniqid() }]);
   };
 
   const onChangeTextBlockData = (e, index) => {
@@ -69,7 +70,7 @@ const ContentMaker = props => {
         type: "image",
         content: image,
         url: URL.createObjectURL(image),
-        key: Date.now() * Math.random()
+        key: uniqid()
       });
     }
     setNewContentData([...newContentData, ...newImages]);

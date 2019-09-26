@@ -11,14 +11,6 @@ const Comments = props => {
     setCommentIdForReply(commentId);
   };
 
-  // const hideInternalComment = e => {
-  //   e.currentTarget.parentNode.parentNode.style.display = "none";
-  //   e.currentTarget.parentNode.parentNode.nextSibling.style.display = "flex";
-  // };
-  // const showInternalComment = e => {
-  //   e.currentTarget.parentNode.parentNode.style.display = "none";
-  //   e.currentTarget.parentNode.parentNode.previousSibling.style.display = "flex";
-  // };
   const hideInternalComment = e => {
     e.currentTarget.parentNode.parentNode.style.display = "none";
     e.currentTarget.parentNode.parentNode.nextSibling.style.display = "flex";

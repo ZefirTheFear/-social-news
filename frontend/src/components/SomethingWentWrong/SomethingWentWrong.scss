@@ -1,0 +1,20 @@
+.somethingwentwrong {
+  position: relative;
+}
+
+.somethingwentwrong__img {
+  max-width: 100%;
+}
+
+.somethingwentwrong__msg {
+  position: absolute;
+  font-size: 2.5rem;
+  top: 80px;
+  right: 30px;
+
+  @media (max-width: 991px) {
+    font-size: 4vw;
+    top: 10vw;
+    right: 5vw;
+  }
+}

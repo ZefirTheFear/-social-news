@@ -6,6 +6,7 @@ const { validationResult } = require("express-validator/check");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const Comment = require("../models/Comment");
+const clearImage = require("../utils/clearImage");
 
 exports.createPost = async (req, res) => {
   // console.log(req.files);
@@ -141,7 +142,7 @@ exports.getPosts = async (req, res) => {
   try {
     const posts = await Post.find().populate("creator", "name avatar");
     if (!posts) {
-      return res.json("There is no posts");
+      return res.status(200).json([]);
     }
     const timeQ = time => {
       const hoursPassed = Math.round((new Date().getTime() - new Date(time)) / (1000 * 60 * 60));
@@ -165,15 +166,16 @@ exports.getPosts = async (req, res) => {
         return 0.0001;
       }
     };
-    const clearPosts = [];
+    const hotPosts = [];
     posts.forEach(post => {
       post._doc.hot = (post.rating + post.comments.length) * timeQ(post.createdAt);
-      clearPosts.push(post._doc);
+      hotPosts.push(post._doc);
     });
-    clearPosts.sort((a, b) => b.hot - a.hot);
-    res.status(200).json(clearPosts);
+    hotPosts.sort((a, b) => b.hot - a.hot);
+    return res.status(200).json(hotPosts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
@@ -201,7 +203,8 @@ exports.getBestPosts = async (req, res) => {
     // }
     res.status(200).json(posts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
@@ -215,7 +218,8 @@ exports.getNewPosts = async (req, res) => {
     // }
     res.status(200).json(posts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
@@ -871,7 +875,7 @@ exports.dislikeComment = async (req, res) => {
   }
 };
 
-const clearImage = filePath => {
-  filePath = path.join(__dirname, "..", filePath);
-  fs.unlink(filePath, err => console.log(err));
-};
+// const clearImage = filePath => {
+//   filePath = path.join(__dirname, "..", filePath);
+//   fs.unlink(filePath, err => console.log(err));
+// };
