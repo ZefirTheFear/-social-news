@@ -26,6 +26,8 @@ const App = () => {
 
   const [isLogoClicked, setIsLogoClicked] = useState(0);
 
+  window.domain = "http://localhost:5001";
+
   // componentDidMount
   // useEffect(() => {
   //   effect

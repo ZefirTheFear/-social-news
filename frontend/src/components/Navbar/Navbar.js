@@ -71,13 +71,11 @@ const Navbar = props => {
 
   const showMenuMobile = e => {
     setIsMenuMobileOpen(true);
-    document.documentElement.style.overflow = "hidden";
   };
 
   const hideMenuMobile = e => {
     modalInnerRef.current.style.animation = "modal__inner-fadeout 0.3s forwards";
     backdropRef.current.style.animation = "backdrop-fadeout 0.3s forwards";
-    document.documentElement.style.overflow = "";
 
     setTimeout(() => {
       setIsMenuMobileOpen(false);
@@ -86,13 +84,11 @@ const Navbar = props => {
 
   const showDashboard = () => {
     setIsDashboardMobileOpen(true);
-    document.documentElement.style.overflow = "hidden";
   };
 
   const hideDashboard = () => {
     modalInnerRef.current.style.animation = "modal__inner-fadeout 0.3s forwards";
     backdropRef.current.style.animation = "backdrop-fadeout 0.3s forwards";
-    document.documentElement.style.overflow = "";
 
     setTimeout(() => {
       setIsDashboardMobileOpen(false);
@@ -101,13 +97,11 @@ const Navbar = props => {
 
   const showLoginForm = () => {
     setIsLoginFormMobileOpen(true);
-    document.documentElement.style.overflow = "hidden";
   };
 
   const hideLoginForm = () => {
     modalInnerRef.current.style.animation = "modal__inner-fadeout 0.3s forwards";
     backdropRef.current.style.animation = "backdrop-fadeout 0.3s forwards";
-    document.documentElement.style.overflow = "";
 
     setTimeout(() => {
       setIsLoginFormMobileOpen(false);

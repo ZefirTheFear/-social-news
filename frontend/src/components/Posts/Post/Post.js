@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import parse from "html-react-parser";
 import { Link, withRouter } from "react-router-dom";
 
+import Confirm from "../../Confirm/Confirm";
+
 import UserContext from "../../../context/userContext";
 
 import timeFormatter from "../../../utils/TimeFormatter";
@@ -13,6 +15,7 @@ const Post = props => {
 
   const [post, setPost] = useState(props.post);
   const [postBody, setPostBody] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const body = props.post.body.map(item => {
@@ -27,7 +30,7 @@ const Post = props => {
           <div className="post-inner__content-img" key={item.key}>
             <img
               className="post-inner__img"
-              src={"http://localhost:5001/" + item.url}
+              src={`${window.domain}/${item.url}`}
               alt="img"
               draggable="false"
             />
@@ -39,101 +42,85 @@ const Post = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchPost = () => {
-    fetch(`http://localhost:5001/posts/${post._id}`)
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        setPost(resData);
-      })
-      .catch(error => console.log(error));
-  };
-
-  const likePostToggle = () => {
-    fetch(`http://localhost:5001/posts/${post._id}/like`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        fetchPost();
-      })
-      .catch(error => console.log(error));
-  };
-
-  const dislikePostToggle = () => {
-    fetch(`http://localhost:5001/posts/${post._id}/dislike`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        fetchPost();
-      })
-      .catch(error => console.log(error));
-  };
-
-  const savePostToggle = () => {
-    if (!userContext.isAuth) {
-      // TODO перенаправить на авторизацию
+  const fetchPost = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/${post._id}`);
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      setPost(resData);
+    } catch (error) {
       return;
     }
-    fetch(`http://localhost:5001/posts/${post._id}/save`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        fetchPost();
-      })
-      .catch(error => console.log(error));
+  };
+
+  const likePostToggle = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/${post._id}/like`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      console.log(resData);
+      fetchPost();
+    } catch (error) {
+      return;
+    }
+  };
+
+  const dislikePostToggle = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/${post._id}/dislike`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      console.log(resData);
+      fetchPost();
+    } catch (error) {
+      return;
+    }
+  };
+
+  const savePostToggle = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/${post._id}/save`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      console.log(resData);
+      fetchPost();
+    } catch (error) {
+      return;
+    }
+  };
+
+  const openConfirmation = () => {
+    setIsDeleting(true);
   };
 
   const deletePostHandler = () => {
-    const rUSure = window.confirm("Удалить пост?");
-    if (!rUSure) {
-      return;
-    }
+    // const rUSure = window.confirm("Удалить пост?");
+    // if (!rUSure) {
+    //   return;
+    // }
 
     fetch(`http://localhost:5001/posts/${post._id}/delete`, {
       headers: {
@@ -160,6 +147,16 @@ const Post = props => {
 
   return (
     <article className="post">
+      {isDeleting ? (
+        <Confirm
+          title="Удаление поста"
+          msg="Вы дествительно хотите удалить?"
+          yesBtn="Удалить"
+          cancelBtn="Оставить"
+          doAction={deletePostHandler}
+          setIsDeleting={setIsDeleting}
+        />
+      ) : null}
       <div className="post__rating-block">
         {userContext.user && post.creator._id !== userContext.user._id ? (
           <div
@@ -236,17 +233,21 @@ const Post = props => {
               ) : null}
             </div>
             <div className="post-inner__footer-saves-amount">{post.saves.length}</div>
-            <div
-              className={
-                "post-inner__footer-save-post" +
-                (userContext.user && post.saves.indexOf(userContext.user._id) > -1
-                  ? " post-inner__footer-save-post_saved"
-                  : "")
-              }
-              title="Сохранить"
-              onClick={savePostToggle}
-            />
-            <div className="post-inner__footer-comments-amount">{post.comments.length}</div>
+            {userContext.user ? (
+              <React.Fragment>
+                <div
+                  className={
+                    "post-inner__footer-save-post" +
+                    (userContext.user && post.saves.indexOf(userContext.user._id) > -1
+                      ? " post-inner__footer-save-post_saved"
+                      : "")
+                  }
+                  title="Сохранить"
+                  onClick={savePostToggle}
+                />
+                <div className="post-inner__footer-comments-amount">{post.comments.length}</div>
+              </React.Fragment>
+            ) : null}
             <Link
               className="post-inner__footer-comments-link"
               to={`/post/${post._id}--${post.title.replace(/ /g, "_")}#comments`}
@@ -282,7 +283,7 @@ const Post = props => {
                 <div
                   className="post-inner__delete-post"
                   title="Удалить пост"
-                  onClick={deletePostHandler}
+                  onClick={openConfirmation}
                 />
               </div>
             ) : null}

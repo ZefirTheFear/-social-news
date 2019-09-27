@@ -376,7 +376,7 @@ exports.likePost = async (req, res) => {
       return res.status(200).json("unliked");
     }
   } catch (error) {
-    console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
@@ -418,7 +418,7 @@ exports.dislikePost = async (req, res) => {
       return res.status(200).json("undisliked");
     }
   } catch (error) {
-    console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
@@ -444,7 +444,7 @@ exports.savePost = async (req, res) => {
       return res.status(200).json("unsaved");
     }
   } catch (error) {
-    console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
