@@ -11,7 +11,6 @@ import "./App.scss";
 import Navbar from "./components/Navbar/Navbar";
 import AppInner from "./components/AppInner/AppInner";
 import NewPost from "./pages/NewPostPage/NewPost";
-import EditPost from "./pages/EditPost/EditPost";
 
 // import TestComponent from "./components/TestComponent/TestComponent";
 // import DnDMouseNTouch from "./components/DnDMouseNTouch/DnDMouseNTouch";
@@ -120,7 +119,12 @@ const App = () => {
             {/* <Route path="/test" component={DnDMouseNTouch} /> */}
 
             {isAuth ? <Route exact path="/new-post" component={NewPost} /> : null}
-            {isAuth ? <Route path="/edit/post/:postId" component={EditPost} /> : null}
+            {isAuth ? (
+              <Route
+                path="/edit/post/:postId"
+                render={props => <NewPost {...props} editMode={true} />}
+              />
+            ) : null}
 
             <Route
               path="/"

@@ -132,9 +132,10 @@ exports.editPost = async (req, res) => {
     post.body = body;
     post.tags = tags;
     await post.save();
-    res.status(200).json(post);
+    return res.status(200).json(post);
   } catch (error) {
-    return res.status(404).json({ error: "There is no such post" });
+    console.log(error);
+    return res.status(404).json({ error: "There is no such postttt" });
   }
 };
 
