@@ -27,7 +27,7 @@ const NewPost = props => {
   useEffect(() => {
     if (props.editMode) {
       setIsLoading(true);
-      fetch(`http://localhost:5001/posts/${postId}`)
+      fetch(`${window.domain}/posts/${postId}`)
         .then(res => {
           if (res.status === 404) {
             setNotFound(true);
@@ -70,7 +70,7 @@ const NewPost = props => {
             } else {
               fetchedOldPostBody.push({
                 type: "image",
-                url: `http://localhost:5001/${bodyItem.url}`,
+                url: `${window.domain}/${bodyItem.url}`,
                 key: bodyItem.key
               });
             }
@@ -171,7 +171,7 @@ const NewPost = props => {
             newImgBlocksArray.push(item.content);
             dataOrder.push({ type: "newImg", key: item.key });
           } else {
-            oldImgBlocksArray.push(item.url.replace("http://localhost:5001/", ""));
+            oldImgBlocksArray.push(item.url.replace(`${window.domain}/`, ""));
             dataOrder.push({ type: "oldImg", key: item.key });
           }
         })
@@ -218,9 +218,7 @@ const NewPost = props => {
     formData.append("tags", JSON.stringify(postTags));
 
     fetch(
-      props.editMode
-        ? `http://localhost:5001/posts/${postId}/edit`
-        : "http://localhost:5001/posts/new-post",
+      props.editMode ? `${window.domain}/posts/${postId}/edit` : `${window.domain}/posts/new-post`,
       {
         headers: {
           Authorization: userContext.token
