@@ -24,18 +24,12 @@ const Confirm = props => {
         </div>
         <div className="confirm__footer">
           <div className="confirm__controls">
-            <button
-              className="confirm__button confirm__button_color_red"
-              onClick={() => {
-                props.doAction();
-                props.setIsDeleting(false);
-              }}
-            >
-              {props.yesBtn}
+            <button className="confirm__button confirm__button_color_red" onClick={props.doAction}>
+              {props.doBtn}
             </button>
             <button
               className="confirm__button confirm__button_color_green"
-              onClick={() => props.setIsDeleting(false)}
+              onClick={props.cancelAction}
             >
               {props.cancelBtn}
             </button>

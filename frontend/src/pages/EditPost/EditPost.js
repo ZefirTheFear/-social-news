@@ -102,12 +102,43 @@ const EditPost = props => {
     setTags(postTags);
   };
 
-  const onSubmit = e => {
+  const editPost = e => {
     e.preventDefault();
-    console.log(e);
     console.log("title", title.trim());
     console.log("content", newPostData);
     console.log("tags", tags);
+
+    const clientErrors = {};
+    if (title.trim().length < 1 || title.trim().length > 30) {
+      clientErrors.title = {
+        msg: "Длина заголовка от 1 до 30 символов"
+      };
+    }
+    if (newPostData.length < 1) {
+      clientErrors.content = {
+        msg: "Нужен контент"
+      };
+    }
+    if (newPostData.length > 5) {
+      clientErrors.content = {
+        msg: "Максимум 5 блоков"
+      };
+    }
+    if (tags.length < 1) {
+      clientErrors.tags = {
+        msg: "Нужен хотя бы 1 тег"
+      };
+    }
+    if (tags.length > 5) {
+      clientErrors.tags = {
+        msg: "Максимум 5 тегов"
+      };
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      return;
+    }
 
     const textBlocksArray = [];
     const oldImgBlocksArray = [];
@@ -184,7 +215,7 @@ const EditPost = props => {
     <div>Loading...</div>
   ) : !notFound ? (
     <div className="new-post">
-      <form className="new-post__form" noValidate onSubmit={onSubmit}>
+      <form className="new-post__form" noValidate onSubmit={editPost}>
         <div className="new-post__title">
           <input
             className={

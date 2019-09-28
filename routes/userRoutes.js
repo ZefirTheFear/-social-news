@@ -37,26 +37,26 @@ const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 router.post(
   "/register",
   [
-    body("name", "Please use min 1 char and max 15 chars")
+    body("name", "Надо от 1 до 15 символов")
       .isLength({ min: 1, max: 15 })
       .custom(async value => {
         const user = await User.findOne({
           name: { $regex: new RegExp("^" + value + "$", "i") }
         });
         if (user) {
-          return Promise.reject("user with such name already exists");
+          return Promise.reject("Пользователь с таким именем уже есть");
         }
       }),
-    body("email", "Please use email here")
+    body("email", "Введите email")
       .normalizeEmail()
       .isEmail()
       .custom(async value => {
         const user = await User.findOne({ email: value });
         if (user) {
-          return Promise.reject("user with such email already exists");
+          return Promise.reject("Пользователь с таким email уже есть");
         }
       }),
-    body("password", "Please not alphanumeric and not lowercase")
+    body("password", "Минимум 1 спецсимвол и 1 заглавный символ")
       .not()
       .isAlphanumeric()
       .not()
@@ -64,8 +64,8 @@ router.post(
       .isLength({ min: 8, max: 15 }),
     body("confirmPassword").custom((value, { req }) => {
       if (value !== req.body.password) {
-        // return Promise.reject("Passwords have to match"); // можно и так
-        throw new Error("Passwords have to match");
+        throw new Error("Пароль должен совпадать");
+        // return Promise.reject("Пароль должен совпадать"); // можно и так
       }
       return true;
     })
@@ -76,7 +76,7 @@ router.post(
 router.post(
   "/login",
   [
-    body("email", "its not even email")
+    body("email", "Введите email")
       .normalizeEmail()
       .isEmail()
   ],

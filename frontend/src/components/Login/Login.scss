@@ -31,6 +31,7 @@
   background: transparent;
   padding: 6px;
   border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
   outline: none;
   color: map-get($colors, app-text);
 

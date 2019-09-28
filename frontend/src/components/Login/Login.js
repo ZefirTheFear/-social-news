@@ -1,5 +1,7 @@
 import React, { useState, useContext } from "react";
 
+import validator from "validator";
+
 import "./Login.scss";
 
 import UserContext from "../../context/userContext";
@@ -33,8 +35,21 @@ const Login = props => {
     }
   };
 
-  const onSubmit = e => {
+  const logIn = e => {
     e.preventDefault();
+
+    const clientErrors = {};
+    const normalizedEmail = validator.normalizeEmail(email);
+    if (!validator.isEmail(normalizedEmail)) {
+      clientErrors.email = {
+        msg: "Введите email"
+      };
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      return setErrors(clientErrors);
+    }
+
     const userData = {
       email: email,
       password: password
@@ -81,7 +96,7 @@ const Login = props => {
   return (
     <div className="login">
       <div className="login__header">Авторизация</div>
-      <form className="login__form" noValidate onSubmit={onSubmit}>
+      <form className="login__form" noValidate onSubmit={logIn}>
         <div className="input-group">
           <input
             type="email"

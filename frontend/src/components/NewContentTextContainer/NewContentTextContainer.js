@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
+import Confirm from "../Confirm/Confirm";
+
 import "./NewContentTextContainer.scss";
 
 const NewContentTextContainer = props => {
@@ -11,6 +13,7 @@ const NewContentTextContainer = props => {
   const [isCancelBlur, setIsCancelBlur] = useState(false);
   const [urlValue, setUrlValue] = useState("");
   const [range, setRange] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (props.content) {
@@ -133,8 +136,25 @@ const NewContentTextContainer = props => {
     setUrlValue("");
   };
 
+  const openConfirmation = () => {
+    setIsDeleting(true);
+  };
+
   return (
     <div className="content-text-container" onDrop={onDrop}>
+      {isDeleting ? (
+        <Confirm
+          title="Удаление текстового блока"
+          msg="Вы дествительно хотите удалить?"
+          doBtn="Удалить"
+          cancelBtn="Оставить"
+          doAction={() => {
+            props.removeBlock();
+            setIsDeleting(false);
+          }}
+          cancelAction={() => setIsDeleting(false)}
+        />
+      ) : null}
       <div
         className="content-text-container__txt"
         contentEditable
@@ -148,7 +168,7 @@ const NewContentTextContainer = props => {
         ref={inputEl}
         tabIndex="1"
       />
-      <div className="content-text-container__remove" title="Удалить" onClick={props.removeBlock}>
+      <div className="content-text-container__remove" title="Удалить" onClick={openConfirmation}>
         &times;
       </div>
       <div className="content-text-container__editor" ref={editEl}>

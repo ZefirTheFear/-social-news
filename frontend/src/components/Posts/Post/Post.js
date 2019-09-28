@@ -151,10 +151,13 @@ const Post = props => {
         <Confirm
           title="Удаление поста"
           msg="Вы дествительно хотите удалить?"
-          yesBtn="Удалить"
+          doBtn="Удалить"
           cancelBtn="Оставить"
-          doAction={deletePostHandler}
-          setIsDeleting={setIsDeleting}
+          doAction={() => {
+            deletePostHandler();
+            setIsDeleting(false);
+          }}
+          cancelAction={() => setIsDeleting(false)}
         />
       ) : null}
       <div className="post__rating-block">

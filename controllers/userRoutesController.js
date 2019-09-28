@@ -27,7 +27,6 @@ exports.registerUser = async (req, res) => {
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json("We are sorry. Something went wrong :(");
-    console.log(error);
   }
 };
 
@@ -43,7 +42,7 @@ exports.loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(404).json({ errors: { email: { msg: "There is no such user" } } });
+      return res.status(404).json({ errors: { email: { msg: "Нет такого пользователя" } } });
     }
     const result = await bcrypt.compare(password, user.password);
     if (result) {
@@ -56,10 +55,9 @@ exports.loginUser = async (req, res) => {
       );
       return res.status(200).json({ token: token, user: user });
     } else {
-      return res.status(404).json({ errors: { password: { msg: "wrong password" } } });
+      return res.status(404).json({ errors: { password: { msg: "Неверный пароль" } } });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json("Something went wrong :(");
   }
 };

@@ -15,7 +15,8 @@
     "react-scripts": "3.0.0",
     "simplebar-react": "^1.0.0",
     "styled-components": "^4.2.0",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.0.3",
+    "validator": "^11.1.0"
   },
   "scripts": {
     "start": "react-scripts start",

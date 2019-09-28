@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import validator from "validator";
+
 import "./Register.scss";
 
 const Register = props => {
@@ -26,8 +28,41 @@ const Register = props => {
     }
   };
 
-  const onSubmit = e => {
+  const registerUser = e => {
     e.preventDefault();
+
+    const clientErrors = {};
+    if (!validator.isLength(name, { min: 1, max: 15 })) {
+      clientErrors.name = {
+        msg: "Надо от 1 до 15 символов"
+      };
+    }
+    const normalizedEmail = validator.normalizeEmail(email);
+    if (!validator.isEmail(normalizedEmail)) {
+      clientErrors.email = {
+        msg: "Введите email"
+      };
+    }
+    if (validator.isAlphanumeric(password)) {
+      clientErrors.password = {
+        msg: "Минимум 1 спецсимвол и 1 заглавный символ"
+      };
+    }
+    if (validator.isLowercase(password)) {
+      clientErrors.password = {
+        msg: "Минимум 1 спецсимвол и 1 заглавный символ"
+      };
+    }
+    if (password !== confirmPassword) {
+      clientErrors.confirmPassword = {
+        msg: "Пароль должен совпадать"
+      };
+    }
+
+    if (Object.keys(clientErrors).length > 0) {
+      return setErrors(clientErrors);
+    }
+
     const newUserData = {
       name: name,
       email: email,
@@ -78,11 +113,11 @@ const Register = props => {
   return (
     <div className="register">
       <div className="register__header">Регистрация</div>
-      <form className="register__form" noValidate onSubmit={onSubmit}>
+      <form className="register__form" noValidate onSubmit={registerUser}>
         <div className="input-group">
           <input
             className={"input" + (errors.name ? " input_invalid" : "")}
-            placeholder="Name"
+            placeholder="Имя"
             name="registerName"
             value={name}
             onChange={onChange}
@@ -107,7 +142,7 @@ const Register = props => {
             <input
               type={!showPassword ? "password" : "text"}
               className={"input input__password" + (errors.password ? " input_invalid" : "")}
-              placeholder="Password"
+              placeholder="Пароль"
               name="registerPassword"
               value={password}
               onChange={onChange}
@@ -137,7 +172,7 @@ const Register = props => {
             <input
               type={!showConfirmPassword ? "password" : "text"}
               className={"input input__password" + (errors.confirmPassword ? " input_invalid" : "")}
-              placeholder="Confirm Password"
+              placeholder="Повторите пароль"
               name="registerConfirmPassword"
               value={confirmPassword}
               onChange={onChange}

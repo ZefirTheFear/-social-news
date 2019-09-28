@@ -79,11 +79,6 @@ const ContentMaker = props => {
 
   // RemovingBlock
   const removeNewPostBlockHandler = index => {
-    const rUSure = window.confirm("Удалить блок?");
-    if (!rUSure) {
-      return;
-    }
-
     const contentData = [...newContentData];
     contentData.splice(index, 1);
     setNewContentData(contentData);
