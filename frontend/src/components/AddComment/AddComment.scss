@@ -21,3 +21,14 @@
     background: darken(map-get($colors, app-secondary), 10%);
   }
 }
+
+.add-comment__form_invalid {
+  border: 1px solid map-get($colors, app-red);
+}
+
+.add-comment__form__invalid-feedback {
+  width: 100%;
+  margin-top: 5px;
+  font-size: 90%;
+  color: map-get($colors, app-red);
+}

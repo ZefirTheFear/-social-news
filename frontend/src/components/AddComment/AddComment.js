@@ -10,10 +10,15 @@ const AddComment = props => {
   const userContext = useContext(UserContext);
 
   const [newCommentData, setNewCommentData] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const createCommentHandler = e => {
     e.preventDefault();
     console.log("content", newCommentData);
+
+    if (newCommentData.length === 0) {
+      return setErrors({ content: { msg: "Нужен контент" } });
+    }
 
     const textBlocksArray = [];
     const imgBlocksArray = [];
@@ -67,7 +72,7 @@ const AddComment = props => {
       .then(resData => {
         console.log(resData);
         if (resData.errors) {
-          // setErrors(resData.errors);
+          setErrors(resData.errors);
         } else {
           setNewCommentData([]);
         }
@@ -81,15 +86,27 @@ const AddComment = props => {
     setNewCommentData(content);
   };
 
+  const focusForm = () => {
+    setErrors({});
+  };
+
   return (
     <div className="add-comment">
       <div className="add-comment__offer">Добавьте комментарий, используя форму ниже...</div>
-      <form className="add-comment__form" onSubmit={createCommentHandler} noValidate>
+      <form
+        className={"add-comment__form" + (errors.content ? " add-comment__form_invalid" : "")}
+        onSubmit={createCommentHandler}
+        onClick={focusForm}
+        noValidate
+      >
         <ContentMaker sendContentMakerStateHandler={sendContentMakerStateHandler} />
         <button type="submit" className="add-comment__btn">
           Отправить
         </button>
       </form>
+      {errors.content ? (
+        <div className="add-comment__form__invalid-feedback">{errors.content.msg}</div>
+      ) : null}
     </div>
   );
 };

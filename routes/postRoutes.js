@@ -153,10 +153,10 @@ router.post(
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);
       if (content.length === 0) {
-        throw new Error("Please add some content");
+        throw new Error("Нужен контент");
       }
       if (content.length > 5) {
-        throw new Error("Please max 5 blocks");
+        throw new Error("Максимум 5 блоков");
       }
       return true;
     })
@@ -178,10 +178,10 @@ router.patch(
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);
       if (content.length === 0) {
-        throw new Error("Please add some content");
+        throw new Error("Нужен контент");
       }
       if (content.length > 5) {
-        throw new Error("Please max 5 blocks");
+        throw new Error("Максимум 5 блоков");
       }
       return true;
     })

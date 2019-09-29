@@ -44,7 +44,7 @@ const Comments = props => {
               />
             </div>
             {comment.children.length > 0 ? (
-              <React.Fragment>
+              <>
                 <div
                   className="comments__opened-internal-comments"
                   style={props.isOpenThread ? { display: "flex" } : { display: "none" }}
@@ -71,7 +71,7 @@ const Comments = props => {
                     </div>
                   </div>
                 </div>
-              </React.Fragment>
+              </>
             ) : null}
           </div>
         );

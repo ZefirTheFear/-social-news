@@ -20,7 +20,7 @@ const SinglePost = props => {
   const postId = props.match.params.postTitle.split("--")[0];
 
   useEffect(() => {
-    fetch(`http://localhost:5001/posts/${postId}`)
+    fetch(`${window.domain}/posts/${postId}`)
       .then(res => {
         if (res.status === 404) {
           setNotFound(true);
@@ -86,7 +86,7 @@ const SinglePost = props => {
   }, [props.location.hash]);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/posts/${postId}/comments`)
+    fetch(`${window.domain}/posts/${postId}/comments`)
       .then(res => res.json())
       .then(resData => {
         console.log(resData);

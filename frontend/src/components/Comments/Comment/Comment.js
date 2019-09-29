@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
-import parse from "html-react-parser";
 import { Link } from "react-router-dom";
+
+import parse from "html-react-parser";
+import uniqid from "uniqid";
 
 import ContentMaker from "../../ContentMaker/ContentMaker";
 import AddComment from "../../AddComment/AddComment";
@@ -19,23 +21,23 @@ const Comment = props => {
   const [commentBodyForEditing, setCommentBodyForEditing] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editCommentData, setEditCommentData] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    console.log(comment);
     if (comment) {
       const body = comment.body.map(item => {
         if (item.type === "text") {
           return (
-            <div className="comment__text-block" key={Date.now() * Math.random()}>
+            <div className="comment__text-block" key={uniqid()}>
               {parse(item.content)}
             </div>
           );
         } else {
           return (
-            <div className="comment__img-block" key={Date.now() * Math.random()}>
+            <div className="comment__img-block" key={uniqid()}>
               <img
                 className="comment__img-block-img"
-                src={"http://localhost:5001/" + item.url}
+                src={`${window.domain}/` + item.url}
                 alt="img"
                 draggable="false"
               />
@@ -56,68 +58,56 @@ const Comment = props => {
     }
   };
 
-  const fetchComment = () => {
-    fetch(`http://localhost:5001/posts/comments/${comment._id}`)
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        setComment(resData);
-      })
-      .catch(error => console.log(error));
+  const fetchComment = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/comments/${comment._id}`);
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      console.log(resData);
+      setComment(resData);
+    } catch (error) {
+      return;
+    }
   };
 
-  const likeComment = () => {
-    fetch(`http://localhost:5001/posts/comments/${comment._id}/like`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        fetchComment();
-      })
-      .catch(error => console.log(error));
+  const likeComment = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/comments/${comment._id}/like`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      console.log(resData);
+      fetchComment();
+    } catch (error) {
+      return;
+    }
   };
 
-  const dislikeComment = () => {
-    fetch(`http://localhost:5001/posts/comments/${comment._id}/dislike`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        fetchComment();
-      })
-      .catch(error => console.log(error));
+  const dislikeComment = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/comments/${comment._id}/dislike`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      if (request.status !== 200) {
+        return;
+      }
+      const resData = await request.json();
+      console.log(resData);
+      fetchComment();
+    } catch (error) {
+      return;
+    }
   };
 
   const editCommentHandler = () => {
@@ -129,7 +119,7 @@ const Comment = props => {
       if (item.type === "text") {
         comBody.push(item);
       } else {
-        comBody.push({ ...item, url: `http://localhost:5001/${item.url}` });
+        comBody.push({ ...item, url: `${window.domain}/${item.url}` });
       }
     });
     console.log(comBody);
@@ -144,6 +134,10 @@ const Comment = props => {
   const sendEditedCommentHandler = e => {
     e.preventDefault();
     console.log("content", editCommentData);
+
+    if (editCommentData.length === 0) {
+      return setErrors({ content: { msg: "Нужен контент" } });
+    }
 
     const textBlocksArray = [];
     const oldImgBlocksArray = [];
@@ -160,7 +154,7 @@ const Comment = props => {
         newImgBlocksArray.push(item.content);
         dataOrder.push({ type: "newImg", key: item.key });
       } else {
-        oldImgBlocksArray.push(item.url.replace("http://localhost:5001/", ""));
+        oldImgBlocksArray.push(item.url.replace(`${window.domain}/`, ""));
         dataOrder.push({ type: "oldImg", key: item.key });
       }
     });
@@ -179,7 +173,7 @@ const Comment = props => {
     }
     formData.append("content", JSON.stringify(dataOrder));
 
-    fetch(`http://localhost:5001/posts/comments/${comment._id}/edit`, {
+    fetch(`${window.domain}/posts/comments/${comment._id}/edit`, {
       headers: {
         Authorization: userContext.token
       },
@@ -199,7 +193,7 @@ const Comment = props => {
       .then(resData => {
         console.log(resData);
         if (resData.errors) {
-          // TODO обработать ошибки
+          setErrors(resData.errors);
         } else {
           cancelEditModeHandler();
           setComment(resData);
@@ -209,7 +203,7 @@ const Comment = props => {
   };
 
   const deleteCommentHandler = () => {
-    fetch(`http://localhost:5001/posts/comments/${comment._id}/delete`, {
+    fetch(`${window.domain}/posts/comments/${comment._id}/delete`, {
       headers: {
         Authorization: userContext.token
       },
@@ -233,6 +227,10 @@ const Comment = props => {
 
   const sendContentMakerStateHandler = content => {
     setEditCommentData(content);
+  };
+
+  const focusForm = () => {
+    setErrors({});
   };
 
   return comment ? (
@@ -272,7 +270,7 @@ const Comment = props => {
           <div className="comment__user-avatar">
             <Link to={`/@${comment.creator.name}`} className="comment__user-avatar-link">
               <img
-                src={"http://localhost:5001/" + comment.creator.avatar}
+                src={`${window.domain}/` + comment.creator.avatar}
                 className="comment__user-avatar-link-img"
                 alt="avatar"
               />
@@ -287,24 +285,34 @@ const Comment = props => {
         <time className="comment__time">{timeFormatter(comment.createdAt)}</time>
       </div>
       {editMode ? (
-        <form className="comment__edit-form" onSubmit={sendEditedCommentHandler} noValidate>
-          <ContentMaker
-            sendContentMakerStateHandler={sendContentMakerStateHandler}
-            contentData={commentBodyForEditing}
-          />
-          <button type="submit" className="comment__edit-submit-btn">
-            отправить
-          </button>
-          <button
-            type="button"
-            className="comment__edit-cancel-btn"
-            onClick={cancelEditModeHandler}
+        <>
+          <form
+            className={"comment__edit-form" + (errors.content ? " comment__edit-form_invalid" : "")}
+            onSubmit={sendEditedCommentHandler}
+            onClick={focusForm}
+            noValidate
           >
-            отмена
-          </button>
-        </form>
+            <ContentMaker
+              sendContentMakerStateHandler={sendContentMakerStateHandler}
+              contentData={commentBodyForEditing}
+            />
+            <button type="submit" className="comment__edit-submit-btn">
+              отправить
+            </button>
+            <button
+              type="button"
+              className="comment__edit-cancel-btn"
+              onClick={cancelEditModeHandler}
+            >
+              отмена
+            </button>
+          </form>
+          {errors.content ? (
+            <div className="comment__edit-form__invalid-feedback">{errors.content.msg}</div>
+          ) : null}
+        </>
       ) : (
-        <React.Fragment>
+        <>
           <div className="comment__content">{commentBody}</div>
           <div className="comment__reply">
             <button className="comment__reply-btn" type="button" onClick={relpyFormToggle}>
@@ -328,7 +336,7 @@ const Comment = props => {
               </div>
             ) : null}
           </div>
-        </React.Fragment>
+        </>
       )}
 
       {props.commentIdForReply === comment._id ? (

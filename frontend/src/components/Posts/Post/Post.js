@@ -16,6 +16,7 @@ const Post = props => {
   const [post, setPost] = useState(props.post);
   const [postBody, setPostBody] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
     const body = props.post.body.map(item => {
@@ -116,36 +117,28 @@ const Post = props => {
     setIsDeleting(true);
   };
 
-  const deletePostHandler = () => {
-    // const rUSure = window.confirm("Удалить пост?");
-    // if (!rUSure) {
-    //   return;
-    // }
-
-    fetch(`http://localhost:5001/posts/${post._id}/delete`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "DELETE"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
+  const deletePostHandler = async () => {
+    try {
+      const request = await fetch(`${window.domain}/posts/${post._id}/delete`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "DELETE"
+      });
+      if (request.status !== 200) {
         return;
-        // TODO обновить посты
-      })
-      .catch(error => console.log(error));
+      }
+      const resData = await request.json();
+      console.log(resData);
+      return setIsDeleted(true);
+    } catch (error) {
+      return;
+    }
   };
 
-  return (
+  return isDeleted ? (
+    <div style={{ marginBottom: "-15px" }}></div>
+  ) : (
     <article className="post">
       {isDeleting ? (
         <Confirm
@@ -237,7 +230,7 @@ const Post = props => {
             </div>
             <div className="post-inner__footer-saves-amount">{post.saves.length}</div>
             {userContext.user ? (
-              <React.Fragment>
+              <>
                 <div
                   className={
                     "post-inner__footer-save-post" +
@@ -249,7 +242,7 @@ const Post = props => {
                   onClick={savePostToggle}
                 />
                 <div className="post-inner__footer-comments-amount">{post.comments.length}</div>
-              </React.Fragment>
+              </>
             ) : null}
             <Link
               className="post-inner__footer-comments-link"
@@ -272,7 +265,7 @@ const Post = props => {
               <Link className="post-inner__avatar-link" to={`/@${post.creator.name}`}>
                 <img
                   className="post-inner__avatar-img"
-                  src={"http://localhost:5001/" + post.creator.avatar}
+                  src={`${window.domain}/` + post.creator.avatar}
                   alt="avatar"
                 />
               </Link>
