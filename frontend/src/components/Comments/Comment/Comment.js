@@ -128,6 +128,7 @@ const Comment = props => {
   };
 
   const cancelEditModeHandler = () => {
+    console.log("cancelEditModeHandler");
     setEditMode(false);
   };
 
@@ -344,6 +345,7 @@ const Comment = props => {
           <AddComment
             postId={comment.postId._id ? comment.postId._id : comment.postId}
             parentCommentId={comment._id}
+            addComment={props.addComment}
           />
         </div>
       ) : null}

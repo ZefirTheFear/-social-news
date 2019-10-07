@@ -9,6 +9,7 @@ import "./SinglePost.scss";
 
 const SinglePost = props => {
   const commentsEl = useRef();
+  const addCommentEl = useRef();
 
   const [comments, setComments] = useState([]);
 
@@ -63,7 +64,6 @@ const SinglePost = props => {
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
           // element.scrollIntoView();
-          // console.log("scrolled");
           reset();
 
           return true;
@@ -86,6 +86,12 @@ const SinglePost = props => {
   }, [props.location.hash]);
 
   useEffect(() => {
+    fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchComments = () => {
+    setIsLoadingComments(true);
     fetch(`${window.domain}/posts/${postId}/comments`)
       .then(res => res.json())
       .then(resData => {
@@ -94,8 +100,18 @@ const SinglePost = props => {
         setIsLoadingComments(false);
       })
       .catch(error => console.log(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
+
+  const addComment = comment => {
+    // setIsLoadingComments(true);
+    // const newComments = [...comments];
+    // console.log("newComments", newComments);
+    // newComments.push(comment);
+    // console.log("newComments", newComments);
+    // setComments(newComments);
+    // setIsLoadingComments(false);
+    fetchComments();
+  };
 
   return isLoadingPost ? (
     <Spinner />
@@ -113,8 +129,8 @@ const SinglePost = props => {
         ) : (
           <h4 className="single-post__no-comments">Комментариев пока нет. Станьте первым.</h4>
         )}
-        <div className="single-post__add-comment">
-          <AddComment postId={postId} />
+        <div className="single-post__add-comment" ref={addCommentEl}>
+          <AddComment postId={postId} addComment={addComment} mode="answerForPost" />
         </div>
       </div>
     </div>

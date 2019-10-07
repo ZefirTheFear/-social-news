@@ -11,6 +11,7 @@ const AddComment = props => {
 
   const [newCommentData, setNewCommentData] = useState([]);
   const [errors, setErrors] = useState({});
+  const [isContentMakerReseted, setIsContentMakerReseted] = useState(null);
 
   const createCommentHandler = e => {
     e.preventDefault();
@@ -52,7 +53,7 @@ const AddComment = props => {
       formData.append("parentCommentId", props.parentCommentId);
     }
 
-    fetch(`http://localhost:5001/posts/${props.postId}/add-comment`, {
+    fetch(`${window.domain}/posts/${props.postId}/add-comment`, {
       headers: {
         Authorization: userContext.token
       },
@@ -73,8 +74,12 @@ const AddComment = props => {
         console.log(resData);
         if (resData.errors) {
           setErrors(resData.errors);
+        } else if (props.mode === "answerForPost") {
+          props.addComment(resData);
+          // setNewCommentData([]);
+          setIsContentMakerReseted(Date.now());
         } else {
-          setNewCommentData([]);
+          props.addComment(resData);
         }
       })
       .catch(err => {
@@ -99,7 +104,10 @@ const AddComment = props => {
         onClick={focusForm}
         noValidate
       >
-        <ContentMaker sendContentMakerStateHandler={sendContentMakerStateHandler} />
+        <ContentMaker
+          sendContentMakerStateHandler={sendContentMakerStateHandler}
+          isReseted={isContentMakerReseted}
+        />
         <button type="submit" className="add-comment__btn">
           Отправить
         </button>

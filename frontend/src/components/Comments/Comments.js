@@ -6,6 +6,7 @@ import "./Comments.scss";
 
 const Comments = props => {
   const [commentIdForReply, setCommentIdForReply] = useState(null);
+  const [fetchedComments, setFetchedComments] = useState(props.comments);
 
   const openReplyBlockHandler = commentId => {
     setCommentIdForReply(commentId);
@@ -20,20 +21,29 @@ const Comments = props => {
     e.currentTarget.parentNode.parentNode.previousSibling.style.display = "flex";
   };
 
-  const returnedComments = [];
+  const addComment = comment => {
+    const newComments = [...fetchedComments];
+    const parentComment = newComments.find(com => com._id === comment.parentComment);
+    parentComment.children.push(comment._id);
+    newComments.push(comment);
+    console.log(newComments);
+    setFetchedComments(newComments);
+    setCommentIdForReply(null);
+  };
 
-  const getCommentsByIdsAndMount = (arrayOfId, comments) => {
+  const getCommentsByIdsAndMount = (arrayOfId, comments, array) => {
     const children = [];
     arrayOfId.forEach(id => {
       children.push(comments.find(comment => comment._id === id));
     });
-    return mountCommentsHandler(children);
+    return mountCommentsHandler(children, array);
   };
 
-  const mountCommentsHandler = comments => {
+  const mountCommentsHandler = (comments, array) => {
+    console.log(comments);
     return comments.map(comment => {
-      if (returnedComments.indexOf(comment._id) === -1) {
-        returnedComments.push(comment._id);
+      if (array.indexOf(comment._id) === -1) {
+        array.push(comment._id);
         return (
           <div className="comments__comment-with-replies" key={comment._id}>
             <div className="comments_comment">
@@ -41,6 +51,7 @@ const Comments = props => {
                 comment={comment}
                 commentIdForReply={commentIdForReply}
                 openReplyBlockHandler={openReplyBlockHandler}
+                addComment={addComment}
               />
             </div>
             {comment.children.length > 0 ? (
@@ -58,7 +69,7 @@ const Comments = props => {
                     <div className="comments__reply-comment-border" />
                   </div>
                   <div className="comments__reply-comment-body">
-                    {getCommentsByIdsAndMount(comment.children, props.comments)}
+                    {getCommentsByIdsAndMount(comment.children, fetchedComments, array)}
                   </div>
                 </div>
                 <div
@@ -81,7 +92,7 @@ const Comments = props => {
     });
   };
 
-  return <div className="comments">{mountCommentsHandler(props.comments)}</div>;
+  return <div className="comments">{mountCommentsHandler(fetchedComments, [])}</div>;
 };
 
 export default Comments;

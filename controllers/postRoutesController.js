@@ -573,7 +573,9 @@ exports.createComment = async (req, res) => {
   });
 
   try {
-    await newComment.save();
+    // await newComment.save();
+    const createdComment = await newComment.save();
+    const comment = await Comment.findById(createdComment.id).populate("creator", "name avatar");
     const user = await User.findById(req.userId);
     user.comments.push(newComment);
     await user.save();
@@ -597,7 +599,8 @@ exports.createComment = async (req, res) => {
       await creator.save();
     }
     // ----------
-    res.status(201).json(newComment);
+    // res.status(201).json(newComment);
+    res.status(201).json(comment);
   } catch (error) {
     console.log(error);
   }

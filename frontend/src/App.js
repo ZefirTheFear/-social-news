@@ -23,7 +23,7 @@ const App = () => {
   // const [token, setToken] = useState(null);
   // const [user, setUser] = useState(null);
 
-  const [isLogoClicked, setIsLogoClicked] = useState(0);
+  const [isLogoClicked, setIsLogoClicked] = useState(null);
 
   window.domain = "http://localhost:5001";
 
@@ -89,7 +89,7 @@ const App = () => {
   };
 
   const logoClicked = () => {
-    setIsLogoClicked(isLogoClicked + 1);
+    setIsLogoClicked(Date.now());
   };
 
   return (

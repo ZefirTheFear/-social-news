@@ -35,6 +35,7 @@ const Dashboard = props => {
           return;
         }
         localStorage.setItem("user", JSON.stringify(resData));
+        userContext.setUser(resData);
         setUser(resData);
         setIsLoading(false);
       })
@@ -119,7 +120,7 @@ const Dashboard = props => {
           >
             Ответы
             {userContext.user.newAnswers.length > 0 ? (
-              <span className="dashboard__new-answers">{userContext.user.newAnswers.length}</span>
+              <span className="dashboard__new-answers">{user.newAnswers.length}</span>
             ) : null}
           </NavLink>
         </div>

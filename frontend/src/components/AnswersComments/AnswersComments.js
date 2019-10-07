@@ -14,7 +14,7 @@ const AnswersComments = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://localhost:5001/comments/answers-comments", {
+    fetch(`${window.domain}/comments/answers-comments`, {
       headers: {
         Authorization: userContext.token
       }
@@ -31,7 +31,7 @@ const AnswersComments = () => {
 
   useEffect(() => {
     return () => {
-      fetch("http://localhost:5001/users/delete-new-answers-for-comments", {
+      fetch(`${window.domain}/users/delete-new-answers-for-comments`, {
         headers: {
           Authorization: userContext.token
         },

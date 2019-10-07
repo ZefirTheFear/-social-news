@@ -277,12 +277,10 @@ exports.setAboutMeNote = async (req, res) => {
 
 exports.deleteNewAnswersForPost = async (req, res) => {
   try {
-    let user = await User.findById(req.userId);
-    user.newAnswers.forEach(answer =>
-      answer.type === "answerForPost" ? user.newAnswers.pull(answer) : null
-    );
-    user = await user.save();
-    return res.status(200).json(user);
+    const user = await User.findById(req.userId);
+    user.newAnswers = user.newAnswers.filter(answer => answer.type !== "answerForPost");
+    const updatedUser = await user.save();
+    return res.status(200).json(updatedUser._doc);
   } catch (error) {
     console.log(error);
   }
@@ -290,12 +288,10 @@ exports.deleteNewAnswersForPost = async (req, res) => {
 
 exports.deleteNewAnswersForComment = async (req, res) => {
   try {
-    let user = await User.findById(req.userId);
-    user.newAnswers.forEach(answer =>
-      answer.type === "answerForComment" ? user.newAnswers.pull(answer) : null
-    );
-    user = await user.save();
-    return res.status(200).json(user);
+    const user = await User.findById(req.userId);
+    user.newAnswers = user.newAnswers.filter(answer => answer.type !== "answerForComment");
+    const updatedUser = await user.save();
+    return res.status(200).json(updatedUser._doc);
   } catch (error) {
     console.log(error);
   }

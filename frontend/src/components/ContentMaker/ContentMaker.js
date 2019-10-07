@@ -27,6 +27,12 @@ const ContentMaker = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newContentData]);
 
+  useEffect(() => {
+    if (props.isReseted) {
+      setNewContentData([]);
+    }
+  }, [props.isReseted]);
+
   // Content Data (TextBlock)
   const addTextBlockHandler = () => {
     setNewContentData([...newContentData, { type: "text", content: "", key: uniqid() }]);
