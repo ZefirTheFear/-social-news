@@ -14,7 +14,7 @@ const MyComments = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://localhost:5001/comments/my-comments", {
+    fetch(`${window.domain}/comments/my-comments`, {
       headers: {
         Authorization: userContext.token
       }

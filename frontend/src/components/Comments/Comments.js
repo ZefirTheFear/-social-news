@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Comment from "./Comment/Comment";
 
@@ -7,6 +7,10 @@ import "./Comments.scss";
 const Comments = props => {
   const [commentIdForReply, setCommentIdForReply] = useState(null);
   const [fetchedComments, setFetchedComments] = useState(props.comments);
+
+  useEffect(() => {
+    setFetchedComments(props.comments);
+  }, [props.comments]);
 
   const openReplyBlockHandler = commentId => {
     setCommentIdForReply(commentId);
@@ -26,9 +30,83 @@ const Comments = props => {
     const parentComment = newComments.find(com => com._id === comment.parentComment);
     parentComment.children.push(comment._id);
     newComments.push(comment);
-    console.log(newComments);
     setFetchedComments(newComments);
     setCommentIdForReply(null);
+  };
+
+  const deleteComment = (commentId, targetComId) => {
+    const commentForDel = fetchedComments.find(comment => comment._id === commentId);
+    const parentOfComForDel = fetchedComments.find(comment => {
+      return comment._id === commentForDel.parentComment;
+    });
+
+    const commentsThread = (array, comment, targetCommentId, isLastChild, parentComment) => {
+      array.push(comment._id);
+      if (comment.children.length > 0) {
+        for (const child of comment.children) {
+          const childComment = fetchedComments.find(com => com._id === child);
+          return commentsThread(
+            array,
+            childComment,
+            targetCommentId,
+            comment.children.indexOf(child) === comment.children.length - 1,
+            comment
+          );
+        }
+      } else {
+        if (comment._id.toString() === targetCommentId.toString()) {
+          return array;
+        } else if (isLastChild) {
+          return searchingForTargetComment(array, parentComment, targetCommentId);
+        } else {
+          const nextSiblingIndex = parentComment.children.indexOf(comment._id) + 1;
+          const nextSiblingId = parentComment.children[nextSiblingIndex];
+          const nextSibling = fetchedComments.find(com => com._id === nextSiblingId);
+          return commentsThread(
+            array,
+            nextSibling,
+            targetCommentId,
+            parentComment.children.indexOf(nextSibling._id) === parentComment.children.length - 1,
+            parentComment
+          );
+        }
+      }
+    };
+
+    const searchingForTargetComment = (array, comment, targetCommentId) => {
+      if (comment._id.toString() === targetCommentId.toString()) {
+        return array;
+      }
+      const parentCommentId = comment.parentComment;
+      const parentComment = fetchedComments.find(com => com._id === parentCommentId);
+      const isLastChild =
+        parentComment.children.indexOf(comment._id) === parentComment.children.length - 1;
+      if (isLastChild) {
+        return searchingForTargetComment(array, parentComment, targetCommentId);
+      } else {
+        const nextSiblingIndex = parentComment.children.indexOf(comment._id) + 1;
+        const nextSiblingId = parentComment.children[nextSiblingIndex];
+        const nextSibling = fetchedComments.find(com => com._id === nextSiblingId);
+        return commentsThread(
+          array,
+          nextSibling,
+          targetCommentId,
+          parentComment.children.indexOf(nextSibling._id) === parentComment.children.length - 1,
+          parentComment
+        );
+      }
+    };
+
+    const deletedCommentsIds = commentsThread([], commentForDel, targetComId);
+    const leftComments = fetchedComments.filter(
+      comment => !deletedCommentsIds.includes(comment._id)
+    );
+
+    if (parentOfComForDel) {
+      let updatedParentCom = leftComments.find(comment => comment._id === parentOfComForDel._id);
+      updatedParentCom.children = updatedParentCom.children.filter(ids => ids !== commentId);
+    }
+    setFetchedComments(leftComments);
   };
 
   const getCommentsByIdsAndMount = (arrayOfId, comments, array) => {
@@ -52,6 +130,7 @@ const Comments = props => {
                 commentIdForReply={commentIdForReply}
                 openReplyBlockHandler={openReplyBlockHandler}
                 addComment={addComment}
+                deleteComment={deleteComment}
               />
             </div>
             {comment.children.length > 0 ? (

@@ -12,8 +12,7 @@ exports.getPostsAnswers = async (req, res) => {
       .populate("creator", "name avatar");
     // TODO если нет answers, то....
     for (const answer of answers) {
-      const newArray = [];
-      const answerWithChildren = await commentsThread(newArray, answer, answer._id);
+      const answerWithChildren = await commentsThread([], answer, answer._id);
       answersWithChildren.push(answerWithChildren);
     }
     return res.status(200).json(answersWithChildren);
@@ -32,8 +31,7 @@ exports.getCommentsAnswers = async (req, res) => {
       .populate("creator", "name avatar");
     // TODO если нет comments, то....
     for (const comment of comments) {
-      const newArray = [];
-      const commentWithChildren = await commentsThread(newArray, comment, comment._id);
+      const commentWithChildren = await commentsThread([], comment, comment._id);
       commentsWithChildren.push(commentWithChildren);
     }
     return res.status(200).json(commentsWithChildren);
@@ -51,8 +49,7 @@ exports.getMyComments = async (req, res) => {
       .populate("creator", "name avatar");
     // TODO если нет comments, то....
     for (const comment of comments) {
-      const newArray = [];
-      const commentWithChildren = await commentsThread(newArray, comment, comment._id);
+      const commentWithChildren = await commentsThread([], comment, comment._id);
       commentsWithChildren.push(commentWithChildren);
     }
     return res.status(200).json(commentsWithChildren);

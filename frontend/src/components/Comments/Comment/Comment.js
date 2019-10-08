@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import parse from "html-react-parser";
 import uniqid from "uniqid";
 
+import Confirm from "../../Confirm/Confirm";
 import ContentMaker from "../../ContentMaker/ContentMaker";
 import AddComment from "../../AddComment/AddComment";
 
@@ -21,6 +22,7 @@ const Comment = props => {
   const [commentBodyForEditing, setCommentBodyForEditing] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editCommentData, setEditCommentData] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -203,6 +205,10 @@ const Comment = props => {
       .catch(err => console.log(err));
   };
 
+  const openConfirmation = () => {
+    setIsDeleting(true);
+  };
+
   const deleteCommentHandler = () => {
     fetch(`${window.domain}/posts/comments/${comment._id}/delete`, {
       headers: {
@@ -221,7 +227,7 @@ const Comment = props => {
       })
       .then(resData => {
         console.log(resData);
-        setComment(null);
+        props.deleteComment(comment._id, comment._id);
       })
       .catch(error => console.log(error));
   };
@@ -236,6 +242,19 @@ const Comment = props => {
 
   return comment ? (
     <div className="comment">
+      {isDeleting ? (
+        <Confirm
+          title="Удаление комментария/ветки"
+          msg="Вы дествительно хотите удалить?"
+          doBtn="Удалить"
+          cancelBtn="Оставить"
+          doAction={() => {
+            deleteCommentHandler();
+            setIsDeleting(false);
+          }}
+          cancelAction={() => setIsDeleting(false)}
+        />
+      ) : null}
       <div className="comment__header">
         <div className="comment__rating">
           <div className="comment__rating-value">{comment.rating}</div>
@@ -331,7 +350,7 @@ const Comment = props => {
                 <button
                   type="button"
                   className="comment__delete-btn"
-                  onClick={deleteCommentHandler}
+                  onClick={openConfirmation}
                   title="Удалить"
                 />
               </div>

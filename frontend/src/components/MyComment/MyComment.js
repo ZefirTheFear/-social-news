@@ -20,11 +20,11 @@ const MyComment = props => {
       ].style.display = "none";
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myComment]);
+  }, [isParentShown]);
 
   const showParentHandler = () => {
     // setIsLoading(true);
-    fetch(`http://localhost:5001/posts/comments/${myComment[0].parentComment}`)
+    fetch(`${window.domain}/posts/comments/${myComment[0].parentComment}`)
       .then(res => res.json())
       .then(resData => {
         console.log(resData);
@@ -32,9 +32,10 @@ const MyComment = props => {
         parentComment.children = [myComment[0]._id];
         const newMyComment = [...myComment];
         newMyComment.unshift(parentComment);
-        setIsParentShown(true);
+        console.log(newMyComment);
         setMyComment(newMyComment);
         // setIsLoading(false);
+        setIsParentShown(true);
       })
       .catch(error => console.log(error));
   };
@@ -42,6 +43,7 @@ const MyComment = props => {
   const hideParentHandler = () => {
     const newMyComment = [...myComment];
     newMyComment.shift();
+    console.log(newMyComment);
     setMyComment(newMyComment);
     setIsParentShown(false);
   };
@@ -57,27 +59,27 @@ const MyComment = props => {
       >
         <h6 className="my-comment__post-title">{myComment[0].postId.title}</h6>
       </Link>
-      {!myComment ? (
+      {/* {!myComment ? (
         <div>Loading...</div>
-      ) : (
-        <React.Fragment>
-          {myComment[0].parentComment && !isParentShown ? (
-            <div
-              className="my-comment__show-parent"
-              onClick={showParentHandler}
-              title="Показать родительский комментарий"
-            ></div>
-          ) : null}
-          {isParentShown ? (
-            <div
-              className="my-comment__hide-parent"
-              onClick={hideParentHandler}
-              title="Скрыть родительский комментарий"
-            ></div>
-          ) : null}
-          <Comments comments={myComment} isOpenThread={props.isOpenThread} />
-        </React.Fragment>
-      )}
+      ) : ( */}
+      <>
+        {myComment[0].parentComment && !isParentShown ? (
+          <div
+            className="my-comment__show-parent"
+            onClick={showParentHandler}
+            title="Показать родительский комментарий"
+          ></div>
+        ) : null}
+        {isParentShown ? (
+          <div
+            className="my-comment__hide-parent"
+            onClick={hideParentHandler}
+            title="Скрыть родительский комментарий"
+          ></div>
+        ) : null}
+        <Comments comments={myComment} isOpenThread={props.isOpenThread} />
+      </>
+      {/* )} */}
     </div>
   );
 };

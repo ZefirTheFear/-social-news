@@ -31,19 +31,19 @@ const AppInner = props => {
               <Posts
                 {...propss}
                 isLogoClicked={props.isLogoClicked}
-                requestUrl="http://localhost:5001/posts"
+                requestUrl={`${window.domain}/posts`}
               />
             )}
           />
           <Route
             path="/best"
             exact
-            render={propss => <Posts {...propss} requestUrl="http://localhost:5001/posts/best" />}
+            render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/best`} />}
           />
           <Route
             path="/new"
             exact
-            render={propss => <Posts {...propss} requestUrl="http://localhost:5001/posts/new" />}
+            render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/new`} />}
           />
           <Route path="/subs" exact component={SubsPosts} />
           <Route path="/search/:desired" component={Search} />
