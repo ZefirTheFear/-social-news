@@ -105,6 +105,22 @@
 
 .post-inner__content-text {
   margin-top: 1rem;
+
+  b {
+    font-weight: bold;
+  }
+
+  i {
+    font-style: italic;
+  }
+
+  a {
+    color: rgb(255, 72, 0);
+
+    &:hover {
+      color: darken(rgb(255, 72, 0), 10%);
+    }
+  }
 }
 
 .post-inner__content-img {
@@ -113,6 +129,7 @@
 
 .post-inner__img {
   max-width: 100%;
+  cursor: zoom-in;
 }
 
 .post-inner__footer {

@@ -51,14 +51,13 @@ const AppInner = props => {
           <Route path="/@:username" component={Profile} />
 
           {props.isAuth ? <Route path="/settings" exact component={Settings} /> : null}
-          <Route path="/answers" component={Answers} />
-          <Route path="/my-comments" exact component={MyComments} />
-          <Route path="/estimates" component={Estimates} />
-          <Route path="/saved" exact component={SavedPosts} />
-          <Route path="/subs-list" exact component={SubsList} />
-          <Route path="/ignore-list" exact component={IgnoreList} />
-          <Route path="/notes" exact component={Notes} />
-
+          {props.isAuth ? <Route path="/answers" component={Answers} /> : null}
+          {props.isAuth ? <Route path="/my-comments" exact component={MyComments} /> : null}
+          {props.isAuth ? <Route path="/estimates" component={Estimates} /> : null}
+          {props.isAuth ? <Route path="/saved" exact component={SavedPosts} /> : null}
+          {props.isAuth ? <Route path="/subs-list" exact component={SubsList} /> : null}
+          {props.isAuth ? <Route path="/ignore-list" exact component={IgnoreList} /> : null}
+          {props.isAuth ? <Route path="/notes" exact component={Notes} /> : null}
           <Route component={NotFound} />
         </Switch>
       </div>

@@ -1,18 +1,5 @@
 @import "../../variables.scss";
 
-b {
-  font-weight: bold;
-}
-
-i {
-  font-style: italic;
-}
-
-a {
-  text-decoration: none;
-  color: red;
-}
-
 div[contenteditable="true"] {
   height: auto;
 }
@@ -28,6 +15,22 @@ div[contenteditable="true"] {
   max-width: calc(100% - 27.25px);
   flex: 1;
   // word-wrap: break-word;
+
+  b {
+    font-weight: bold;
+  }
+
+  i {
+    font-style: italic;
+  }
+
+  a {
+    color: rgb(255, 72, 0);
+
+    &:hover {
+      color: darken(rgb(255, 72, 0), 10%);
+    }
+  }
 }
 
 .content-text-container__txt {

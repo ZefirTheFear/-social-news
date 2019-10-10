@@ -147,6 +147,13 @@ const NewPost = props => {
         msg: "Максимум 5 тегов"
       };
     }
+    for (const tag of tags) {
+      if (tag.content.length > 30) {
+        clientErrors.tags = {
+          msg: "Нe более 30 символов в теге"
+        };
+      }
+    }
 
     if (Object.keys(clientErrors).length > 0) {
       setErrors(clientErrors);

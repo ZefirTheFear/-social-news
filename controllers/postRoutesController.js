@@ -453,6 +453,14 @@ exports.deletePost = async (req, res) => {
   const postId = req.params.postId;
 
   try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
+    if (user.status !== "admin" && user.status !== "moderator") {
+      return res.status(403).json({ error: "u cant do this" });
+    }
+
     const post = await Post.findById(postId).populate("comments");
     if (!post) {
       return res.status(404).json("there is no such post");
@@ -679,6 +687,9 @@ exports.deleteComment = async (req, res) => {
     const user = await User.findById(req.userId);
     if (!user) {
       return res.status(404).json({ error: "There is no such user" });
+    }
+    if (user.status !== "admin" && user.status !== "moderator") {
+      return res.status(403).json({ error: "u cant do this" });
     }
 
     const delCom = async (comId, targetComId) => {

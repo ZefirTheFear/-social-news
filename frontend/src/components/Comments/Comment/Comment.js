@@ -5,6 +5,7 @@ import parse from "html-react-parser";
 import uniqid from "uniqid";
 
 import Confirm from "../../Confirm/Confirm";
+import FullScreenImage from "../../FullScreenImage/FullScreenImage";
 import ContentMaker from "../../ContentMaker/ContentMaker";
 import AddComment from "../../AddComment/AddComment";
 
@@ -23,6 +24,8 @@ const Comment = props => {
   const [editMode, setEditMode] = useState(false);
   const [editCommentData, setEditCommentData] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isImgFullScreen, setIsImgFullScreen] = useState(false);
+  const [src, setSrc] = useState(null);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -42,6 +45,7 @@ const Comment = props => {
                 src={`${window.domain}/` + item.url}
                 alt="img"
                 draggable="false"
+                onClick={() => imgFullScreen(`${window.domain}/${item.url}`)}
               />
             </div>
           );
@@ -51,6 +55,11 @@ const Comment = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comment]);
+
+  const imgFullScreen = src => {
+    setIsImgFullScreen(true);
+    setSrc(src);
+  };
 
   const relpyFormToggle = () => {
     if (props.commentIdForReply === comment._id) {
@@ -254,6 +263,9 @@ const Comment = props => {
           }}
           cancelAction={() => setIsDeleting(false)}
         />
+      ) : null}
+      {isImgFullScreen ? (
+        <FullScreenImage src={src} clicked={() => setIsImgFullScreen(false)} />
       ) : null}
       <div className="comment__header">
         <div className="comment__rating">

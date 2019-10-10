@@ -124,11 +124,15 @@ const NewContentTextContainer = props => {
   };
 
   const urlInputConfirm = () => {
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-    document.execCommand("createLink", false, urlValue);
-    urlBlc.current.style.display = "none";
-    setUrlValue("");
+    if (urlValue.startsWith("http://www") || urlValue.startsWith("https://www")) {
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand("createLink", false, urlValue);
+      urlBlc.current.style.display = "none";
+      setUrlValue("");
+    } else {
+      return alert("Введите полную ссылку, пожалуйста");
+    }
   };
 
   const urlInputCancel = () => {

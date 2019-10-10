@@ -53,6 +53,10 @@ const App = () => {
   // }, [])
 
   useEffect(() => {
+    // console.log(
+    //   "%c+",
+    //   'font-size: 1px; padding: 150px 87px; line-height: 0; background: url("https://cs.pikabu.ru/assets/images/dev.png"); background-size: 175px 300px; color: transparent; background-repeat: no-repeat;'
+    // );
     if (
       !localStorage.getItem("token") ||
       !localStorage.getItem("isAuth") ||

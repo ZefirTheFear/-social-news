@@ -1,0 +1,23 @@
+@import "../../variables";
+
+.full-screen-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 5vh 5vw;
+  background: map-get($colors, app-main);
+  z-index: 2;
+  cursor: zoom-out;
+}
+
+.full-screen-image__img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border: 5px solid map-get($colors, app-text);
+  border-radius: map-get($border-radii, main);
+}

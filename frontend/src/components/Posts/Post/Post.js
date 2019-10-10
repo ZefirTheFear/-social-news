@@ -3,6 +3,7 @@ import parse from "html-react-parser";
 import { Link, withRouter } from "react-router-dom";
 
 import Confirm from "../../Confirm/Confirm";
+import FullScreenImage from "../../FullScreenImage/FullScreenImage";
 
 import UserContext from "../../../context/userContext";
 
@@ -17,6 +18,8 @@ const Post = props => {
   const [postBody, setPostBody] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isImgFullScreen, setIsImgFullScreen] = useState(false);
+  const [src, setSrc] = useState(null);
 
   useEffect(() => {
     const body = props.post.body.map(item => {
@@ -34,6 +37,7 @@ const Post = props => {
               src={`${window.domain}/${item.url}`}
               alt="img"
               draggable="false"
+              onClick={() => imgFullScreen(`${window.domain}/${item.url}`)}
             />
           </div>
         );
@@ -54,6 +58,11 @@ const Post = props => {
     } catch (error) {
       return;
     }
+  };
+
+  const imgFullScreen = src => {
+    setIsImgFullScreen(true);
+    setSrc(src);
   };
 
   const likePostToggle = async () => {
@@ -153,6 +162,9 @@ const Post = props => {
           cancelAction={() => setIsDeleting(false)}
         />
       ) : null}
+      {isImgFullScreen ? (
+        <FullScreenImage src={src} clicked={() => setIsImgFullScreen(false)} />
+      ) : null}
       <div className="post__rating-block">
         {userContext.user && post.creator._id !== userContext.user._id ? (
           <div
@@ -192,7 +204,7 @@ const Post = props => {
           </div>
           <div className="post-inner__tags">
             {post.tags.map(tag => (
-              <Link className="post-inner__tag-link" key={tag} to="##">
+              <Link className="post-inner__tag-link" key={tag} to={`/search/${tag}`}>
                 {tag}
               </Link>
             ))}
