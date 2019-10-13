@@ -115,14 +115,16 @@ const Navbar = props => {
           <Link to="/" onClick={props.logoClicked}>
             <img
               className="header__logo-img"
-              src={require("../../assets/ztf-logo-002.png")}
+              // src={require("../../assets/ztf-logo-002.png")}
+              src={require("../../assets/spinner-logo.svg")}
               alt="logo"
             />
-            <img
-              src={require("../../assets/ztf-logo-002-mobile.png")}
+            {/* <img
+              // src={require("../../assets/ztf-logo-002-mobile.png")}
+              src={require("../../assets/spinner-logo.svg")}
               className="header__logo-img-mobile"
               alt="logo"
-            />
+            /> */}
           </Link>
         </div>
         <div className="header__item header__menu">

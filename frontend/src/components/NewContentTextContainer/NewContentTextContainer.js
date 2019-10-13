@@ -88,7 +88,7 @@ const NewContentTextContainer = props => {
         .trim().length > 0
     ) {
       const range = window.getSelection().getRangeAt(0);
-      editEl.current.style.top = range.getBoundingClientRect().top + "px";
+      editEl.current.style.top = window.pageYOffset + range.getBoundingClientRect().top + "px";
       editEl.current.style.left =
         range.getBoundingClientRect().left + range.getBoundingClientRect().width / 2 + "px";
       editEl.current.style.transform = "translate(-50%, -120%)";

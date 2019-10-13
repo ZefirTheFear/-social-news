@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import Post from "../Posts/Post/Post";
 import NotFound from "../../pages/NotFoundPage/NotFound";
+import Spinner from "../Spinner/Spinner";
 
 import numberFormatter from "../../utils/NumberFormatter";
 import timeFormatterFull from "../../utils/TimeFormatterFull";
@@ -32,7 +33,7 @@ const Profile = props => {
     setUser(null);
     setIsUserLoading(true);
     setNotFoundError(false);
-    fetch(`http://localhost:5001/users/user/${props.match.params.username}`)
+    fetch(`${window.domain}/users/user/${props.match.params.username}`)
       .then(res => {
         if (res.status === 404) {
           setNotFoundError(true);
@@ -62,7 +63,7 @@ const Profile = props => {
 
   const fetchPosts = () => {
     console.log("fetching posts");
-    fetch(`http://localhost:5001/posts/userposts/${user._id}`)
+    fetch(`${window.domain}/posts/userposts/${user._id}`)
       .then(res => res.json())
       .then(resData => {
         console.log(resData);
@@ -78,6 +79,10 @@ const Profile = props => {
   }, [props.match.url]);
 
   useEffect(() => {
+    window.onresize = () => {
+      userNote.current.style.height = "auto";
+      userNote.current.style.height = userNote.current.scrollHeight + "px";
+    };
     if (user) {
       fetchPosts();
       if (userContext.isAuth) {
@@ -92,11 +97,16 @@ const Profile = props => {
     if (user && userContext.user) {
       aboutMe.current.style.height = "auto";
       aboutMe.current.style.height = aboutMe.current.scrollHeight + "px";
+
+      if (userNote.current) {
+        userNote.current.style.height = "auto";
+        userNote.current.style.height = userNote.current.scrollHeight + "px";
+      }
       setNote("");
-      const userNote = userContext.user.notesAboutUsers.find(note => note.userId === user._id);
-      if (userNote) {
-        setInitialUserNote(userNote.body);
-        setNote(userNote.body);
+      const noteAboutUser = userContext.user.notesAboutUsers.find(note => note.userId === user._id);
+      if (noteAboutUser) {
+        setInitialUserNote(noteAboutUser.body);
+        setNote(noteAboutUser.body);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,10 +117,11 @@ const Profile = props => {
       userNote.current.style.height = "auto";
       userNote.current.style.height = userNote.current.scrollHeight + "px";
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note]);
 
   const subscribeToUserToggle = () => {
-    fetch(`http://localhost:5001/users/toggle-subscribe-to-user/${user._id}`, {
+    fetch(`${window.domain}/users/toggle-subscribe-to-user/${user._id}`, {
       headers: {
         Authorization: userContext.token
       },
@@ -122,7 +133,8 @@ const Profile = props => {
         } else {
           // TODO вывести UI , что что-то пошло не так
           console.log("что что-то пошло не так");
-          return;
+          throw Error("U cant do this");
+          // return;
         }
       })
       .then(resData => {
@@ -134,7 +146,7 @@ const Profile = props => {
   };
 
   const blockUserToggle = () => {
-    fetch(`http://localhost:5001/users/toggle-ignore/${user._id}`, {
+    fetch(`${window.domain}/users/toggle-ignore/${user._id}`, {
       headers: {
         Authorization: userContext.token
       },
@@ -146,7 +158,8 @@ const Profile = props => {
         } else {
           // TODO вывести UI , что что-то пошло не так
           console.log("что что-то пошло не так");
-          return;
+          throw Error("U cant do this");
+          // return;
         }
       })
       .then(resData => {
@@ -171,7 +184,7 @@ const Profile = props => {
       notedUserId: user._id,
       noteBody: note.trim()
     };
-    fetch(`http://localhost:5001/users/set-note`, {
+    fetch(`${window.domain}/users/set-note`, {
       headers: {
         Authorization: userContext.token,
         "Content-Type": "application/json"
@@ -197,7 +210,7 @@ const Profile = props => {
   };
 
   return isUserLoading ? (
-    <div>Loading...</div>
+    <Spinner />
   ) : notFoundError ? (
     <NotFound />
   ) : (
@@ -205,11 +218,7 @@ const Profile = props => {
       <div className="porfile__info">
         <div className="profile__header">
           <div className="profile__avatar">
-            <img
-              className="profile__img"
-              src={"http://localhost:5001/" + user.avatar}
-              alt="avatar"
-            />
+            <img className="profile__img" src={`${window.domain}/` + user.avatar} alt="avatar" />
           </div>
           <div className="profile__user">
             <div className="profile__nickname">{user.name}</div>
@@ -229,12 +238,16 @@ const Profile = props => {
                     "profile__subscribe" + (isSubscribed ? " profile__subscribe_subscribed" : "")
                   }
                   onClick={subscribeToUserToggle}
+                  disabled={isBlocked}
+                  title={isBlocked ? "сначала разблокируйте" : ""}
                 >
                   {isSubscribed ? "отписаться" : "подписаться"}
                 </button>
                 <button
                   className={"profile__ignore" + (isBlocked ? " profile__ignore_ignored" : "")}
                   onClick={blockUserToggle}
+                  disabled={isSubscribed}
+                  title={isSubscribed ? "сначала отпишитесь" : ""}
                 >
                   {isBlocked ? "разблокировать" : "заблокировать"}
                 </button>
@@ -309,7 +322,8 @@ const Profile = props => {
             rows="1"
             onChange={onChangeNote}
             onBlur={saveNote}
-            placeholder="Заметка об этом пользователе. Будет видна только Вам. Нажмите, чтобы ввести текст"
+            placeholder="Заметка об этом пользователе. "
+            title="Будет видна только Вам. Нажмите, чтобы ввести текст"
             ref={userNote}
           />
         </div>
@@ -319,7 +333,7 @@ const Profile = props => {
       <div className="profile__posts">
         <div className="posts">
           {isPostsLoading ? (
-            <div>Loading...</div>
+            <Spinner />
           ) : posts.length > 0 ? (
             posts.map(post => (
               <div key={post._id} className="posts__post">
@@ -327,7 +341,7 @@ const Profile = props => {
               </div>
             ))
           ) : (
-            <h1>There is no posts yet</h1>
+            <div className="profile__no-posts">Здесь пока что нет ни одного поста</div>
           )}
         </div>
       </div>

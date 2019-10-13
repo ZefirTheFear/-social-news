@@ -17,12 +17,13 @@
 }
 
 .post__rating-up {
+  cursor: pointer;
+
   &::before {
     font-family: "Font Awesome 5 Free";
     content: "\f0d8";
     font-weight: 900;
     font-size: 30px;
-    cursor: pointer;
   }
 
   &:hover {
@@ -41,12 +42,13 @@
 }
 
 .post__rating-down {
+  cursor: pointer;
+
   &::before {
     font-family: "Font Awesome 5 Free";
     content: "\f0d7";
     font-weight: 900;
     font-size: 30px;
-    cursor: pointer;
   }
 
   &:hover {
@@ -173,7 +175,6 @@
     content: "\f0d8";
     font-weight: 900;
     font-size: 25px;
-    cursor: pointer;
   }
 
   &:hover {
@@ -199,7 +200,6 @@
     content: "\f0d7";
     font-weight: 900;
     font-size: 25px;
-    cursor: pointer;
   }
 
   &:hover {

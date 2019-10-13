@@ -30,24 +30,28 @@
   border-radius: 25px;
   overflow: hidden;
   margin-right: 50px;
+
+  @media (min-width: 768px) {
+    margin-left: 70px;
+  }
 }
 
 .header__logo-img {
   height: map-get($heights, header) * 0.8 - 2px;
 
-  @media (max-width: 767px) {
-    display: none;
-  }
+  // @media (max-width: 767px) {
+  //   display: none;
+  // }
 }
 
-.header__logo-img-mobile {
-  display: none;
-  height: map-get($heights, header) * 0.8 - 2px;
+// .header__logo-img-mobile {
+//   display: none;
+//   height: map-get($heights, header) * 0.8 - 2px;
 
-  @media (max-width: 767px) {
-    display: inline;
-  }
-}
+//   @media (max-width: 767px) {
+//     display: inline;
+//   }
+// }
 
 .header-menu {
   display: flex;

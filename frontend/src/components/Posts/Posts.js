@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import Post from "./Post/Post";
 import Spinner from "../Spinner/Spinner";
 import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
 
+import UserContext from "../../context/userContext";
+
 import "./Posts.scss";
 
 const Posts = props => {
+  const userContext = useContext(UserContext);
+
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -23,25 +27,15 @@ const Posts = props => {
       }
       const resData = await request.json();
       console.log(resData);
-      setPosts(resData);
+      const posts = resData.filter(post => !userContext.user.ignoreList.includes(post.creator._id));
+      console.log(posts);
+      setPosts(posts);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
       setIsError(true);
       setIsLoading(false);
     }
-    // setIsLoading(true);
-    // fetch("http://localhost:5001/posts")
-    //   .then(res => {
-    //     console.log(res);
-    //     res.json();
-    //   })
-    //   .then(resData => {
-    //     console.log(resData);
-    //     setPosts(resData);
-    //     setIsLoading(false);
-    //   })
-    //   .catch(error => console.log(error));
   };
 
   useEffect(() => {

@@ -142,6 +142,11 @@ exports.editPost = async (req, res) => {
 exports.getPosts = async (req, res) => {
   try {
     const posts = await Post.find().populate("creator", "name avatar");
+    //   const user = await User.findById(req.userId);
+    //   const ignoreList = user.ignoreList.map(item => item.toString());
+    //   console.log("ignoreList", ignoreList);
+    //   posts = posts.filter(post => !ignoreList.includes(post.creator.toString()));
+    // }
     if (!posts) {
       return res.status(200).json([]);
     }

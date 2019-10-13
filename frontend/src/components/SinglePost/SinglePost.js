@@ -103,13 +103,6 @@ const SinglePost = props => {
   };
 
   const addComment = comment => {
-    // setIsLoadingComments(true);
-    // const newComments = [...comments];
-    // console.log("newComments", newComments);
-    // newComments.push(comment);
-    // console.log("newComments", newComments);
-    // setComments(newComments);
-    // setIsLoadingComments(false);
     fetchComments();
   };
 

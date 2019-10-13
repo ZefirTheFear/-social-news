@@ -174,7 +174,11 @@ const Post = props => {
                 ? " post__rating-up_liked"
                 : "")
             }
-            title="Поставить плюсик"
+            title={
+              userContext.user && post.likes.indexOf(userContext.user._id) > -1
+                ? "Убрать плюсик"
+                : "Поставить плюсик"
+            }
             onClick={likePostToggle}
           />
         ) : null}
@@ -187,7 +191,11 @@ const Post = props => {
                 ? " post__rating-down_disliked"
                 : "")
             }
-            title="Поставить минус"
+            title={
+              userContext.user && post.dislikes.indexOf(userContext.user._id) > -1
+                ? "Убрать минус"
+                : "Поставить минус"
+            }
             onClick={dislikePostToggle}
           />
         ) : null}

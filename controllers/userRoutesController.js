@@ -65,7 +65,9 @@ exports.loginUser = async (req, res) => {
 exports.getUser = async (req, res) => {
   const username = req.params.username;
   try {
-    const user = await User.findOne({ name: username });
+    const user = await User.findOne({
+      name: { $regex: new RegExp("^" + username + "$", "i") }
+    });
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
     }
@@ -81,6 +83,10 @@ exports.toggleSubscribeToUser = async (req, res) => {
   try {
     let user = await User.findById(req.userId);
     const subscribedUser = await User.findById(subscribedUserId);
+
+    if (user.ignoreList.find(item => item.toString() === subscribedUserId)) {
+      return res.status(403).json("u cant do this");
+    }
 
     const subscribe = user.subscribeTo.find(subscribe => subscribe.toString() === subscribedUserId);
     if (!subscribe) {
@@ -107,6 +113,10 @@ exports.toggleIgnoreUser = async (req, res) => {
   try {
     let user = await User.findById(req.userId);
     const ignoredUser = await User.findById(ignoredUserId);
+
+    if (user.subscribeTo.find(item => item.toString() === ignoredUserId)) {
+      return res.status(403).json("u cant do this");
+    }
 
     const ignore = user.ignoreList.find(ignore => ignore.toString() === ignoredUserId);
     if (!ignore) {

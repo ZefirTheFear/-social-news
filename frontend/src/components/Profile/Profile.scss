@@ -48,6 +48,10 @@
   max-width: 40vw;
   margin: 0 15px;
   grid-area: user;
+
+  @media (max-width: 767px) {
+    margin-top: 1rem;
+  }
 }
 
 .profile__user-settings {
@@ -100,6 +104,14 @@
   color: #fff;
   border-radius: map-get($border-radii, main);
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    background: map-get($colors, app-main);
+    &:hover {
+      background: map-get($colors, app-main);
+    }
+  }
 }
 
 .profile__subscribe {
@@ -236,4 +248,15 @@
 
 .profile__posts {
   margin-top: 30px;
+}
+
+.profile__no-posts {
+  padding: 15px 25px;
+  border: 1px solid map-get($colors, border);
+  border-radius: map-get($border-radii, main);
+  background: map-get($colors, app-secondary-bg);
+
+  @media (min-width: 768px) {
+    margin-left: 70px;
+  }
 }

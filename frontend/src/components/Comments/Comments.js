@@ -1,12 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, memo } from "react";
 
 import Comment from "./Comment/Comment";
+
+import UserContext from "../../context/userContext";
 
 import "./Comments.scss";
 
 const Comments = props => {
+  const userContext = useContext(UserContext);
+
   const [commentIdForReply, setCommentIdForReply] = useState(null);
-  const [fetchedComments, setFetchedComments] = useState(props.comments);
+  const cleanedComments = props.comments;
+  cleanedComments.forEach(comment => {
+    if (userContext.user.ignoreList.includes(comment.creator._id)) {
+      comment.body = [{ type: "text", content: "Коммент от игнорируемого пользователя" }];
+    }
+  });
+  const [fetchedComments, setFetchedComments] = useState(cleanedComments);
 
   useEffect(() => {
     setFetchedComments(props.comments);
@@ -174,4 +184,4 @@ const Comments = props => {
   return <div className="comments">{mountCommentsHandler(fetchedComments, [])}</div>;
 };
 
-export default Comments;
+export default memo(Comments);
