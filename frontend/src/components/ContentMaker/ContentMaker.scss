@@ -6,6 +6,15 @@
 
 .content-maker__inner {
   width: 100%;
+  border: 2px solid transparent;
+  transition: all 0.3s ease-out;
+  padding-top: 15px;
+}
+
+.content-maker__inner_is-dragging-over {
+  background-color: darken(map-get($colors, app-main), 10%);
+  border-radius: map-get($border-radii, main);
+  border: 2px solid map-get($colors, border);
 }
 
 .content-maker__inner-item {

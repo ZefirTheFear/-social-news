@@ -112,15 +112,19 @@ const ContentMaker = props => {
     <div className="content-maker">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="dnd">
-          {provided => (
+          {(provided, snapshot) => (
             <div
-              className="content-maker__inner"
+              className={
+                snapshot.isDraggingOver
+                  ? "content-maker__inner content-maker__inner_is-dragging-over"
+                  : "content-maker__inner"
+              }
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
               {newContentData.map((item, index) => (
                 <Draggable key={item.key} draggableId={item.key} index={index}>
-                  {provided => (
+                  {(provided, snapshot) => (
                     <div
                       className="content-maker__inner-item"
                       {...provided.draggableProps}
@@ -136,11 +140,13 @@ const ContentMaker = props => {
                           index={index}
                           onChangeNewPostData={onChangeTextBlockData}
                           removeBlock={() => removeNewPostBlockHandler(index)}
+                          isDragging={snapshot.isDragging}
                         />
                       ) : (
                         <NewContentImageContainer
                           url={item.url}
                           removeBlock={() => removeNewPostBlockHandler(index)}
+                          isDragging={snapshot.isDragging}
                         />
                       )}
                     </div>

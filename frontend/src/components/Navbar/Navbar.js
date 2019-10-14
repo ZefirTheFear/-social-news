@@ -112,7 +112,7 @@ const Navbar = props => {
     <header className="header header_theme_dark">
       <div className="header__inner">
         <div className="header__item header__logo">
-          <Link to="/" onClick={props.logoClicked}>
+          <Link to="/" onClick={props.logoClicked} title="домой">
             <img
               className="header__logo-img"
               // src={require("../../assets/ztf-logo-002.png")}

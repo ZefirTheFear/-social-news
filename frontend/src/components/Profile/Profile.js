@@ -80,8 +80,14 @@ const Profile = props => {
 
   useEffect(() => {
     window.onresize = () => {
-      userNote.current.style.height = "auto";
-      userNote.current.style.height = userNote.current.scrollHeight + "px";
+      if (userNote.current) {
+        userNote.current.style.height = "auto";
+        userNote.current.style.height = userNote.current.scrollHeight + "px";
+      }
+      if (aboutMe.current) {
+        aboutMe.current.style.height = "auto";
+        aboutMe.current.style.height = aboutMe.current.scrollHeight + "px";
+      }
     };
     if (user) {
       fetchPosts();

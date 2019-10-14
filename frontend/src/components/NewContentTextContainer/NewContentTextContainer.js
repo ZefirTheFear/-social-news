@@ -160,7 +160,11 @@ const NewContentTextContainer = props => {
         />
       ) : null}
       <div
-        className="content-text-container__txt"
+        className={
+          props.isDragging
+            ? "content-text-container__txt content-text-container__txt_is-dragging"
+            : "content-text-container__txt"
+        }
         contentEditable
         role="textbox"
         aria-multiline="true"

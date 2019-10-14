@@ -10,6 +10,13 @@
   display: flex;
   flex: 1;
   background: map-get($colors, app-main);
+  transition: all 0.3s ease-out;
+}
+
+.content-img-container__img-block_is-dragging {
+  // background-color: darken(map-get($colors, app-main), 10%);
+  border-radius: map-get($border-radii, main);
+  border: 2px solid map-get($colors, border);
 }
 
 .content-img-container__img {

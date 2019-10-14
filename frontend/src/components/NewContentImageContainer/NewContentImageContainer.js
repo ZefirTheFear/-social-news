@@ -26,7 +26,13 @@ const NewContentImageContainer = props => {
           cancelAction={() => setIsDeleting(false)}
         />
       ) : null}
-      <div className="content-img-container__img-block">
+      <div
+        className={
+          props.isDragging
+            ? "content-img-container__img-block content-img-container__img-block_is-dragging"
+            : "content-img-container__img-block"
+        }
+      >
         <img className="content-img-container__img" src={props.url} alt="img" draggable="false" />
       </div>
       <div className="content-img-container__remove" title="Удалить" onClick={openConfirmation}>

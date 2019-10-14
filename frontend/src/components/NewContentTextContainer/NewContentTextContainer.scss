@@ -43,10 +43,17 @@ div[contenteditable="true"] {
   background-color: map-get($colors, app-main);
   color: map-get($colors, app-text);
   text-align: left;
+  transition: all 0.3s ease-out;
 
   &:focus {
     outline: none;
   }
+}
+
+.content-text-container__txt_is-dragging {
+  // background-color: darken(map-get($colors, app-main), 10%);
+  border-radius: map-get($border-radii, main);
+  border: 2px solid map-get($colors, border);
 }
 
 .content-text-container__remove {
