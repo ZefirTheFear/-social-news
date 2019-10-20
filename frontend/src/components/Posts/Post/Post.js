@@ -248,9 +248,9 @@ const Post = props => {
                 />
               ) : null}
             </div>
-            <div className="post-inner__footer-saves-amount">{post.saves.length}</div>
             {userContext.user ? (
               <>
+                <div className="post-inner__footer-saves-amount">{post.saves.length}</div>
                 <div
                   className={
                     "post-inner__footer-save-post" +
@@ -261,9 +261,9 @@ const Post = props => {
                   title="Сохранить"
                   onClick={savePostToggle}
                 />
-                <div className="post-inner__footer-comments-amount">{post.comments.length}</div>
               </>
             ) : null}
+            <div className="post-inner__footer-comments-amount">{post.comments.length}</div>
             <Link
               className="post-inner__footer-comments-link"
               to={`/post/${post._id}--${post.title.replace(/ /g, "_")}#comments`}

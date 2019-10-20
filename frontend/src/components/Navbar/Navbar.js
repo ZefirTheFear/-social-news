@@ -20,21 +20,21 @@ const Navbar = props => {
   const [isDashboardMobileOpen, setIsDashboardMobileOpen] = useState(false);
   const [isLoginFormMobileOpen, setIsLoginFormMobileOpen] = useState(false);
 
-  const searchBlockOnClick = e => {
+  const disturbSearchInput = e => {
     e.currentTarget.style.width = "240px";
     searchInput.current.style.width = "200px";
     searchInput.current.style.padding = "6px 10px";
     searchInput.current.focus();
     setSearchInputIsOpen(true);
+  };
+
+  const searchBlockOnClick = e => {
+    disturbSearchInput(e);
     console.log("clicked");
   };
 
   const searchBlockEnter = e => {
-    e.currentTarget.style.width = "240px";
-    searchInput.current.style.width = "200px";
-    searchInput.current.style.padding = "6px 10px";
-    searchInput.current.focus();
-    setSearchInputIsOpen(true);
+    disturbSearchInput(e);
     console.log("entered");
   };
 
@@ -66,14 +66,13 @@ const Navbar = props => {
       return console.log("empty");
     }
     props.history.push(`/search/${searchInputValue}`);
-    // setSearchInputValue("");
   };
 
-  const showMenuMobile = e => {
+  const showMenuMobile = () => {
     setIsMenuMobileOpen(true);
   };
 
-  const hideMenuMobile = e => {
+  const hideMenuMobile = () => {
     modalInnerRef.current.style.animation = "modal__inner-fadeout 0.3s forwards";
     backdropRef.current.style.animation = "backdrop-fadeout 0.3s forwards";
 
@@ -115,20 +114,13 @@ const Navbar = props => {
           <Link to="/" onClick={props.logoClicked} title="домой">
             <img
               className="header__logo-img"
-              // src={require("../../assets/ztf-logo-002.png")}
               src={require("../../assets/spinner-logo.svg")}
               alt="logo"
             />
-            {/* <img
-              // src={require("../../assets/ztf-logo-002-mobile.png")}
-              src={require("../../assets/spinner-logo.svg")}
-              className="header__logo-img-mobile"
-              alt="logo"
-            /> */}
           </Link>
         </div>
         <div className="header__item header__menu">
-          <div className="header-menu">
+          <nav className="header-menu">
             <div className="header-menu__item">
               <NavLink
                 to="/"
@@ -168,7 +160,7 @@ const Navbar = props => {
                 </NavLink>
               </div>
             ) : null}
-          </div>
+          </nav>
           <div className="header-menu-mobile" onClick={showMenuMobile} />
           {isMenuMobileOpen ? (
             <Modal
@@ -211,23 +203,20 @@ const Navbar = props => {
               </form>
             </div>
             {props.isAuth ? (
-              <React.Fragment>
-                {/* <div className="header-right-menu__item header-right-menu__notifications">
-                  <Link to="/notifications" className="header-right-menu__notifications-link" />
-                </div> */}
+              <>
                 <div
                   className="header-right-menu__item header-right-menu__avatar"
                   onClick={showDashboard}
                 >
                   <img
                     className="header-right-menu__img"
-                    src={"http://localhost:5001/" + props.user.avatar}
+                    src={`${window.domain}/` + props.user.avatar}
                     alt="avatar"
                   />
                 </div>
-              </React.Fragment>
+              </>
             ) : (
-              <React.Fragment>
+              <>
                 <div
                   className="header-right-menu__item header-right-menu__login"
                   onClick={showLoginForm}
@@ -243,7 +232,7 @@ const Navbar = props => {
                     <AuthForm hideLoginForm={hideLoginForm} />
                   </Modal>
                 ) : null}
-              </React.Fragment>
+              </>
             )}
           </div>
         </div>

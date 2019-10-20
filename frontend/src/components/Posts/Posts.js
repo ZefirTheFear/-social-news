@@ -18,18 +18,33 @@ const Posts = props => {
   const fetchPosts = async () => {
     try {
       setIsLoading(true);
-      const request = await fetch(props.requestUrl);
-      console.log(request);
-      if (request.status !== 200) {
+      const response = await fetch(
+        props.requestUrl,
+        props.logedIn
+          ? {
+              headers: {
+                Authorization: userContext.token
+              }
+            }
+          : null
+      );
+      console.log(response);
+      if (response.status !== 200) {
         setIsError(true);
         setIsLoading(false);
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
-      const posts = resData.filter(post => !userContext.user.ignoreList.includes(post.creator._id));
-      console.log(posts);
-      setPosts(posts);
+      if (userContext.user) {
+        const posts = resData.filter(
+          post => !userContext.user.ignoreList.includes(post.creator._id)
+        );
+        console.log(posts);
+        setPosts(posts);
+      } else {
+        setPosts(resData);
+      }
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -56,7 +71,7 @@ const Posts = props => {
           </div>
         ))
       ) : (
-        <div>There is no posts yet</div>
+        <div className="posts__no-posts">Здесь пока что нет ни одного поста</div>
       )}
     </div>
   );

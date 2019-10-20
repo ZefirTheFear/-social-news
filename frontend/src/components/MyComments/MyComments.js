@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 
 import MyComment from "../MyComment/MyComment";
+import Spinner from "../Spinner/Spinner";
 
 import UserContext from "../../context/userContext";
 
@@ -13,33 +14,47 @@ const MyComments = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`${window.domain}/comments/my-comments`, {
-      headers: {
-        Authorization: userContext.token
-      }
-    })
-      .then(res => res.json())
-      .then(resData => {
-        console.log(resData);
-        setMyComment(resData);
-        setIsLoading(false);
-      })
-      .catch(error => console.log(error));
+    fetchComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return isLoading ? (
-    <div>Loading...</div>
-  ) : (
-    <div className="answers-comments">
-      {myComment.map(myComment => {
-        return myComment ? (
-          <div className="answers-comments__answer" key={myComment[0]._id}>
-            <MyComment myComment={myComment} isOpenThread={false} />
-          </div>
-        ) : null;
-      })}
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`${window.domain}/comments/my-comments`, {
+        headers: {
+          Authorization: userContext.token
+        }
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setMyComment(resData);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
+  };
+
+  return (
+    <div className="my-comments">
+      {isLoading ? (
+        <Spinner />
+      ) : myComment.length > 0 ? (
+        myComment.map(myComment => {
+          return myComment ? (
+            <div className="my-comments__comment" key={myComment[0]._id}>
+              <MyComment myComment={myComment} isOpenThread={false} />
+            </div>
+          ) : null;
+        })
+      ) : (
+        <div className="my-comments__no-comments">Здесь пока что нет ни одного комментария</div>
+      )}
     </div>
   );
 };

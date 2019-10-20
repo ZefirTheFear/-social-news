@@ -10,7 +10,8 @@ import "./App.scss";
 
 import Navbar from "./components/Navbar/Navbar";
 import AppInner from "./components/AppInner/AppInner";
-import NewPost from "./pages/NewPostPage/NewPost";
+import NewPost from "./components/NewPost/NewPost";
+import SomethingWentWrong from "./components/SomethingWentWrong/SomethingWentWrong";
 
 // import TestComponent from "./components/TestComponent/TestComponent";
 // import DnDMouseNTouch from "./components/DnDMouseNTouch/DnDMouseNTouch";
@@ -24,6 +25,7 @@ const App = () => {
   // const [user, setUser] = useState(null);
 
   const [isLogoClicked, setIsLogoClicked] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   window.domain = "http://localhost:5001";
 
@@ -55,7 +57,7 @@ const App = () => {
   useEffect(() => {
     // console.log(
     //   "%c+",
-    //   'font-size: 1px; padding: 150px 87px; line-height: 0; background: url("https://cs.pikabu.ru/assets/images/dev.png"); background-size: 175px 300px; color: transparent; background-repeat: no-repeat;'
+    //   `font-size: 1px; padding: 150px 87px; line-height: 0; background: url(${window.domain}/uploads/general/dev.png); background-size: 175px 300px; color: transparent; background-repeat: no-repeat;`
     // );
     if (
       !localStorage.getItem("token") ||
@@ -106,42 +108,48 @@ const App = () => {
         setIsAuth: setIsAuth,
         setUser: setUser,
         setToken: setToken,
-        logoutHandler: logoutHandler
+        logoutHandler: logoutHandler,
+        setIsError: setIsError
       }}
     >
       <BrowserRouter>
         <div className="app">
-          <Navbar
-            isAuth={isAuth}
-            user={user}
-            logoutHandler={logoutHandler}
-            logoClicked={logoClicked}
-          />
-
-          <Switch>
-            {/* <Route path="/test" component={TestComponent} /> */}
-            {/* <Route path="/test" component={DnDMouseNTouch} /> */}
-
-            {isAuth ? <Route exact path="/new-post" component={NewPost} /> : null}
-            {isAuth ? (
-              <Route
-                path="/edit/post/:postId"
-                render={props => <NewPost {...props} editMode={true} />}
+          {isError ? (
+            <SomethingWentWrong />
+          ) : (
+            <>
+              <Navbar
+                isAuth={isAuth}
+                user={user}
+                logoutHandler={logoutHandler}
+                logoClicked={logoClicked}
               />
-            ) : null}
+              <Switch>
+                {/* <Route path="/test" component={TestComponent} /> */}
+                {/* <Route path="/test" component={DnDMouseNTouch} /> */}
 
-            <Route
-              path="/"
-              render={props => (
-                <AppInner
-                  {...props}
-                  isAuth={isAuth}
-                  logoutHandler={logoutHandler}
-                  isLogoClicked={isLogoClicked}
+                {isAuth ? <Route exact path="/new-post" component={NewPost} /> : null}
+                {isAuth ? (
+                  <Route
+                    path="/edit/post/:postId"
+                    render={props => <NewPost {...props} editMode={true} />}
+                  />
+                ) : null}
+
+                <Route
+                  path="/"
+                  render={props => (
+                    <AppInner
+                      {...props}
+                      isAuth={isAuth}
+                      logoutHandler={logoutHandler}
+                      isLogoClicked={isLogoClicked}
+                    />
+                  )}
                 />
-              )}
-            />
-          </Switch>
+              </Switch>
+            </>
+          )}
         </div>
       </BrowserRouter>
     </UserContext.Provider>

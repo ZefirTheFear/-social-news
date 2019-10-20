@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 
 import validator from "validator";
 
-import "./Login.scss";
-
 import UserContext from "../../context/userContext";
+
+import "./Login.scss";
 
 const Login = props => {
   const userContext = useContext(UserContext);
@@ -23,10 +23,10 @@ const Login = props => {
     localStorage.setItem("expiryDate", expiryDate);
     userContext.setUser(data.user);
     userContext.setToken(data.token);
-    userContext.setIsAuth(true); // в последнюю очередь, т.к. на смене IsAuth срабатывает триггер на ререндер и не будет ждать остальных изменений (хотя они и были бы сразу после)
+    userContext.setIsAuth(true);
   };
 
-  const onChange = e => {
+  const changeInputValue = e => {
     if (e.target.name === "loginEmail") {
       setEmail(e.target.value);
     }
@@ -35,7 +35,7 @@ const Login = props => {
     }
   };
 
-  const logIn = e => {
+  const logIn = async e => {
     e.preventDefault();
 
     const clientErrors = {};
@@ -43,6 +43,12 @@ const Login = props => {
     if (!validator.isEmail(normalizedEmail)) {
       clientErrors.email = {
         msg: "Введите email"
+      };
+    }
+
+    if (password.length === 0) {
+      clientErrors.password = {
+        msg: "Введите пароль"
       };
     }
 
@@ -55,42 +61,51 @@ const Login = props => {
       password: password
     };
 
-    fetch("http://localhost:5001/users/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userData)
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 200 || res.status === 422 || res.status === 404) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
+    try {
+      const response = await fetch(`${window.domain}/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+      });
+      console.log(response);
+      if (response.status !== 200 && response.status !== 404 && response.status !== 422) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      if (resData.errors) {
+        setErrors(resData.errors);
+        return;
+      } else {
+        if (props.hideLoginForm) {
+          props.hideLoginForm();
         }
-      })
-      .then(resData => {
-        if (!resData) {
-          return;
-        }
-        console.log(resData);
-        if (resData.errors) {
-          setErrors(resData.errors);
-        } else {
-          loginHandler(resData);
-          if (props.hideLoginForm) {
-            props.hideLoginForm();
-          }
-        }
-      })
-      .catch(err => console.log(err));
+        loginHandler(resData);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const focusEmail = () => {
+    const newErrors = { ...errors };
+    delete newErrors.email;
+    setErrors(newErrors);
+  };
+
+  const focusPassword = () => {
+    const newErrors = { ...errors };
+    delete newErrors.password;
+    setErrors(newErrors);
   };
 
   return (
@@ -104,7 +119,8 @@ const Login = props => {
             placeholder="Email"
             name="loginEmail"
             value={email}
-            onChange={onChange}
+            onChange={changeInputValue}
+            onFocus={focusEmail}
             autoComplete="off"
           />
           {errors.email ? <div className="input__invalid-feedback">{errors.email.msg}</div> : null}
@@ -117,7 +133,8 @@ const Login = props => {
               placeholder="Password"
               name="loginPassword"
               value={password}
-              onChange={onChange}
+              onChange={changeInputValue}
+              onFocus={focusPassword}
             />
             <div className="input-group__type-toggle">
               {!showPassword ? (

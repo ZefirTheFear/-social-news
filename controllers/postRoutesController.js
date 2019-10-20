@@ -15,7 +15,6 @@ exports.createPost = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     if (req.files.length) {
-      console.log(req.files.length);
       req.files.imgBlocksArray.forEach(item => {
         clearImage(item.path);
       });
@@ -23,43 +22,48 @@ exports.createPost = async (req, res) => {
     return res.status(422).json({ errors: errors.mapped() });
   }
 
-  const title = req.body.title;
-  const textBlocksArray = JSON.parse(req.body.textBlocksArray);
-  const dataOrder = JSON.parse(req.body.content);
-  const body = [];
-  let textBlockArrayIndex = 0;
-  let imgBlockArrayIndex = 0;
-  dataOrder.forEach(item => {
-    if (item.type === "text") {
-      body.push({ type: "text", content: textBlocksArray[textBlockArrayIndex], key: item.key });
-      textBlockArrayIndex++;
-    } else {
-      // body.push({ type: "img", url: req.files[imgBlockArrayIndex].path.replace(/\\/g, "/") });
-      body.push({
-        type: "img",
-        url: req.files.imgBlocksArray[imgBlockArrayIndex].path,
-        key: item.key
-      });
-      imgBlockArrayIndex++;
-    }
-  });
-  const tags = JSON.parse(req.body.tags);
-
-  const newPost = new Post({
-    title: title,
-    body: body,
-    tags: tags,
-    creator: req.userId
-  });
-
   try {
-    await newPost.save();
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
+
+    const title = req.body.title;
+    const textBlocksArray = JSON.parse(req.body.textBlocksArray);
+    const dataOrder = JSON.parse(req.body.content);
+    const body = [];
+    let textBlockArrayIndex = 0;
+    let imgBlockArrayIndex = 0;
+    dataOrder.forEach(item => {
+      if (item.type === "text") {
+        body.push({ type: "text", content: textBlocksArray[textBlockArrayIndex], key: item.key });
+        textBlockArrayIndex++;
+      } else {
+        // body.push({ type: "img", url: req.files[imgBlockArrayIndex].path.replace(/\\/g, "/") });
+        body.push({
+          type: "img",
+          url: req.files.imgBlocksArray[imgBlockArrayIndex].path,
+          key: item.key
+        });
+        imgBlockArrayIndex++;
+      }
+    });
+    const tags = JSON.parse(req.body.tags);
+
+    const newPost = new Post({
+      title: title,
+      body: body,
+      tags: tags,
+      creator: req.userId
+    });
+
+    await newPost.save();
     user.posts.push(newPost);
     await user.save();
     return res.status(201).json(newPost);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -74,7 +78,6 @@ exports.editPost = async (req, res) => {
     return res.status(422).json({ errors: errors.mapped() });
   }
 
-  const postId = req.params.postId;
   try {
     const user = await User.findById(req.userId);
     if (!user) {
@@ -83,7 +86,7 @@ exports.editPost = async (req, res) => {
     if (user.status !== "admin" && user.status !== "moderator") {
       return res.status(403).json({ error: "u cant do this" });
     }
-    const post = await Post.findById(postId);
+    const post = await Post.findById(req.params.postId);
     if (!post) {
       return res.status(404).json({ error: "There is no such post" });
     }
@@ -134,19 +137,14 @@ exports.editPost = async (req, res) => {
     await post.save();
     return res.status(200).json(post);
   } catch (error) {
-    console.log(error);
-    return res.status(404).json({ error: "There is no such postttt" });
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getPosts = async (req, res) => {
   try {
     const posts = await Post.find().populate("creator", "name avatar");
-    //   const user = await User.findById(req.userId);
-    //   const ignoreList = user.ignoreList.map(item => item.toString());
-    //   console.log("ignoreList", ignoreList);
-    //   posts = posts.filter(post => !ignoreList.includes(post.creator.toString()));
-    // }
     if (!posts) {
       return res.status(200).json([]);
     }
@@ -181,21 +179,7 @@ exports.getPosts = async (req, res) => {
     return res.status(200).json(hotPosts);
   } catch (error) {
     // console.log(error);
-    return res.status(503).json("oops. some problems");
-  }
-};
-
-exports.getPostsByUser = async (req, res) => {
-  const userId = req.params.userId;
-  try {
-    const user = await User.findById(userId);
-    const posts = await Post.find({ creator: userId }).populate("creator", "name avatar");
-    // if (!posts) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(posts);
-  } catch (error) {
-    console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -204,13 +188,13 @@ exports.getBestPosts = async (req, res) => {
     const posts = await Post.find()
       .populate("creator", "name avatar")
       .sort({ rating: -1 });
-    // if (!posts) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(posts);
+    if (!posts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(posts);
   } catch (error) {
     // console.log(error);
-    return res.status(503).json("oops. some problems");
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -219,13 +203,33 @@ exports.getNewPosts = async (req, res) => {
     const posts = await Post.find()
       .populate("creator", "name avatar")
       .sort({ createdAt: -1 });
-    // if (!posts) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(posts);
+    if (!posts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(posts);
   } catch (error) {
     // console.log(error);
-    return res.status(503).json("oops. some problems");
+    return res.status(503).json({ error: "oops. some problems" });
+  }
+};
+
+exports.getSubsPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
+    const posts = await Post.find({ creator: { $in: [user.subscribeTo] } }).populate(
+      "creator",
+      "name avatar"
+    );
+    if (!posts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(posts);
+  } catch (error) {
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -235,9 +239,9 @@ exports.getDesiredPosts = async (req, res) => {
     const posts = await Post.find()
       .populate("creator", "name avatar")
       .sort({ createdAt: -1 });
-    // if (!posts) {
-    //   return res.json("There is no posts");
-    // }
+    if (!posts) {
+      return res.status(200).json([]);
+    }
     const desiredPosts = posts.filter(post => {
       for (const tag of post.tags) {
         if (tag.includes(desired)) {
@@ -245,102 +249,118 @@ exports.getDesiredPosts = async (req, res) => {
         }
       }
     });
-    res.status(200).json(desiredPosts);
+    return res.status(200).json(desiredPosts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
-exports.getSubsPosts = async (req, res) => {
+exports.getPostsByUser = async (req, res) => {
+  const userId = req.params.userId;
   try {
-    const user = await User.findById(req.userId);
-    const subsPosts = await Post.find({ creator: { $in: [user.subscribeTo] } }).populate(
-      "creator",
-      "name avatar"
-    );
-    // if (subsPosts.length === 0) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(subsPosts);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-exports.getSavedPosts = async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    const savedPosts = [];
-    for (const post of user.savedPosts) {
-      const savedPost = await Post.findById(post._id).populate("creator", "name avatar");
-      savedPosts.unshift(savedPost);
+    const posts = await Post.find({ creator: userId }).populate("creator", "name avatar");
+    if (!posts) {
+      return res.status(200).json([]);
     }
-    // if (savedPosts.length === 0) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(savedPosts);
+    return res.status(200).json(posts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getEstimatedPosts = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
     const estimatedPosts = await Post.find({
       _id: { $in: [...user.likedPosts, ...user.dislikedPosts] }
     })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
-    // if (estimatedPosts.length === 0) {
-    //   return res.status(404).json("There is no posts");
-    // }
-    res.status(200).json(estimatedPosts);
+    if (!estimatedPosts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(estimatedPosts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getLikedPosts = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
     const likedPosts = await Post.find({ _id: { $in: [...user.likedPosts] } })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
-    // if (likedPosts.length === 0) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(likedPosts);
+    if (!likedPosts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(likedPosts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getDislikedPosts = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
     const dislikedPosts = await Post.find({ _id: { $in: [...user.dislikedPosts] } })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
-    // if (dislikedPosts.length === 0) {
-    //   return res.json("There is no posts");
-    // }
-    res.status(200).json(dislikedPosts);
+    if (!dislikedPosts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(dislikedPosts);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
+  }
+};
+
+exports.getSavedPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
+    const savedPosts = await Post.find({
+      _id: { $in: user.savedPosts }
+    })
+      .populate("creator", "name avatar")
+      .sort({ createdAt: -1 });
+    if (!savedPosts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(savedPosts);
+  } catch (error) {
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getPost = async (req, res) => {
   const postId = req.params.postId;
   try {
-    const post = await Post.findById({ _id: postId }).populate("creator", "name avatar");
+    const post = await Post.findById(postId).populate("creator", "name avatar");
     if (!post) {
       return res.status(404).json({ error: "There is no such post" });
     }
-    res.status(200).json(post);
+    return res.status(200).json(post);
   } catch (error) {
-    return res.status(404).json({ error: "There is no such post" });
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -586,7 +606,6 @@ exports.createComment = async (req, res) => {
   });
 
   try {
-    // await newComment.save();
     const createdComment = await newComment.save();
     const comment = await Comment.findById(createdComment.id).populate("creator", "name avatar");
     const user = await User.findById(req.userId);
@@ -613,7 +632,7 @@ exports.createComment = async (req, res) => {
     }
     // ----------
     // res.status(201).json(newComment);
-    res.status(201).json(comment);
+    return res.status(201).json(comment);
   } catch (error) {
     console.log(error);
   }
@@ -789,7 +808,7 @@ exports.getComments = async (req, res) => {
     if (!comments) {
       return res.json("There is no comments");
     }
-    res.status(200).json(comments);
+    return res.status(200).json(comments);
   } catch (error) {
     console.log(error);
   }
@@ -805,7 +824,7 @@ exports.getComment = async (req, res) => {
     if (!comment) {
       return res.json("There is no comments");
     }
-    res.status(200).json(comment);
+    return res.status(200).json(comment);
   } catch (error) {
     console.log(error);
   }

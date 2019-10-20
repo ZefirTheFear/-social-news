@@ -5,19 +5,24 @@ exports.getPostsAnswers = async (req, res) => {
   try {
     const answersWithChildren = [];
     const postsIds = await Post.find({ creator: req.userId }).select("_id");
-    // TODO если нет постов, то....
+    if (!postsIds) {
+      return res.status(200).json([]);
+    }
     const answers = await Comment.find({ postId: { $in: postsIds }, parentComment: null })
       .sort({ createdAt: -1 })
       .populate("postId", "title")
       .populate("creator", "name avatar");
-    // TODO если нет answers, то....
+    if (!answers) {
+      return res.status(200).json([]);
+    }
     for (const answer of answers) {
       const answerWithChildren = await commentsThread([], answer, answer._id);
       answersWithChildren.push(answerWithChildren);
     }
     return res.status(200).json(answersWithChildren);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -29,14 +34,17 @@ exports.getCommentsAnswers = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("postId", "title")
       .populate("creator", "name avatar");
-    // TODO если нет comments, то....
+    if (!comments) {
+      return res.status(200).json([]);
+    }
     for (const comment of comments) {
       const commentWithChildren = await commentsThread([], comment, comment._id);
       commentsWithChildren.push(commentWithChildren);
     }
     return res.status(200).json(commentsWithChildren);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -47,14 +55,17 @@ exports.getMyComments = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("postId", "title")
       .populate("creator", "name avatar");
-    // TODO если нет comments, то....
+    if (!comments) {
+      return res.status(200).json([]);
+    }
     for (const comment of comments) {
       const commentWithChildren = await commentsThread([], comment, comment._id);
       commentsWithChildren.push(commentWithChildren);
     }
     return res.status(200).json(commentsWithChildren);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 

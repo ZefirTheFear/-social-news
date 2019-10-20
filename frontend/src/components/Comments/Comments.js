@@ -10,12 +10,16 @@ const Comments = props => {
   const userContext = useContext(UserContext);
 
   const [commentIdForReply, setCommentIdForReply] = useState(null);
+
   const cleanedComments = props.comments;
-  cleanedComments.forEach(comment => {
-    if (userContext.user.ignoreList.includes(comment.creator._id)) {
-      comment.body = [{ type: "text", content: "Коммент от игнорируемого пользователя" }];
-    }
-  });
+  if (userContext.user) {
+    cleanedComments.forEach(comment => {
+      if (userContext.user.ignoreList.includes(comment.creator._id)) {
+        comment.body = [{ type: "text", content: "Коммент от игнорируемого пользователя" }];
+      }
+    });
+  }
+
   const [fetchedComments, setFetchedComments] = useState(cleanedComments);
 
   useEffect(() => {

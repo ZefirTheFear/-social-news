@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import Comments from "../Comments/Comments";
+import UserContext from "../../context/userContext";
 
 import "./MyComment.scss";
 
 const MyComment = props => {
   const answerEl = useRef();
 
+  const userContext = useContext(UserContext);
+
   const [isParentShown, setIsParentShown] = useState(false);
   const [myComment, setMyComment] = useState(props.myComment);
-  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isParentShown) {
@@ -22,22 +24,28 @@ const MyComment = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isParentShown]);
 
-  const showParentHandler = () => {
-    // setIsLoading(true);
-    fetch(`${window.domain}/posts/comments/${myComment[0].parentComment}`)
-      .then(res => res.json())
-      .then(resData => {
-        console.log(resData);
-        const parentComment = { ...resData };
-        parentComment.children = [myComment[0]._id];
-        const newMyComment = [...myComment];
-        newMyComment.unshift(parentComment);
-        console.log(newMyComment);
-        setMyComment(newMyComment);
-        // setIsLoading(false);
-        setIsParentShown(true);
-      })
-      .catch(error => console.log(error));
+  const showParentHandler = async () => {
+    try {
+      document.body.style.cursor = "wait";
+      const response = await fetch(`${window.domain}/posts/comments/${myComment[0].parentComment}`);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      const parentComment = { ...resData };
+      parentComment.children = [myComment[0]._id];
+      const newMyComment = [...myComment];
+      newMyComment.unshift(parentComment);
+      console.log(newMyComment);
+      setMyComment(newMyComment);
+      setIsParentShown(true);
+      document.body.style.cursor = "";
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const hideParentHandler = () => {
@@ -48,9 +56,6 @@ const MyComment = props => {
     setIsParentShown(false);
   };
 
-  // return isLoading ? (
-  //   <div>Loading...</div>
-  // ) : (
   return (
     <div className="my-comment" ref={answerEl}>
       <Link
@@ -59,27 +64,27 @@ const MyComment = props => {
       >
         <h6 className="my-comment__post-title">{myComment[0].postId.title}</h6>
       </Link>
-      {/* {!myComment ? (
-        <div>Loading...</div>
-      ) : ( */}
       <>
         {myComment[0].parentComment && !isParentShown ? (
-          <div
-            className="my-comment__show-parent"
-            onClick={showParentHandler}
-            title="Показать родительский комментарий"
-          ></div>
+          <div>
+            <div
+              className="my-comment__show-parent"
+              onClick={showParentHandler}
+              title="Показать родительский комментарий"
+            ></div>
+          </div>
         ) : null}
         {isParentShown ? (
-          <div
-            className="my-comment__hide-parent"
-            onClick={hideParentHandler}
-            title="Скрыть родительский комментарий"
-          ></div>
+          <div>
+            <div
+              className="my-comment__hide-parent"
+              onClick={hideParentHandler}
+              title="Скрыть родительский комментарий"
+            ></div>
+          </div>
         ) : null}
         <Comments comments={myComment} isOpenThread={props.isOpenThread} />
       </>
-      {/* )} */}
     </div>
   );
 };

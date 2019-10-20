@@ -13,6 +13,12 @@ const ProfileSettings = () => {
   const [note, setNote] = useState(userContext.user.aboutMe);
 
   useEffect(() => {
+    window.onresize = () => {
+      if (textarea.current) {
+        textarea.current.style.height = "auto";
+        textarea.current.style.height = textarea.current.scrollHeight + "px";
+      }
+    };
     textarea.current.style.height = "auto";
     textarea.current.style.height = textarea.current.scrollHeight + "px";
   }, []);
@@ -21,85 +27,76 @@ const ProfileSettings = () => {
     inputEl.current.click();
   };
 
-  const changeAvatarHandler = e => {
+  const changeAvatarHandler = async e => {
     const formData = new FormData();
     formData.append("avatar", e.target.files[0]);
-    fetch("http://localhost:5001/users/change-avatar", {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "POST",
-      body: formData
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        userContext.setUser(resData);
-      })
-      .catch(err => console.log(err));
     e.target.value = null;
+    try {
+      const response = await fetch(`${window.domain}/users/change-avatar`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "POST",
+        body: formData
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      userContext.setUser(resData);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
-  const deleteAvatar = () => {
-    fetch("http://localhost:5001/users/delete-avatar", {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        userContext.setUser(resData);
-      })
-      .catch(err => console.log(err));
+  const deleteAvatar = async () => {
+    try {
+      const response = await fetch(`${window.domain}/users/delete-avatar`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      userContext.setUser(resData);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
-  const changeSexHandler = e => {
-    console.log(e.target.value);
-    fetch("http://localhost:5001/users/change-sex", {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH",
-      body: e.target.value
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        userContext.setUser(resData);
-      })
-      .catch(err => console.log(err));
+  const changeSexHandler = async e => {
+    try {
+      const response = await fetch(`${window.domain}/users/change-sex`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH",
+        body: e.target.value
+      });
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      userContext.setUser(resData);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const onChangeNote = e => {
@@ -108,31 +105,29 @@ const ProfileSettings = () => {
     textarea.current.style.height = e.currentTarget.scrollHeight + "px";
   };
 
-  const saveNote = () => {
+  const saveNote = async () => {
     if (note.trim() === userContext.user.aboutMe) {
       return;
     }
-    fetch(`http://localhost:5001/users/set-about-me-note`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH",
-      body: note.trim()
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-      })
-      .catch(error => console.log(error));
+    try {
+      const response = await fetch(`${window.domain}/users/set-about-me-note`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH",
+        body: note.trim()
+      });
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   return (
@@ -141,7 +136,7 @@ const ProfileSettings = () => {
       <div className="settings__image-block">
         <img
           className="settings__img"
-          src={"http://localhost:5001/" + userContext.user.avatar}
+          src={`${window.domain}/` + userContext.user.avatar}
           alt="ava"
         />
         <button

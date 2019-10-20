@@ -1,5 +1,9 @@
 @import "../../variables.scss";
 
+.comments {
+  overflow-x: auto;
+}
+
 .comments_comment {
   padding-bottom: 10px;
 }

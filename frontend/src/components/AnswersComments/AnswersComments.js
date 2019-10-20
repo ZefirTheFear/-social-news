@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 
 import Answer from "../Answer/Answer";
+import Spinner from "../Spinner/Spinner";
 
 import UserContext from "../../context/userContext";
 
@@ -13,52 +14,77 @@ const AnswersComments = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`${window.domain}/comments/answers-comments`, {
-      headers: {
-        Authorization: userContext.token
-      }
-    })
-      .then(res => res.json())
-      .then(resData => {
-        console.log(resData);
-        setAnswers(resData);
-        setIsLoading(false);
-      })
-      .catch(error => console.log(error));
+    fetchAnswers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     return () => {
-      fetch(`${window.domain}/users/delete-new-answers-for-comments`, {
-        headers: {
-          Authorization: userContext.token
-        },
-        method: "PATCH"
-      })
-        .then(res => res.json())
-        .then(resData => {
-          console.log(resData);
-          localStorage.setItem("user", JSON.stringify(resData));
-          userContext.setUser(resData);
-        })
-        .catch(error => console.log(error));
+      deleteNewAnswersForPosts();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return isLoading ? (
-    <div>Loading...</div>
-  ) : (
+  const fetchAnswers = async () => {
+    try {
+      const response = await fetch(`${window.domain}/comments/answers-comments`, {
+        headers: {
+          Authorization: userContext.token
+        }
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setAnswers(resData);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
+  };
+
+  const deleteNewAnswersForPosts = async () => {
+    try {
+      const response = await fetch(`${window.domain}/users/delete-new-answers-for-comments`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      userContext.setUser(resData);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
+  };
+
+  return (
     <div className="answers-comments">
-      {answers.map(answer => {
-        return answer ? (
-          <div className="answers-comments__answer" key={answer[0]._id}>
-            <Answer answer={answer} isOpenThread={true} />
-          </div>
-        ) : null;
-      })}
+      {isLoading ? (
+        <Spinner />
+      ) : answers.length > 0 ? (
+        answers.map(answer => {
+          return answer ? (
+            <div className="answers-comments__answer" key={answer[0]._id}>
+              <Answer answer={answer} isOpenThread={true} />
+            </div>
+          ) : null;
+        })
+      ) : (
+        <div className="answers-comments__no-answers">Здесь пока что нет ни одного ответа</div>
+      )}
     </div>
   );
 };

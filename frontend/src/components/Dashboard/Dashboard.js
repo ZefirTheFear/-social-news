@@ -3,6 +3,8 @@ import { Link, NavLink } from "react-router-dom";
 
 import "./Dashboard.scss";
 
+import Spinner from "../Spinner/Spinner";
+
 import UserContext from "../../context/userContext";
 
 import numberFormatter from "../../utils/NumberFormatter";
@@ -13,33 +15,33 @@ const Dashboard = props => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  const fetchUser = async () => {
+    try {
+      const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`);
+      console.log(response);
+      if (response.status === 404) {
+        return props.logoutHandler();
+      }
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        // setIsLoading(false);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      userContext.setUser(resData);
+      setUser(resData);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+      // setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(`http://localhost:5001/users/user/${userContext.user.name}`)
-      .then(res => {
-        if (res.status === 404) {
-          return props.logoutHandler();
-        } else if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        if (!resData) {
-          return;
-        }
-        console.log(resData);
-        if (resData.error) {
-          return;
-        }
-        localStorage.setItem("user", JSON.stringify(resData));
-        userContext.setUser(resData);
-        setUser(resData);
-        setIsLoading(false);
-      })
-      .catch(err => console.log(err));
+    fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -51,7 +53,7 @@ const Dashboard = props => {
   };
 
   return isLoading ? (
-    <div>Loading...</div>
+    <Spinner />
   ) : (
     <div className="dashboard">
       <div className="dashboard__header">
@@ -61,11 +63,7 @@ const Dashboard = props => {
             to={`/@${user.name}`}
             onClick={props.hideDashboard}
           >
-            <img
-              className="dashboard__img"
-              src={"http://localhost:5001/" + user.avatar}
-              alt="avatar"
-            />
+            <img className="dashboard__img" src={`${window.domain}/` + user.avatar} alt="avatar" />
           </Link>
         </div>
         <div className="dashboard__user-info">
@@ -111,7 +109,7 @@ const Dashboard = props => {
           </span>
         </div>
       </div>
-      <div className="dashboard__profile-content">
+      <nav className="dashboard__profile-content">
         <div className="dashboard__profile-content-item" onClick={props.hideDashboard}>
           <NavLink
             to="/answers"
@@ -119,7 +117,7 @@ const Dashboard = props => {
             activeClassName="dashboard__profile-content-item-link_active"
           >
             Ответы
-            {userContext.user.newAnswers.length > 0 ? (
+            {userContext.user && userContext.user.newAnswers.length > 0 ? (
               <span className="dashboard__new-answers">{userContext.user.newAnswers.length}</span>
             ) : null}
           </NavLink>
@@ -178,7 +176,7 @@ const Dashboard = props => {
             Заметки
           </NavLink>
         </div>
-      </div>
+      </nav>
       <div className="dashboard__add-post">
         <Link className="dashboard__add-post-link" to="/new-post" onClick={props.hideDashboard}>
           <div className="dashboard__add-post-plus" />

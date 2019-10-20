@@ -1,9 +1,7 @@
 import React from "react";
 import { Route, Switch, NavLink, Redirect } from "react-router-dom";
 
-import EstimatesAll from "../EstimatesAll/EstimatesAll";
-import EstimatesLikes from "../EstimatesLikes/EstimatesLikes";
-import EstimatesDislikes from "../EstimatesDislikes/EstimatesDislikes";
+import Posts from "../Posts/Posts";
 
 import "./Estimates.scss";
 
@@ -43,9 +41,30 @@ const Estimates = () => {
 
       <div className="estimates__inner">
         <Switch>
-          <Route path="/estimates" exact render={props => <EstimatesAll {...props} />} />
-          <Route path="/estimates/liked" exact component={EstimatesLikes} />
-          <Route path="/estimates/disliked" exact component={EstimatesDislikes} />
+          <Route
+            path="/estimates"
+            exact
+            render={propss => (
+              <Posts {...propss} requestUrl={`${window.domain}/posts/estimates`} logedIn />
+            )}
+          />
+          <Route
+            path="/estimates/liked"
+            exact
+            render={propss => (
+              <Posts {...propss} requestUrl={`${window.domain}/posts/liked`} logedIn />
+            )}
+          />
+          <Route
+            path="/estimates/disliked"
+            exact
+            render={propss => (
+              <Posts {...propss} requestUrl={`${window.domain}/posts/disliked`} logedIn />
+            )}
+          />
+          {/* <Route path="/estimates" exact render={props => <EstimatesAll {...props} />} /> */}
+          {/* <Route path="/estimates/liked" exact component={EstimatesLikes} /> */}
+          {/* <Route path="/estimates/disliked" exact component={EstimatesDislikes} /> */}
           <Redirect to="/estimates" />
         </Switch>
       </div>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
+import Spinner from "../Spinner/Spinner";
+
 import UserContext from "../../context/userContext";
 
 import "./SubsList.scss";
@@ -12,82 +14,82 @@ const SubsList = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/users/get-subscribe-to`, {
-      headers: {
-        Authorization: userContext.token
-      }
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          setIsLoading(false);
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        if (!resData) {
-          return;
-        }
-        setSubList(resData);
-        setIsLoading(false);
-      })
-      .catch(error => console.log(error));
+    fetchSubscribeToUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const removeUser = userId => {
-    fetch(`http://localhost:5001/users/toggle-subscribe-to-user/${userId}`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
+  const fetchSubscribeToUsers = async () => {
+    try {
+      const response = await fetch(`${window.domain}/users/get-subscribe-to`, {
+        headers: {
+          Authorization: userContext.token
         }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        setSubList([...subList].filter(item => item._id !== userId));
-      })
-      .catch(error => console.log(error));
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setSubList(resData);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
-  return isLoading ? (
-    <div>Loading...</div>
-  ) : subList.length === 0 ? (
-    <div>Вы ни на кого не подписаны</div>
-  ) : (
+  const unsubUser = async userId => {
+    try {
+      const response = await fetch(`${window.domain}/users/toggle-subscribe-to-user/${userId}`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      setSubList([...subList].filter(item => item._id !== userId));
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
+  };
+
+  return (
     <div className="subs-list">
-      {subList.map(user => {
-        return (
-          <div className="subs-list__sub-to" key={user._id}>
-            <div className="subs-list__remove-user" onClick={() => removeUser(user._id)}>
-              &times;
+      {isLoading ? (
+        <Spinner />
+      ) : subList.length > 0 ? (
+        subList.map(user => {
+          return (
+            <div className="subs-list__sub-to" key={user._id}>
+              <div className="subs-list__remove-user" onClick={() => unsubUser(user._id)}>
+                &times;
+              </div>
+              <Link to={`/@${user.name}`}>
+                <img
+                  className="subs-list__user-avatar"
+                  src={`${window.domain}/` + user.avatar}
+                  alt="ava"
+                />
+              </Link>
+              <Link className="subs-list__username" to={`/@${user.name}`}>
+                {user.name}
+              </Link>
             </div>
-            <Link to={`/@${user.name}`}>
-              <img
-                className="subs-list__user-avatar"
-                src={"http://localhost:5001/" + user.avatar}
-                alt="ava"
-              />
-            </Link>
-            <Link className="subs-list__username" to={`/@${user.name}`}>
-              {user.name}
-            </Link>
-          </div>
-        );
-      })}
+          );
+        })
+      ) : (
+        <div>Вы ни на кого не подписаны</div>
+      )}
     </div>
   );
 };

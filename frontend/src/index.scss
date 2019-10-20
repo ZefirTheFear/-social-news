@@ -1,9 +1,5 @@
 @import "./_variables.scss";
 
-::selection {
-  background-color: map-get($colors, text-selection);
-}
-
 * {
   box-sizing: border-box;
 }
@@ -11,7 +7,7 @@
 html {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
-  line-height: 22px;
+  // line-height: 22px;
   // font-weight: 400;
 }
 
@@ -24,6 +20,10 @@ body {
 
 a {
   text-decoration: none;
+}
+
+::selection {
+  background-color: map-get($colors, text-selection);
 }
 
 /* --- для scrollbar --- */
@@ -48,12 +48,4 @@ a {
 // @media (max-width: 767px) {
 // }
 // @media (max-width: 575px) {
-// }
-
-// a {
-//   color: #61dafb;
-// }
-// a:hover {
-//   color: #0897be;
-//   text-decoration: none;
 // }

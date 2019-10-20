@@ -3,8 +3,9 @@ import React, { useEffect, useState, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import Post from "../Posts/Post/Post";
-import NotFound from "../../pages/NotFoundPage/NotFound";
+import NotFound from "../NotFound/NotFound";
 import Spinner from "../Spinner/Spinner";
+import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
 
 import numberFormatter from "../../utils/NumberFormatter";
 import timeFormatterFull from "../../utils/TimeFormatterFull";
@@ -26,51 +27,55 @@ const Profile = props => {
   const [notFoundError, setNotFoundError] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(null);
   const [isBlocked, setIsBlocked] = useState(null);
+  const [isSubscribeBtnDisabled, setIsSubscribeBtnDisabled] = useState(false);
+  const [isBlockBtnDisabled, setIsBlockBtnDisabled] = useState(false);
   const [initialUserNote, setInitialUserNote] = useState("");
   const [note, setNote] = useState("");
+  const [isError, setIsError] = useState(false);
 
-  const fetchUserData = () => {
-    setUser(null);
-    setIsUserLoading(true);
-    setNotFoundError(false);
-    fetch(`${window.domain}/users/user/${props.match.params.username}`)
-      .then(res => {
-        if (res.status === 404) {
-          setNotFoundError(true);
-          setIsUserLoading(false);
-          return;
-        } else if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        if (!resData) {
-          return;
-        }
-        console.log(resData);
-        if (resData.error) {
-          return;
-        }
-        setUser(resData);
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${window.domain}/users/user/${props.match.params.username}`);
+      console.log(response);
+      if (response.status === 404) {
+        setNotFoundError(true);
         setIsUserLoading(false);
-      })
-      .catch(err => console.log(err));
+        return;
+      }
+      if (response.status !== 200) {
+        setIsError(true);
+        setIsUserLoading(false);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setUser(resData);
+      setIsUserLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+      setIsUserLoading(false);
+    }
   };
 
-  const fetchPosts = () => {
-    console.log("fetching posts");
-    fetch(`${window.domain}/posts/userposts/${user._id}`)
-      .then(res => res.json())
-      .then(resData => {
-        console.log(resData);
-        setPosts(resData);
+  const fetchUserPosts = async () => {
+    try {
+      const response = await fetch(`${window.domain}/posts/userposts/${user._id}`);
+      console.log(response);
+      if (response.status !== 200) {
+        setIsError(true);
         setIsPostsLoading(false);
-      })
-      .catch(error => console.log(error));
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setPosts(resData);
+      setIsPostsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+      setIsPostsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -90,7 +95,7 @@ const Profile = props => {
       }
     };
     if (user) {
-      fetchPosts();
+      fetchUserPosts();
       if (userContext.isAuth) {
         setIsBlocked(user.ignoredBy.indexOf(userContext.user._id) > -1);
         setIsSubscribed(user.subscribers.indexOf(userContext.user._id) > -1);
@@ -100,10 +105,11 @@ const Profile = props => {
   }, [user]);
 
   useEffect(() => {
-    if (user && userContext.user) {
+    if (user) {
       aboutMe.current.style.height = "auto";
       aboutMe.current.style.height = aboutMe.current.scrollHeight + "px";
-
+    }
+    if (user && userContext.user) {
       if (userNote.current) {
         userNote.current.style.height = "auto";
         userNote.current.style.height = userNote.current.scrollHeight + "px";
@@ -126,54 +132,66 @@ const Profile = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note]);
 
-  const subscribeToUserToggle = () => {
-    fetch(`${window.domain}/users/toggle-subscribe-to-user/${user._id}`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          throw Error("U cant do this");
-          // return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        setIsSubscribed(!isSubscribed);
-      })
-      .catch(error => console.log(error));
+  const subscribeToUserToggle = async () => {
+    try {
+      setIsSubscribeBtnDisabled(true);
+      setIsBlockBtnDisabled(true);
+      const response = await fetch(`${window.domain}/users/toggle-subscribe-to-user/${user._id}`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        setIsError(true);
+        setIsSubscribeBtnDisabled(false);
+        setIsBlockBtnDisabled(false);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      setIsSubscribed(!isSubscribed);
+      setIsSubscribeBtnDisabled(false);
+      setIsBlockBtnDisabled(false);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+      setIsSubscribeBtnDisabled(false);
+      setIsBlockBtnDisabled(false);
+    }
   };
 
-  const blockUserToggle = () => {
-    fetch(`${window.domain}/users/toggle-ignore/${user._id}`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          throw Error("U cant do this");
-          // return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        setIsBlocked(!isBlocked);
-      })
-      .catch(error => console.log(error));
+  const blockUserToggle = async () => {
+    try {
+      setIsBlockBtnDisabled(true);
+      setIsSubscribeBtnDisabled(true);
+      const response = await fetch(`${window.domain}/users/toggle-ignore/${user._id}`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH"
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        setIsError(true);
+        setIsBlockBtnDisabled(false);
+        setIsSubscribeBtnDisabled(false);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      setIsBlocked(!isBlocked);
+      setIsBlockBtnDisabled(false);
+      setIsSubscribeBtnDisabled(false);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+      setIsBlockBtnDisabled(false);
+      setIsSubscribeBtnDisabled(false);
+    }
   };
 
   const onChangeNote = e => {
@@ -182,7 +200,7 @@ const Profile = props => {
     userNote.current.style.height = e.currentTarget.scrollHeight + "px";
   };
 
-  const saveNote = () => {
+  const saveNote = async () => {
     if (note.trim() === initialUserNote) {
       return;
     }
@@ -190,33 +208,34 @@ const Profile = props => {
       notedUserId: user._id,
       noteBody: note.trim()
     };
-    fetch(`${window.domain}/users/set-note`, {
-      headers: {
-        Authorization: userContext.token,
-        "Content-Type": "application/json"
-      },
-      method: "PATCH",
-      body: JSON.stringify(noteData)
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        localStorage.setItem("user", JSON.stringify(resData));
-        setInitialUserNote(note);
-      })
-      .catch(error => console.log(error));
+    try {
+      const response = await fetch(`${window.domain}/users/set-note`, {
+        headers: {
+          Authorization: userContext.token,
+          "Content-Type": "application/json"
+        },
+        method: "PATCH",
+        body: JSON.stringify(noteData)
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      localStorage.setItem("user", JSON.stringify(resData));
+      setInitialUserNote(note);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+    }
   };
 
   return isUserLoading ? (
     <Spinner />
+  ) : isError ? (
+    <SomethingWentWrong />
   ) : notFoundError ? (
     <NotFound />
   ) : (
@@ -244,7 +263,7 @@ const Profile = props => {
                     "profile__subscribe" + (isSubscribed ? " profile__subscribe_subscribed" : "")
                   }
                   onClick={subscribeToUserToggle}
-                  disabled={isBlocked}
+                  disabled={isBlocked || isSubscribeBtnDisabled}
                   title={isBlocked ? "сначала разблокируйте" : ""}
                 >
                   {isSubscribed ? "отписаться" : "подписаться"}
@@ -252,7 +271,7 @@ const Profile = props => {
                 <button
                   className={"profile__ignore" + (isBlocked ? " profile__ignore_ignored" : "")}
                   onClick={blockUserToggle}
-                  disabled={isSubscribed}
+                  disabled={isSubscribed || isBlockBtnDisabled}
                   title={isSubscribed ? "сначала отпишитесь" : ""}
                 >
                   {isBlocked ? "разблокировать" : "заблокировать"}

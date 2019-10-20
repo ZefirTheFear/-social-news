@@ -6,6 +6,7 @@
   padding: 15px 25px;
   border: 1px solid map-get($colors, border);
   border-radius: map-get($border-radii, main);
+  background: map-get($colors, app-secondary-bg);
 }
 
 .ignore-list__sub-to {

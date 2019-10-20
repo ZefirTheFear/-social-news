@@ -86,7 +86,7 @@ router.post(
 router.get("/user/:username", userRoutesController.getUser);
 
 router.patch(
-  "/toggle-subscribe-to-user/:subscribedUserId",
+  "/toggle-subscribe-to-user/:subscribeToUserId",
   isAuth,
   userRoutesController.toggleSubscribeToUser
 );

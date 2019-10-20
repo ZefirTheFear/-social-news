@@ -32,32 +32,26 @@ const fileFilter = (req, file, cb) => {
   }
 };
 const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
-// app.use(
-//   multer({ storage: fileStorage, fileFilter: fileFilter }).fields([
-//     { name: "imgBlocksArray" },
-//     { name: "newImgBlocksArray" }
-//   ])
-// );
 
 router.get("/", postRoutesController.getPosts);
-
-router.get("/userposts/:userId", postRoutesController.getPostsByUser);
 
 router.get("/best", postRoutesController.getBestPosts);
 
 router.get("/new", postRoutesController.getNewPosts);
 
-router.get("/desired/:desired", postRoutesController.getDesiredPosts);
-
 router.get("/subs", isAuth, postRoutesController.getSubsPosts);
 
-router.get("/saved", isAuth, postRoutesController.getSavedPosts);
+router.get("/desired/:desired", postRoutesController.getDesiredPosts);
+
+router.get("/userposts/:userId", postRoutesController.getPostsByUser);
 
 router.get("/estimates", isAuth, postRoutesController.getEstimatedPosts);
 
 router.get("/liked", isAuth, postRoutesController.getLikedPosts);
 
 router.get("/disliked", isAuth, postRoutesController.getDislikedPosts);
+
+router.get("/saved", isAuth, postRoutesController.getSavedPosts);
 
 router.post(
   "/new-post",

@@ -38,20 +38,7 @@
 
 .header__logo-img {
   height: map-get($heights, header) * 0.8 - 2px;
-
-  // @media (max-width: 767px) {
-  //   display: none;
-  // }
 }
-
-// .header__logo-img-mobile {
-//   display: none;
-//   height: map-get($heights, header) * 0.8 - 2px;
-
-//   @media (max-width: 767px) {
-//     display: inline;
-//   }
-// }
 
 .header-menu {
   display: flex;
@@ -172,24 +159,6 @@
     font-size: 15px;
   }
 }
-
-// .header-right-menu__notifications {
-//   &:hover {
-//     color: map-get($colors, app-secondary);
-//   }
-
-//   &::before {
-//     font-family: "Font Awesome 5 Free";
-//     content: "\f0f3";
-//     font-weight: 900;
-//     font-size: 16px;
-//   }
-// }
-
-// .header-right-menu__notifications-link {
-//   text-decoration: none;
-//   color: map-get($colors, app-text);
-// }
 
 .header-right-menu__avatar {
   display: none;

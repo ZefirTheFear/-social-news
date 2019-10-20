@@ -4,16 +4,14 @@ import { Route, Switch } from "react-router-dom";
 import "./AppInner.scss";
 
 import Posts from "../Posts/Posts";
-import SubsPosts from "../SubsPosts/SubsPosts";
 import Search from "../Search/Search";
 import SinglePost from "../SinglePost/SinglePost";
 import Profile from "../Profile/Profile";
 import Sidebar from "../Sidebar/Sidebar";
-import NotFound from "../../pages/NotFoundPage/NotFound";
+import NotFound from "../NotFound/NotFound";
 import Answers from "../Answers/Answers";
 import MyComments from "../MyComments/MyComments";
 import Estimates from "../Estimates/Estimates";
-import SavedPosts from "../SavedPosts/SavedPosts";
 import SubsList from "../SubsList/SubsList";
 import IgnoreList from "../IgnoreList/IgnoreList";
 import Notes from "../Notes/Notes";
@@ -45,25 +43,43 @@ const AppInner = props => {
             exact
             render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/new`} />}
           />
-          <Route path="/subs" exact component={SubsPosts} />
+          {props.isAuth ? (
+            <Route
+              path="/subs"
+              exact
+              render={propss => (
+                <Posts {...propss} requestUrl={`${window.domain}/posts/subs`} logedIn />
+              )}
+            />
+          ) : null}
           <Route path="/search/:desired" component={Search} />
-          <Route path="/post/:postTitle" component={SinglePost} />
+
           <Route path="/@:username" component={Profile} />
+
+          <Route path="/post/:postTitle" component={SinglePost} />
 
           {props.isAuth ? <Route path="/settings" exact component={Settings} /> : null}
           {props.isAuth ? <Route path="/answers" component={Answers} /> : null}
           {props.isAuth ? <Route path="/my-comments" exact component={MyComments} /> : null}
           {props.isAuth ? <Route path="/estimates" component={Estimates} /> : null}
-          {props.isAuth ? <Route path="/saved" exact component={SavedPosts} /> : null}
+          {props.isAuth ? (
+            <Route
+              path="/saved"
+              exact
+              render={propss => (
+                <Posts {...propss} requestUrl={`${window.domain}/posts/saved`} logedIn />
+              )}
+            />
+          ) : null}
           {props.isAuth ? <Route path="/subs-list" exact component={SubsList} /> : null}
           {props.isAuth ? <Route path="/ignore-list" exact component={IgnoreList} /> : null}
           {props.isAuth ? <Route path="/notes" exact component={Notes} /> : null}
           <Route component={NotFound} />
         </Switch>
       </div>
-      <div className="app-inner__sidebar">
+      <aside className="app-inner__sidebar">
         <Sidebar logoutHandler={props.logoutHandler} />
-      </div>
+      </aside>
     </div>
   );
 };

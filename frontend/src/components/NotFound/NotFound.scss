@@ -1,0 +1,41 @@
+@import "../../variables";
+
+.not-found {
+  position: relative;
+}
+
+.not-found__img {
+  max-width: 100%;
+}
+
+.not-found__msg {
+  position: absolute;
+  font-size: 2.5rem;
+  top: 80px;
+  right: 100px;
+
+  @media (max-width: 991px) {
+    font-size: 4vw;
+    top: 10vw;
+    right: 15vw;
+  }
+}
+
+.not-found__home {
+  position: absolute;
+  font-size: 1.5rem;
+  top: 150px;
+  right: 140px;
+
+  color: inherit;
+
+  &:hover {
+    color: map-get($colors, app-secondary);
+  }
+
+  @media (max-width: 991px) {
+    font-size: 3vw;
+    top: 20vw;
+    right: 19vw;
+  }
+}

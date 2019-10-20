@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import validator from "validator";
+
+import UserContext from "../../context/userContext";
 
 import "./Register.scss";
 
 const Register = props => {
+  const userContext = useContext(UserContext);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +17,7 @@ const Register = props => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const onChange = e => {
+  const changeInputValue = e => {
     if (e.target.name === "registerName") {
       setName(e.target.value);
     }
@@ -28,7 +32,7 @@ const Register = props => {
     }
   };
 
-  const registerUser = e => {
+  const registerUser = async e => {
     e.preventDefault();
 
     const clientErrors = {};
@@ -70,36 +74,32 @@ const Register = props => {
       confirmPassword: confirmPassword
     };
 
-    fetch("http://localhost:5001/users/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(newUserData)
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 201 || res.status === 422) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        if (!resData) {
-          return;
-        }
-        console.log(resData);
-        if (resData.errors) {
-          setErrors(resData.errors);
-          return;
-        } else {
-          props.loginModeOn();
-        }
-      })
-      .catch(err => console.log(err));
+    try {
+      const response = await fetch(`${window.domain}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newUserData)
+      });
+      console.log(response);
+      if (response.status !== 201 && response.status !== 422) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      if (resData.errors) {
+        setErrors(resData.errors);
+        return;
+      } else {
+        props.loginModeOn();
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const toggleShowPassword = () => {
@@ -108,6 +108,30 @@ const Register = props => {
 
   const toggleShowConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const focusName = () => {
+    const newErrors = { ...errors };
+    delete newErrors.name;
+    setErrors(newErrors);
+  };
+
+  const focusEmail = () => {
+    const newErrors = { ...errors };
+    delete newErrors.email;
+    setErrors(newErrors);
+  };
+
+  const focusPassword = () => {
+    const newErrors = { ...errors };
+    delete newErrors.password;
+    setErrors(newErrors);
+  };
+
+  const focusConfirmPassword = () => {
+    const newErrors = { ...errors };
+    delete newErrors.confirmPassword;
+    setErrors(newErrors);
   };
 
   return (
@@ -120,7 +144,8 @@ const Register = props => {
             placeholder="Имя"
             name="registerName"
             value={name}
-            onChange={onChange}
+            onChange={changeInputValue}
+            onFocus={focusName}
             autoComplete="off"
           />
           {errors.name ? <div className="input__invalid-feedback">{errors.name.msg}</div> : null}
@@ -132,7 +157,8 @@ const Register = props => {
             placeholder="Email"
             name="registerEmail"
             value={email}
-            onChange={onChange}
+            onChange={changeInputValue}
+            onFocus={focusEmail}
             autoComplete="off"
           />
           {errors.email ? <div className="input__invalid-feedback">{errors.email.msg}</div> : null}
@@ -145,7 +171,8 @@ const Register = props => {
               placeholder="Пароль"
               name="registerPassword"
               value={password}
-              onChange={onChange}
+              onChange={changeInputValue}
+              onFocus={focusPassword}
             />
             <div className="input-group__type-toggle">
               {!showPassword ? (
@@ -175,7 +202,8 @@ const Register = props => {
               placeholder="Повторите пароль"
               name="registerConfirmPassword"
               value={confirmPassword}
-              onChange={onChange}
+              onChange={changeInputValue}
+              onFocus={focusConfirmPassword}
             />
             <div className="input-group__type-toggle">
               {!showConfirmPassword ? (

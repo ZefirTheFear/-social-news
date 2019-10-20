@@ -8,33 +8,48 @@
 .my-comment__post-title {
   display: inline-block;
   margin-bottom: 1rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   color: map-get($colors, app-secondary);
 
   &:hover {
-    color: map-get($colors, app-secondary);
+    color: darken(map-get($colors, app-secondary), 10%);
   }
 }
 
 .my-comment__show-parent,
 .my-comment__hide-parent {
-  cursor: pointer;
   margin-bottom: 10px;
 }
 
 .my-comment__show-parent {
+  display: inline-block;
+
   &::before {
     font-family: "Font Awesome 5 Free";
     content: "\f0fe";
     font-weight: 900;
     font-size: 16px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: darken(map-get($colors, app-text), 10%);
   }
 }
+
 .my-comment__hide-parent {
+  display: inline-block;
+
   &::before {
     font-family: "Font Awesome 5 Free";
     content: "\f146";
     font-weight: 900;
     font-size: 16px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: darken(map-get($colors, app-text), 10%);
   }
 }

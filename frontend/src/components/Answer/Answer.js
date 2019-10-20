@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 import Comments from "../Comments/Comments";
@@ -6,11 +6,6 @@ import Comments from "../Comments/Comments";
 import "./Answer.scss";
 
 const Answer = props => {
-  useEffect(() => {
-    console.log("answer", props.answer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <div className="answer">
       <Link
@@ -22,11 +17,7 @@ const Answer = props => {
       >
         <h6 className="answer__post-title">{props.answer[0].postId.title}</h6>
       </Link>
-      {!props.answer ? (
-        <div>Loading...</div>
-      ) : (
-        <Comments comments={props.answer} isOpenThread={props.isOpenThread} />
-      )}
+      <Comments comments={props.answer} isOpenThread={props.isOpenThread} />
     </div>
   );
 };

@@ -24,9 +24,10 @@ exports.registerUser = async (req, res) => {
       password: hashedPassword
     });
     await newUser.save();
-    res.status(201).json(newUser);
+    return res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).json("We are sorry. Something went wrong :(");
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -58,7 +59,8 @@ exports.loginUser = async (req, res) => {
       return res.status(404).json({ errors: { password: { msg: "Неверный пароль" } } });
     }
   } catch (error) {
-    res.status(500).json("Something went wrong :(");
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -73,37 +75,47 @@ exports.getUser = async (req, res) => {
     }
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.toggleSubscribeToUser = async (req, res) => {
-  const subscribedUserId = req.params.subscribedUserId;
+  const subscribeToUserId = req.params.subscribeToUserId;
 
   try {
     let user = await User.findById(req.userId);
-    const subscribedUser = await User.findById(subscribedUserId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
+    const subscribeToUser = await User.findById(subscribeToUserId);
+    if (!subscribeToUser) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
 
-    if (user.ignoreList.find(item => item.toString() === subscribedUserId)) {
+    if (user.ignoreList.find(item => item.toString() === subscribeToUserId)) {
       return res.status(403).json("u cant do this");
     }
 
-    const subscribe = user.subscribeTo.find(subscribe => subscribe.toString() === subscribedUserId);
+    const subscribe = user.subscribeTo.find(
+      subscribe => subscribe.toString() === subscribeToUserId
+    );
     if (!subscribe) {
-      user.subscribeTo.push(subscribedUserId);
+      user.subscribeTo.push(subscribeToUserId);
       user = await user.save();
-      subscribedUser.subscribers.push(req.userId);
-      await subscribedUser.save();
+      subscribeToUser.subscribers.push(req.userId);
+      await subscribeToUser.save();
       return res.status(200).json(user);
     } else {
-      user.subscribeTo.pull(subscribedUserId);
+      user.subscribeTo.pull(subscribeToUserId);
       user = await user.save();
-      subscribedUser.subscribers.pull(req.userId);
-      await subscribedUser.save();
+      subscribeToUser.subscribers.pull(req.userId);
+      await subscribeToUser.save();
       return res.status(200).json(user);
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -112,7 +124,13 @@ exports.toggleIgnoreUser = async (req, res) => {
 
   try {
     let user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     const ignoredUser = await User.findById(ignoredUserId);
+    if (!ignoredUser) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
 
     if (user.subscribeTo.find(item => item.toString() === ignoredUserId)) {
       return res.status(403).json("u cant do this");
@@ -133,7 +151,8 @@ exports.toggleIgnoreUser = async (req, res) => {
       return res.status(200).json(user);
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -143,6 +162,9 @@ exports.setNoteAboutUser = async (req, res) => {
 
   try {
     let user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     const note = user.notesAboutUsers.find(note => note.userId === notedUserId);
     if (!note) {
       user.notesAboutUsers.push({ userId: notedUserId, body: noteBody });
@@ -159,7 +181,8 @@ exports.setNoteAboutUser = async (req, res) => {
       return res.status(200).json(user);
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -179,64 +202,69 @@ exports.removeNoteAboutUser = async (req, res) => {
 exports.getSubscribeTo = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     if (user.subscribeTo.length === 0) {
-      return res.status(404).json({ error: "there is no subscribeTo users" });
+      return res.status(200).json([]);
     }
     const users = await User.find({
       _id: { $in: [...user.subscribeTo] }
     }).select("name avatar");
-    if (!users) {
-      return res.status(404).json({ error: "there is no subscribeTo users" });
-    }
     return res.status(200).json(users);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getIgnoreList = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     if (user.ignoreList.length === 0) {
-      return res.status(404).json({ error: "there is no ignored users" });
+      return res.status(200).json([]);
     }
     const users = await User.find({
       _id: { $in: [...user.ignoreList] }
     }).select("name avatar");
-    if (!users) {
-      return res.status(404).json({ error: "there is no ignored users" });
-    }
     return res.status(200).json(users);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.getNotes = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-    const notes = [];
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     if (user.notesAboutUsers.length === 0) {
-      return res.status(404).json({ error: "there is no notes about users" });
+      return res.status(200).json([]);
     }
 
+    const notes = [];
     for (const note of user.notesAboutUsers) {
       const notedUser = await User.findById(note.userId).select("name avatar");
       notes.push({ user: notedUser, body: note.body });
     }
-    if (notes.length === 0) {
-      return res.status(404).json({ error: "there is no notes about users" });
-    }
     return res.status(200).json(notes);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.changeAvatar = async (req, res) => {
-  console.log(req.file);
   try {
     let user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     if (user.avatar !== "uploads/avatars/default_avatar.png") {
       clearImage(user.avatar);
     }
@@ -244,14 +272,17 @@ exports.changeAvatar = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.deleteAvatar = async (req, res) => {
-  console.log(req.file);
   try {
     let user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     if (user.avatar !== "uploads/avatars/default_avatar.png") {
       clearImage(user.avatar);
     }
@@ -259,50 +290,67 @@ exports.deleteAvatar = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.changeSex = async (req, res) => {
   try {
     let user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     user.sex = req.body;
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.setAboutMeNote = async (req, res) => {
   try {
     let user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     user.aboutMe = req.body;
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.deleteNewAnswersForPost = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     user.newAnswers = user.newAnswers.filter(answer => answer.type !== "answerForPost");
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser._doc);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
 exports.deleteNewAnswersForComment = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "there is no such user" });
+    }
     user.newAnswers = user.newAnswers.filter(answer => answer.type !== "answerForComment");
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser._doc);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };

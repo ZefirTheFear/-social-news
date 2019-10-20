@@ -7,5 +7,6 @@ export default React.createContext({
   setIsAuth: () => {},
   setUser: () => {},
   setToken: () => {},
-  logoutHandler: () => {}
+  logoutHandler: () => {},
+  setIsError: () => {}
 });
