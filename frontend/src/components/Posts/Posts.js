@@ -58,6 +58,10 @@ const Posts = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLogoClicked, props.requestUrl]);
 
+  const deletePost = postId => {
+    setPosts(posts.filter(post => post._id !== postId));
+  };
+
   return (
     <div className="posts">
       {isLoading ? (
@@ -67,7 +71,7 @@ const Posts = props => {
       ) : posts.length > 0 ? (
         posts.map(post => (
           <div key={post._id} className="posts__post">
-            <Post post={post} />
+            <Post post={post} deletePost={deletePost} />
           </div>
         ))
       ) : (

@@ -8,5 +8,6 @@ export default React.createContext({
   setUser: () => {},
   setToken: () => {},
   logoutHandler: () => {},
-  setIsError: () => {}
+  setIsError: () => {},
+  setIsPageNotFound: () => {}
 });

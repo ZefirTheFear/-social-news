@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar/Navbar";
 import AppInner from "./components/AppInner/AppInner";
 import NewPost from "./components/NewPost/NewPost";
 import SomethingWentWrong from "./components/SomethingWentWrong/SomethingWentWrong";
+import NotFound from "./components/NotFound/NotFound";
 
 // import TestComponent from "./components/TestComponent/TestComponent";
 // import DnDMouseNTouch from "./components/DnDMouseNTouch/DnDMouseNTouch";
@@ -26,6 +27,7 @@ const App = () => {
 
   const [isLogoClicked, setIsLogoClicked] = useState(null);
   const [isError, setIsError] = useState(false);
+  const [isPageNotFound, setIsPageNotFound] = useState(false);
 
   window.domain = "http://localhost:5001";
 
@@ -109,13 +111,16 @@ const App = () => {
         setUser: setUser,
         setToken: setToken,
         logoutHandler: logoutHandler,
-        setIsError: setIsError
+        setIsError: setIsError,
+        setIsPageNotFound: setIsPageNotFound
       }}
     >
       <BrowserRouter>
         <div className="app">
           {isError ? (
             <SomethingWentWrong />
+          ) : isPageNotFound ? (
+            <NotFound />
           ) : (
             <>
               <Navbar

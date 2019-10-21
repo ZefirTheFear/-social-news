@@ -17,12 +17,17 @@ const Post = props => {
   const [post, setPost] = useState(props.post);
   const [postBody, setPostBody] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDeleted, setIsDeleted] = useState(false);
   const [isImgFullScreen, setIsImgFullScreen] = useState(false);
   const [src, setSrc] = useState(null);
 
   useEffect(() => {
-    const body = props.post.body.map(item => {
+    console.log("props", props);
+    setPostBody(createPostBody());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const createPostBody = () => {
+    return props.post.body.map(item => {
       if (item.type === "text") {
         return (
           <div className="post-inner__content-text" key={item.key}>
@@ -43,20 +48,26 @@ const Post = props => {
         );
       }
     });
-    setPostBody(body);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   const fetchPost = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/${post._id}`);
-      if (request.status !== 200) {
+      document.body.style.cursor = "wait";
+      const response = await fetch(`${window.domain}/posts/${post._id}`);
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        document.body.style.cursor = "";
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
+      console.log(resData);
       setPost(resData);
+      document.body.style.cursor = "";
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
+      document.body.style.cursor = "";
     }
   };
 
@@ -67,58 +78,67 @@ const Post = props => {
 
   const likePostToggle = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/${post._id}/like`, {
+      const response = await fetch(`${window.domain}/posts/${post._id}/like`, {
         headers: {
           Authorization: userContext.token
         },
         method: "PATCH"
       });
-      if (request.status !== 200) {
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
       fetchPost();
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
     }
   };
 
   const dislikePostToggle = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/${post._id}/dislike`, {
+      const response = await fetch(`${window.domain}/posts/${post._id}/dislike`, {
         headers: {
           Authorization: userContext.token
         },
         method: "PATCH"
       });
-      if (request.status !== 200) {
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
       fetchPost();
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
     }
   };
 
   const savePostToggle = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/${post._id}/save`, {
+      const response = await fetch(`${window.domain}/posts/${post._id}/save`, {
         headers: {
           Authorization: userContext.token
         },
         method: "PATCH"
       });
-      if (request.status !== 200) {
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
       fetchPost();
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
     }
   };
 
@@ -128,26 +148,34 @@ const Post = props => {
 
   const deletePostHandler = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/${post._id}/delete`, {
+      document.body.style.cursor = "wait";
+      const response = await fetch(`${window.domain}/posts/${post._id}/delete`, {
         headers: {
           Authorization: userContext.token
         },
         method: "DELETE"
       });
-      if (request.status !== 200) {
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        document.body.style.cursor = "";
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
-      return setIsDeleted(true);
+      document.body.style.cursor = "";
+      if (props.match.params.postTitle) {
+        return props.history.push("/");
+      }
+      return props.deletePost(post._id);
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
+      document.body.style.cursor = "";
     }
   };
 
-  return isDeleted ? (
-    <div style={{ marginBottom: "-15px" }}></div>
-  ) : (
+  return (
     <article className="post">
       {isDeleting ? (
         <Confirm

@@ -219,7 +219,7 @@ exports.getSubsPosts = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "There is no such user" });
     }
-    const posts = await Post.find({ creator: { $in: [user.subscribeTo] } }).populate(
+    const posts = await Post.find({ creator: { $in: user.subscribeTo } }).populate(
       "creator",
       "name avatar"
     );
@@ -297,7 +297,7 @@ exports.getLikedPosts = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "There is no such user" });
     }
-    const likedPosts = await Post.find({ _id: { $in: [...user.likedPosts] } })
+    const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
     if (!likedPosts) {
@@ -316,7 +316,7 @@ exports.getDislikedPosts = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "There is no such user" });
     }
-    const dislikedPosts = await Post.find({ _id: { $in: [...user.dislikedPosts] } })
+    const dislikedPosts = await Post.find({ _id: { $in: user.dislikedPosts } })
       .sort({ createdAt: -1 })
       .populate("creator", "name avatar");
     if (!dislikedPosts) {
@@ -360,6 +360,9 @@ exports.getPost = async (req, res) => {
     return res.status(200).json(post);
   } catch (error) {
     // console.log(error);
+    if (error.name === "CastError") {
+      return res.status(404).json({ error: "There is no such post" });
+    }
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -402,6 +405,7 @@ exports.likePost = async (req, res) => {
       return res.status(200).json("unliked");
     }
   } catch (error) {
+    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -444,6 +448,7 @@ exports.dislikePost = async (req, res) => {
       return res.status(200).json("undisliked");
     }
   } catch (error) {
+    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -470,6 +475,7 @@ exports.savePost = async (req, res) => {
       return res.status(200).json("unsaved");
     }
   } catch (error) {
+    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -566,7 +572,8 @@ exports.deletePost = async (req, res) => {
     console.log(post._id, "post deleted");
     return res.status(200).json("post deleted");
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 
@@ -804,13 +811,13 @@ exports.getComments = async (req, res) => {
 
   try {
     const comments = await Comment.find({ postId: postId }).populate("creator", "name avatar");
-    // .sort({ createdAt: -1 });
     if (!comments) {
-      return res.json("There is no comments");
+      return res.status(200).json([]);
     }
     return res.status(200).json(comments);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
