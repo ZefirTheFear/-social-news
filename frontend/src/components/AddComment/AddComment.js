@@ -13,12 +13,15 @@ const AddComment = props => {
   const [errors, setErrors] = useState({});
   const [isContentMakerReseted, setIsContentMakerReseted] = useState(null);
 
-  const createCommentHandler = e => {
+  const createCommentHandler = async e => {
     e.preventDefault();
     console.log("content", newCommentData);
 
     if (newCommentData.length === 0) {
       return setErrors({ content: { msg: "Нужен контент" } });
+    }
+    if (newCommentData.length > 5) {
+      return setErrors({ content: { msg: "Максимум 5 блоков" } });
     }
 
     const textBlocksArray = [];
@@ -53,38 +56,33 @@ const AddComment = props => {
       formData.append("parentCommentId", props.parentCommentId);
     }
 
-    fetch(`${window.domain}/posts/${props.postId}/add-comment`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "POST",
-      body: formData
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 201 || res.status === 422) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        if (resData.errors) {
-          setErrors(resData.errors);
-        } else if (props.mode === "answerForPost") {
-          props.addComment(resData);
-          // setNewCommentData([]);
-          setIsContentMakerReseted(Date.now());
-        } else {
-          props.addComment(resData);
-        }
-      })
-      .catch(err => {
-        console.log(err);
+    try {
+      const response = await fetch(`${window.domain}/posts/${props.postId}/add-comment`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "POST",
+        body: formData
       });
+      console.log(response);
+      if (response.status !== 201 && response.status !== 422) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      if (resData.errors) {
+        setErrors(resData.errors);
+      } else if (props.mode === "answerForPost") {
+        props.addComment(resData);
+        setIsContentMakerReseted(Date.now());
+      } else {
+        props.addComment(resData);
+      }
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const sendContentMakerStateHandler = content => {

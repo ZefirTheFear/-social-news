@@ -21,7 +21,6 @@ const Post = props => {
   const [src, setSrc] = useState(null);
 
   useEffect(() => {
-    console.log("props", props);
     setPostBody(createPostBody());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

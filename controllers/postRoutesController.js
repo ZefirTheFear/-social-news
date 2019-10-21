@@ -707,7 +707,8 @@ exports.editComment = async (req, res) => {
     await comment.save();
     return res.status(200).json(comment);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -802,7 +803,8 @@ exports.deleteComment = async (req, res) => {
     };
     delCom(commentId, commentId);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -829,11 +831,12 @@ exports.getComment = async (req, res) => {
       .populate("creator", "name avatar")
       .populate("postId", "title");
     if (!comment) {
-      return res.json("There is no comments");
+      return res.status(404).json("There is no such comment");
     }
     return res.status(200).json(comment);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -875,7 +878,8 @@ exports.likeComment = async (req, res) => {
       return res.status(200).json("unliked comment");
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -917,7 +921,8 @@ exports.dislikeComment = async (req, res) => {
       return res.status(200).json("undisliked comment");
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 

@@ -30,31 +30,34 @@ const Comment = props => {
 
   useEffect(() => {
     if (comment) {
-      const body = comment.body.map(item => {
-        if (item.type === "text") {
-          return (
-            <div className="comment__text-block" key={uniqid()}>
-              {parse(item.content)}
-            </div>
-          );
-        } else {
-          return (
-            <div className="comment__img-block" key={uniqid()}>
-              <img
-                className="comment__img-block-img"
-                src={`${window.domain}/` + item.url}
-                alt="img"
-                draggable="false"
-                onClick={() => imgFullScreen(`${window.domain}/${item.url}`)}
-              />
-            </div>
-          );
-        }
-      });
-      setCommentBody(body);
+      setCommentBody(createCommentBody());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comment]);
+
+  const createCommentBody = () => {
+    return comment.body.map(item => {
+      if (item.type === "text") {
+        return (
+          <div className="comment__text-block" key={uniqid()}>
+            {parse(item.content)}
+          </div>
+        );
+      } else {
+        return (
+          <div className="comment__img-block" key={uniqid()}>
+            <img
+              className="comment__img-block-img"
+              src={`${window.domain}/` + item.url}
+              alt="img"
+              draggable="false"
+              onClick={() => imgFullScreen(`${window.domain}/${item.url}`)}
+            />
+          </div>
+        );
+      }
+    });
+  };
 
   const imgFullScreen = src => {
     setIsImgFullScreen(true);
@@ -71,53 +74,66 @@ const Comment = props => {
 
   const fetchComment = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/comments/${comment._id}`);
-      if (request.status !== 200) {
+      document.body.style.cursor = "wait";
+      const response = await fetch(`${window.domain}/posts/comments/${comment._id}`);
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        document.body.style.cursor = "";
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
       setComment(resData);
+      document.body.style.cursor = "";
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
+      document.body.style.cursor = "";
     }
   };
 
   const likeComment = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/comments/${comment._id}/like`, {
+      const response = await fetch(`${window.domain}/posts/comments/${comment._id}/like`, {
         headers: {
           Authorization: userContext.token
         },
         method: "PATCH"
       });
-      if (request.status !== 200) {
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
       fetchComment();
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
     }
   };
 
   const dislikeComment = async () => {
     try {
-      const request = await fetch(`${window.domain}/posts/comments/${comment._id}/dislike`, {
+      const response = await fetch(`${window.domain}/posts/comments/${comment._id}/dislike`, {
         headers: {
           Authorization: userContext.token
         },
         method: "PATCH"
       });
-      if (request.status !== 200) {
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
         return;
       }
-      const resData = await request.json();
+      const resData = await response.json();
       console.log(resData);
       fetchComment();
     } catch (error) {
-      return;
+      console.log(error);
+      userContext.setIsError(true);
     }
   };
 
@@ -143,12 +159,15 @@ const Comment = props => {
     setEditMode(false);
   };
 
-  const sendEditedCommentHandler = e => {
+  const sendEditedCommentHandler = async e => {
     e.preventDefault();
     console.log("content", editCommentData);
 
     if (editCommentData.length === 0) {
       return setErrors({ content: { msg: "Нужен контент" } });
+    }
+    if (editCommentData.length > 5) {
+      return setErrors({ content: { msg: "Максимум 5 блоков" } });
     }
 
     const textBlocksArray = [];
@@ -185,60 +204,60 @@ const Comment = props => {
     }
     formData.append("content", JSON.stringify(dataOrder));
 
-    fetch(`${window.domain}/posts/comments/${comment._id}/edit`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "PATCH",
-      body: formData
-    })
-      .then(res => {
-        console.log(res);
-        if (res.status === 200 || res.status === 422) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        if (resData.errors) {
-          setErrors(resData.errors);
-        } else {
-          cancelEditModeHandler();
-          setComment(resData);
-        }
-      })
-      .catch(err => console.log(err));
+    try {
+      const response = await fetch(`${window.domain}/posts/comments/${comment._id}/edit`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "PATCH",
+        body: formData
+      });
+      console.log(response);
+      if (response.status !== 200 && response.status !== 422) {
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      if (resData.errors) {
+        setErrors(resData.errors);
+      } else {
+        cancelEditModeHandler();
+        setComment(resData);
+      }
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const openConfirmation = () => {
     setIsDeleting(true);
   };
 
-  const deleteCommentHandler = () => {
-    fetch(`${window.domain}/posts/comments/${comment._id}/delete`, {
-      headers: {
-        Authorization: userContext.token
-      },
-      method: "DELETE"
-    })
-      .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          // TODO вывести UI , что что-то пошло не так
-          console.log("что что-то пошло не так");
-          return;
-        }
-      })
-      .then(resData => {
-        console.log(resData);
-        props.deleteComment(comment._id, comment._id);
-      })
-      .catch(error => console.log(error));
+  const deleteCommentHandler = async () => {
+    try {
+      document.body.style.cursor = "wait";
+      const response = await fetch(`${window.domain}/posts/comments/${comment._id}/delete`, {
+        headers: {
+          Authorization: userContext.token
+        },
+        method: "DELETE"
+      });
+      console.log(response);
+      if (response.status !== 200) {
+        userContext.setIsError(true);
+        document.body.style.cursor = "";
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      document.body.style.cursor = "";
+      props.deleteComment(comment._id, comment._id);
+    } catch (error) {
+      console.log(error);
+      userContext.setIsError(true);
+    }
   };
 
   const sendContentMakerStateHandler = content => {
