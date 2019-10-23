@@ -13,8 +13,19 @@ const MyComments = () => {
   const [myComment, setMyComment] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+
   useEffect(() => {
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      controller.abort();
+      console.log("fetchComments прерван");
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -23,7 +34,8 @@ const MyComments = () => {
       const response = await fetch(`${window.domain}/comments/my-comments`, {
         headers: {
           Authorization: userContext.token
-        }
+        },
+        signal: signal
       });
       console.log(response);
       if (response.status !== 200) {
@@ -36,6 +48,9 @@ const MyComments = () => {
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      if (error.name === "AbortError") {
+        return;
+      }
       userContext.setIsError(true);
     }
   };

@@ -13,6 +13,9 @@ const AnswersComments = () => {
   const [answers, setAnswers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+
   useEffect(() => {
     fetchAnswers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -20,7 +23,9 @@ const AnswersComments = () => {
 
   useEffect(() => {
     return () => {
-      deleteNewAnswersForPosts();
+      deleteNewAnswersForComments();
+      controller.abort();
+      console.log("fetch AnswersForComments прерван");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -30,7 +35,8 @@ const AnswersComments = () => {
       const response = await fetch(`${window.domain}/comments/answers-comments`, {
         headers: {
           Authorization: userContext.token
-        }
+        },
+        signal: signal
       });
       console.log(response);
       if (response.status !== 200) {
@@ -43,11 +49,14 @@ const AnswersComments = () => {
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      if (error.name === "AbortError") {
+        return;
+      }
       userContext.setIsError(true);
     }
   };
 
-  const deleteNewAnswersForPosts = async () => {
+  const deleteNewAnswersForComments = async () => {
     try {
       const response = await fetch(`${window.domain}/users/delete-new-answers-for-comments`, {
         headers: {

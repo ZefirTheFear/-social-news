@@ -20,8 +20,19 @@ const Post = props => {
   const [isImgFullScreen, setIsImgFullScreen] = useState(false);
   const [src, setSrc] = useState(null);
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+
   useEffect(() => {
     setPostBody(createPostBody());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      controller.abort();
+      console.log("fetchPost прерван");
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -52,7 +63,7 @@ const Post = props => {
   const fetchPost = async () => {
     try {
       document.body.style.cursor = "wait";
-      const response = await fetch(`${window.domain}/posts/${post._id}`);
+      const response = await fetch(`${window.domain}/posts/${post._id}`, { signal: signal });
       console.log(response);
       if (response.status !== 200) {
         userContext.setIsError(true);
@@ -65,8 +76,11 @@ const Post = props => {
       document.body.style.cursor = "";
     } catch (error) {
       console.log(error);
-      userContext.setIsError(true);
       document.body.style.cursor = "";
+      if (error.name === "AbortError") {
+        return;
+      }
+      userContext.setIsError(true);
     }
   };
 

@@ -14,7 +14,7 @@ const Sidebar = props => {
     <div className="sidebar">
       {userContext.isAuth ? (
         <div className="sidebar__block">
-          <Dashboard logoutHandler={props.logoutHandler} />
+          <Dashboard logoutHandler={props.logoutHandler} isLogoClicked={props.isLogoClicked} />
         </div>
       ) : (
         <div className="sidebar__block">

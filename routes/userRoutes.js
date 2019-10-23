@@ -31,9 +31,6 @@ const fileFilter = (req, file, cb) => {
 };
 const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 
-// @route     POST /users/register
-// @ desc     Register user
-// @ access   Public
 router.post(
   "/register",
   [

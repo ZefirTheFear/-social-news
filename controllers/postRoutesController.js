@@ -641,7 +641,8 @@ exports.createComment = async (req, res) => {
     // res.status(201).json(newComment);
     return res.status(201).json(comment);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(503).json("oops. some problems");
   }
 };
 

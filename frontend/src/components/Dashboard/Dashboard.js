@@ -15,9 +15,27 @@ const Dashboard = props => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  useEffect(() => {
+    fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isLogoClicked]);
+
+  useEffect(() => {
+    return () => {
+      controller.abort();
+      // console.log("fetch прерван");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const fetchUser = async () => {
     try {
-      const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`);
+      const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`, {
+        signal: signal
+      });
       console.log(response);
       if (response.status === 404) {
         return props.logoutHandler();
@@ -35,15 +53,12 @@ const Dashboard = props => {
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      if (error.name === "AbortError") {
+        return;
+      }
       userContext.setIsError(true);
-      // setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const logout = () => {
     if (props.hideDashboard) {

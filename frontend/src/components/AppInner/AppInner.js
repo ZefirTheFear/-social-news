@@ -78,7 +78,7 @@ const AppInner = props => {
         </Switch>
       </div>
       <aside className="app-inner__sidebar">
-        <Sidebar logoutHandler={props.logoutHandler} />
+        <Sidebar logoutHandler={props.logoutHandler} isLogoClicked={props.isLogoClicked} />
       </aside>
     </div>
   );

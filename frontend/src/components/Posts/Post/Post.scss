@@ -257,7 +257,8 @@
 .post-inner__footer-right-side {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
 
   @media (max-width: 767px) {
     width: 100%;
@@ -265,9 +266,16 @@
 }
 
 .post-inner__user-info {
+  display: flex;
+  flex-direction: column;
   max-width: 150px;
   margin-right: 10px;
   text-align: right;
+
+  @media (max-width: 767px) {
+    max-width: 40%;
+    text-align: left;
+  }
 }
 
 .post-inner__user-info-item {
@@ -304,6 +312,10 @@
   display: flex;
   align-items: center;
   margin-left: 15px;
+
+  @media (max-width: 767px) {
+    margin-left: auto;
+  }
 }
 
 .post-inner__edit-link {

@@ -22,6 +22,11 @@ const SinglePost = props => {
 
   const postId = props.match.params.postTitle.split("--")[0];
 
+  const controllerForPost = new AbortController();
+  const signalForPost = controllerForPost.signal;
+  const controllerForComments = new AbortController();
+  const signalForComments = controllerForComments.signal;
+
   useEffect(() => {
     fetchPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,9 +44,18 @@ const SinglePost = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
+  useEffect(() => {
+    return () => {
+      controllerForPost.abort();
+      controllerForComments.abort();
+      // console.log("fetchSinglePost прерван");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const fetchPost = async () => {
     try {
-      const response = await fetch(`${window.domain}/posts/${postId}`);
+      const response = await fetch(`${window.domain}/posts/${postId}`, { signal: signalForPost });
       console.log(response);
       if (response.status === 404) {
         userContext.setIsPageNotFound(true);
@@ -57,13 +71,18 @@ const SinglePost = props => {
       setIsLoadingPost(false);
     } catch (error) {
       console.log(error);
+      if (error.name === "AbortError") {
+        return;
+      }
       userContext.setIsError(true);
     }
   };
 
   const fetchComments = async () => {
     try {
-      const response = await fetch(`${window.domain}/posts/${postId}/comments`);
+      const response = await fetch(`${window.domain}/posts/${postId}/comments`, {
+        signal: signalForComments
+      });
       console.log(response);
       if (response.status !== 200) {
         userContext.setIsError(true);
@@ -75,6 +94,9 @@ const SinglePost = props => {
       setIsLoadingComments(false);
     } catch (error) {
       console.log(error);
+      if (error.name === "AbortError") {
+        return;
+      }
       userContext.setIsError(true);
     }
   };
