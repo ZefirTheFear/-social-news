@@ -12,7 +12,6 @@
   display: flex;
 }
 .comments__closed-internal-comments {
-  // display: none;
   display: flex;
   cursor: default;
 }
@@ -65,5 +64,5 @@
 
 .comments__reply-comment-body {
   margin-left: 5px;
-  width: 100%;
+  width: calc(100% - 17.25px);
 }

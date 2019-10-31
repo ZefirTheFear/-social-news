@@ -8,7 +8,7 @@
   width: 100%;
   border: 2px solid transparent;
   transition: all 0.3s ease-out;
-  padding-top: 15px;
+  // padding-top: 15px;
 }
 
 .content-maker__inner_is-dragging-over {
@@ -44,6 +44,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.content-maker__add-txt {
   margin-right: 15px;
 }
 

@@ -287,7 +287,7 @@ const Comment = props => {
         <FullScreenImage src={src} clicked={() => setIsImgFullScreen(false)} />
       ) : null}
       <div className="comment__header">
-        <div className="comment__rating">
+        {/* <div className="comment__rating">
           <div className="comment__rating-value">{comment.rating}</div>
           {userContext.user && comment.creator._id !== userContext.user._id ? (
             <div className="comment__rating-up">
@@ -315,7 +315,7 @@ const Comment = props => {
               />
             </div>
           ) : null}
-        </div>
+        </div> */}
 
         <div className="comment__user-info">
           <div className="comment__user-avatar">
@@ -365,27 +365,58 @@ const Comment = props => {
       ) : (
         <>
           <div className="comment__content">{commentBody}</div>
-          <div className="comment__reply">
+          <div className="comment__footer">
             <button className="comment__reply-btn" type="button" onClick={relpyFormToggle}>
               {props.commentIdForReply === comment._id ? "отмена" : "ответить"}
             </button>
-            {userContext.user &&
-            (userContext.user.status === "admin" || userContext.user.status === "moderator") ? (
-              <div className="comment__admin-btns">
-                <button
-                  type="button"
-                  className="comment__edit-btn"
-                  onClick={editCommentHandler}
-                  title="Редактировать"
-                />
-                <button
-                  type="button"
-                  className="comment__delete-btn"
-                  onClick={openConfirmation}
-                  title="Удалить"
-                />
+            <div className="comment__footer-right-side">
+              <div className="comment__rating">
+                {userContext.user && comment.creator._id !== userContext.user._id ? (
+                  <div className="comment__rating-up">
+                    <div
+                      className={
+                        "comment__rating-up-symbol" +
+                        (userContext.user && comment.likes.indexOf(userContext.user._id) > -1
+                          ? " comment__rating-up-symbol_liked"
+                          : "")
+                      }
+                      onClick={likeComment}
+                    />
+                  </div>
+                ) : null}
+                <div className="comment__rating-value">{comment.rating}</div>
+                {userContext.user && comment.creator._id !== userContext.user._id ? (
+                  <div className="comment-rating-down">
+                    <div
+                      className={
+                        "comment__rating-down-symbol" +
+                        (userContext.user && comment.dislikes.indexOf(userContext.user._id) > -1
+                          ? " comment__rating-up-symbol_disliked"
+                          : "")
+                      }
+                      onClick={dislikeComment}
+                    />
+                  </div>
+                ) : null}
               </div>
-            ) : null}
+              {userContext.user &&
+              (userContext.user.status === "admin" || userContext.user.status === "moderator") ? (
+                <div className="comment__admin-btns">
+                  <button
+                    type="button"
+                    className="comment__edit-btn"
+                    onClick={editCommentHandler}
+                    title="Редактировать"
+                  />
+                  <button
+                    type="button"
+                    className="comment__delete-btn"
+                    onClick={openConfirmation}
+                    title="Удалить"
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
         </>
       )}

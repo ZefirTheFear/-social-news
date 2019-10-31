@@ -8,6 +8,12 @@ const Modal = props => {
     document.documentElement.style.overflow = "hidden";
   }, []);
 
+  useEffect(() => {
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
+  }, []);
+
   return (
     <div className="modal">
       <Backdrop

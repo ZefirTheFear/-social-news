@@ -70,6 +70,10 @@
 .post-inner__main {
   padding: 15px 25px;
   background: map-get($colors, app-secondary-bg);
+
+  @media (max-width: 767px) {
+    padding: 10px 10px;
+  }
 }
 
 .post-inner__title {
@@ -95,6 +99,9 @@
   color: darken(map-get($colors, app-text), 20%);
   font-size: 0.85rem;
   margin-right: 15px;
+  background: map-get($colors, app-main);
+  padding: 2px 5px;
+  border-radius: map-get($border-radii, tag);
 
   &:hover {
     color: map-get($colors, app-secondary);
@@ -107,6 +114,7 @@
 
 .post-inner__content-text {
   margin-top: 1rem;
+  word-wrap: break-word;
 
   b {
     font-weight: bold;
@@ -143,6 +151,7 @@
 
   @media (max-width: 767px) {
     flex-direction: column;
+    padding: 10px 10px;
   }
 }
 
