@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const port = process.env.port || 5001;
+const port = process.env.PORT || 5001;
 
 // connect to MongoDB
 const db = require("./config/keys").mongoURI;
