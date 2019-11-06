@@ -29,7 +29,8 @@ const App = () => {
   const [isError, setIsError] = useState(false);
   const [isPageNotFound, setIsPageNotFound] = useState(false);
 
-  window.domain = "http://localhost:5001";
+  // window.domain = "http://localhost:5001";
+  window.domain = "";
 
   // componentDidMount
   // useEffect(() => {

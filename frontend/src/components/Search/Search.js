@@ -1,50 +1,66 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import Post from "../Posts/Post/Post";
 import Spinner from "../Spinner/Spinner";
-import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
+
+import UserContext from "../../context/userContext";
 
 import "./Search.scss";
 
 const Search = props => {
+  const userContext = useContext(UserContext);
+
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  let loading = true;
 
   const desired = props.match.params.desired.trim();
 
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true);
-      const request = await fetch(`${window.domain}/posts/desired/${desired}`);
-      console.log(request);
-      if (request.status !== 200) {
-        setIsError(true);
-        setIsLoading(false);
-        return;
-      }
-      const resData = await request.json();
-      console.log(resData);
-      setPosts(resData);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsError(true);
-      setIsLoading(false);
-    }
-  };
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   useEffect(() => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.match.params.desired.trim()]);
 
+  useEffect(() => {
+    return () => {
+      if (loading) {
+        controller.abort();
+        console.log("searching прерван");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch(`${window.domain}/posts/desired/${desired}`, { signal: signal });
+      console.log(response);
+      if (response.status !== 200) {
+        loading = false;
+        setIsLoading(false);
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setPosts(resData);
+      loading = false;
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      loading = false;
+      setIsLoading(false);
+      userContext.setIsError(true);
+    }
+  };
+
   return (
     <div className="posts">
       {isLoading ? (
         <Spinner />
-      ) : isError ? (
-        <SomethingWentWrong />
       ) : posts.length > 0 ? (
         posts.map(post => (
           <div key={post._id} className="posts__post">

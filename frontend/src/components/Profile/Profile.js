@@ -2,10 +2,8 @@ import React, { useEffect, useState, useContext, useRef } from "react";
 
 import { Link } from "react-router-dom";
 
-import Post from "../Posts/Post/Post";
-import NotFound from "../NotFound/NotFound";
+import Posts from "../Posts/Posts";
 import Spinner from "../Spinner/Spinner";
-import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
 
 import numberFormatter from "../../utils/NumberFormatter";
 import timeFormatterFull from "../../utils/TimeFormatterFull";
@@ -22,61 +20,17 @@ const Profile = props => {
 
   const [user, setUser] = useState(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
-  const [posts, setPosts] = useState([]);
-  const [isPostsLoading, setIsPostsLoading] = useState(true);
-  const [notFoundError, setNotFoundError] = useState(false);
+  const [isShownPosts, setIsShownPosts] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(null);
   const [isBlocked, setIsBlocked] = useState(null);
   const [isSubscribeBtnDisabled, setIsSubscribeBtnDisabled] = useState(false);
   const [isBlockBtnDisabled, setIsBlockBtnDisabled] = useState(false);
   const [initialUserNote, setInitialUserNote] = useState("");
   const [note, setNote] = useState("");
-  const [isError, setIsError] = useState(false);
+  let loading = true;
 
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(`${window.domain}/users/user/${props.match.params.username}`);
-      console.log(response);
-      if (response.status === 404) {
-        setNotFoundError(true);
-        setIsUserLoading(false);
-        return;
-      }
-      if (response.status !== 200) {
-        setIsError(true);
-        setIsUserLoading(false);
-        return;
-      }
-      const resData = await response.json();
-      console.log(resData);
-      setUser(resData);
-      setIsUserLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsError(true);
-      setIsUserLoading(false);
-    }
-  };
-
-  const fetchUserPosts = async () => {
-    try {
-      const response = await fetch(`${window.domain}/posts/userposts/${user._id}`);
-      console.log(response);
-      if (response.status !== 200) {
-        setIsError(true);
-        setIsPostsLoading(false);
-        return;
-      }
-      const resData = await response.json();
-      console.log(resData);
-      setPosts(resData);
-      setIsPostsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsError(true);
-      setIsPostsLoading(false);
-    }
-  };
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   useEffect(() => {
     fetchUserData();
@@ -84,6 +38,14 @@ const Profile = props => {
   }, [props.match.url]);
 
   useEffect(() => {
+    if (userNote.current) {
+      userNote.current.style.height = "auto";
+      userNote.current.style.height = userNote.current.scrollHeight + "px";
+    }
+    if (aboutMe.current) {
+      aboutMe.current.style.height = "auto";
+      aboutMe.current.style.height = aboutMe.current.scrollHeight + "px";
+    }
     window.onresize = () => {
       if (userNote.current) {
         userNote.current.style.height = "auto";
@@ -95,7 +57,7 @@ const Profile = props => {
       }
     };
     if (user) {
-      fetchUserPosts();
+      setIsShownPosts(true);
       if (userContext.isAuth) {
         setIsBlocked(user.ignoredBy.indexOf(userContext.user._id) > -1);
         setIsSubscribed(user.subscribers.indexOf(userContext.user._id) > -1);
@@ -132,6 +94,47 @@ const Profile = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note]);
 
+  useEffect(() => {
+    return () => {
+      if (loading) {
+        controller.abort();
+        console.log("fetchUserDara прерван");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${window.domain}/users/user/${props.match.params.username}`, {
+        signal: signal
+      });
+      console.log(response);
+      if (response.status === 404) {
+        // loading = false;
+        // setIsUserLoading(false);
+        userContext.setIsPageNotFound(true);
+        return;
+      }
+      if (response.status !== 200) {
+        loading = false;
+        setIsUserLoading(false);
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
+      setUser(resData);
+      loading = false;
+      setIsUserLoading(false);
+    } catch (error) {
+      console.log(error);
+      loading = false;
+      setIsUserLoading(false);
+      userContext.setIsError(true);
+    }
+  };
+
   const subscribeToUserToggle = async () => {
     try {
       setIsSubscribeBtnDisabled(true);
@@ -144,9 +147,9 @@ const Profile = props => {
       });
       console.log(response);
       if (response.status !== 200) {
-        setIsError(true);
         setIsSubscribeBtnDisabled(false);
         setIsBlockBtnDisabled(false);
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
@@ -157,9 +160,9 @@ const Profile = props => {
       setIsBlockBtnDisabled(false);
     } catch (error) {
       console.log(error);
-      setIsError(true);
       setIsSubscribeBtnDisabled(false);
       setIsBlockBtnDisabled(false);
+      userContext.setIsError(true);
     }
   };
 
@@ -175,9 +178,9 @@ const Profile = props => {
       });
       console.log(response);
       if (response.status !== 200) {
-        setIsError(true);
         setIsBlockBtnDisabled(false);
         setIsSubscribeBtnDisabled(false);
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
@@ -188,9 +191,9 @@ const Profile = props => {
       setIsSubscribeBtnDisabled(false);
     } catch (error) {
       console.log(error);
-      setIsError(true);
       setIsBlockBtnDisabled(false);
       setIsSubscribeBtnDisabled(false);
+      userContext.setIsError(true);
     }
   };
 
@@ -219,7 +222,7 @@ const Profile = props => {
       });
       console.log(response);
       if (response.status !== 200) {
-        setIsError(true);
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
@@ -228,16 +231,12 @@ const Profile = props => {
       setInitialUserNote(note);
     } catch (error) {
       console.log(error);
-      setIsError(true);
+      userContext.setIsError(true);
     }
   };
 
   return isUserLoading ? (
     <Spinner />
-  ) : isError ? (
-    <SomethingWentWrong />
-  ) : notFoundError ? (
-    <NotFound />
   ) : (
     <div className="profile">
       <div className="porfile__info">
@@ -356,19 +355,9 @@ const Profile = props => {
         <div className="profile__bottom-border" />
       )}
       <div className="profile__posts">
-        <div className="posts">
-          {isPostsLoading ? (
-            <Spinner />
-          ) : posts.length > 0 ? (
-            posts.map(post => (
-              <div key={post._id} className="posts__post">
-                <Post post={post} />
-              </div>
-            ))
-          ) : (
-            <div className="profile__no-posts">Здесь пока что нет ни одного поста</div>
-          )}
-        </div>
+        {isShownPosts ? (
+          <Posts requestUrl={`${window.domain}/posts/userposts/${user._id}`} />
+        ) : null}
       </div>
     </div>
   );

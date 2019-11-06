@@ -5,8 +5,8 @@ import uniqid from "uniqid";
 import ContentMaker from "../ContentMaker/ContentMaker";
 import NewPostTagContainer from "../NewPostTagContainer/NewPostTagContainer";
 import Spinner from "../Spinner/Spinner";
-import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
-import NotFound from "../NotFound/NotFound";
+// import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
+// import NotFound from "../NotFound/NotFound";
 
 import UserContext from "../../context/userContext";
 
@@ -20,30 +20,54 @@ const NewPost = props => {
   const [newPostData, setNewPostData] = useState([]);
   const [currentTag, setCurrentTag] = useState("");
   const [tags, setTags] = useState([]);
-  const [isError, setIsError] = useState(false);
+  // const [isError, setIsError] = useState(false);
 
   const [fetchedPostBody, setFetchedPostBody] = useState(null);
-  const [notFound, setNotFound] = useState(false);
+  // const [notFound, setNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  let loading = null;
 
   const postId = props.match.params.postId;
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  useEffect(() => {
+    if (props.editMode) {
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (loading) {
+        controller.abort();
+        console.log("fetchPostData прерван");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchData = async () => {
     if (userContext.user.status !== "admin" && userContext.user.status !== "moderator") {
       return props.history.push("/");
     }
 
+    loading = true;
     setIsLoading(true);
-    const response = await fetch(`${window.domain}/posts/${postId}`);
+    const response = await fetch(`${window.domain}/posts/${postId}`, { signal: signal });
     console.log(response);
     if (response.status === 404) {
-      setNotFound(true);
+      userContext.setIsPageNotFound(true);
+      loading = false;
       setIsLoading(false);
       return;
     }
     if (response.status !== 200) {
-      setIsError(true);
+      loading = false;
       setIsLoading(false);
+      userContext.setIsError(true);
       return;
     }
     const resData = await response.json();
@@ -75,21 +99,9 @@ const NewPost = props => {
     });
     setFetchedPostBody(fetchedOldPostBody);
 
+    loading = false;
     setIsLoading(false);
   };
-
-  useEffect(() => {
-    if (props.editMode) {
-      try {
-        fetchData();
-      } catch (error) {
-        console.log(error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Title
   const onChangeTitle = e => {
@@ -246,8 +258,8 @@ const NewPost = props => {
       );
       console.log(response);
       if (response.status !== 200 && response.status !== 201 && response.status !== 422) {
-        setIsError(true);
         setIsLoading(false);
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
@@ -260,8 +272,8 @@ const NewPost = props => {
       }
     } catch (error) {
       console.log(error);
-      setIsError(true);
       setIsLoading(false);
+      userContext.setIsError(true);
     }
   };
 
@@ -289,9 +301,7 @@ const NewPost = props => {
 
   return isLoading ? (
     <Spinner />
-  ) : isError ? (
-    <SomethingWentWrong />
-  ) : !notFound ? (
+  ) : (
     <div className="new-post">
       <form className="new-post__form" noValidate onSubmit={createPost}>
         <div className="new-post__title">
@@ -351,8 +361,6 @@ const NewPost = props => {
         </button>
       </form>
     </div>
-  ) : (
-    <NotFound />
   );
 };
 

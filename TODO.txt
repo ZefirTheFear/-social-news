@@ -1,3 +1,5 @@
+-addComent только для авторизированных пользователей
+
 -прерывать fetch при unmount'е компонента
 
 -clear timerId mutation observer

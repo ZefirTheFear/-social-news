@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 
 import Post from "./Post/Post";
 import Spinner from "../Spinner/Spinner";
-import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
 
 import UserContext from "../../context/userContext";
 
@@ -13,7 +12,7 @@ const Posts = props => {
 
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  let loading = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -23,21 +22,18 @@ const Posts = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLogoClicked, props.requestUrl]);
 
-  const deletePost = postId => {
-    setPosts(posts.filter(post => post._id !== postId));
-  };
-
   useEffect(() => {
     return () => {
-      controller.abort();
-      console.log("fetchPosts прерван");
+      if (loading) {
+        controller.abort();
+        console.log("fetchPosts прерван");
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPosts = async () => {
     try {
-      setIsLoading(true);
       const response = await fetch(
         props.requestUrl,
         props.logedIn
@@ -51,8 +47,9 @@ const Posts = props => {
       );
       console.log(response);
       if (response.status !== 200) {
-        setIsError(true);
+        loading = false;
         setIsLoading(false);
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
@@ -66,23 +63,27 @@ const Posts = props => {
       } else {
         setPosts(resData);
       }
+      loading = false;
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      loading = false;
+      setIsLoading(false);
       if (error.name === "AbortError") {
         return;
       }
-      setIsError(true);
-      setIsLoading(false);
+      userContext.setIsError(true);
     }
+  };
+
+  const deletePost = postId => {
+    setPosts(posts.filter(post => post._id !== postId));
   };
 
   return (
     <div className="posts">
       {isLoading ? (
         <Spinner />
-      ) : isError ? (
-        <SomethingWentWrong />
       ) : posts.length > 0 ? (
         posts.map(post => (
           <div key={post._id} className="posts__post">

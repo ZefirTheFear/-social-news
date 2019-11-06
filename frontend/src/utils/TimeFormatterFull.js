@@ -32,5 +32,9 @@ export default time => {
     : "";
   const D = difDay ? `${difDay} ${numberFormatter(difDay, ["день", "дня", "дней"])}` : "";
 
+  if (`${Y} ${M} ${D}` === "  ") {
+    return `с сегодняшнего дня`;
+  }
+
   return `${Y} ${M} ${D}`;
 };

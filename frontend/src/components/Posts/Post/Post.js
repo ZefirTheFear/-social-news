@@ -19,6 +19,7 @@ const Post = props => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImgFullScreen, setIsImgFullScreen] = useState(false);
   const [src, setSrc] = useState(null);
+  let loading = null;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -30,8 +31,10 @@ const Post = props => {
 
   useEffect(() => {
     return () => {
-      controller.abort();
-      console.log("fetchPost прерван");
+      if (loading) {
+        controller.abort();
+        console.log("fetchPost прерван");
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -62,21 +65,25 @@ const Post = props => {
 
   const fetchPost = async () => {
     try {
+      loading = true;
       document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/${post._id}`, { signal: signal });
       console.log(response);
       if (response.status !== 200) {
+        loading = false;
         userContext.setIsError(true);
         document.body.style.cursor = "";
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      loading = false;
       setPost(resData);
       document.body.style.cursor = "";
     } catch (error) {
       console.log(error);
       document.body.style.cursor = "";
+      loading = false;
       if (error.name === "AbortError") {
         return;
       }
@@ -91,6 +98,7 @@ const Post = props => {
 
   const likePostToggle = async () => {
     try {
+      document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/${post._id}/like`, {
         headers: {
           Authorization: userContext.token
@@ -99,20 +107,24 @@ const Post = props => {
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       fetchPost();
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
 
   const dislikePostToggle = async () => {
     try {
+      document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/${post._id}/dislike`, {
         headers: {
           Authorization: userContext.token
@@ -121,20 +133,24 @@ const Post = props => {
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       fetchPost();
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
 
   const savePostToggle = async () => {
     try {
+      document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/${post._id}/save`, {
         headers: {
           Authorization: userContext.token
@@ -143,14 +159,17 @@ const Post = props => {
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       fetchPost();
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };

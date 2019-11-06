@@ -12,8 +12,9 @@ import numberFormatter from "../../utils/NumberFormatter";
 const Dashboard = props => {
   const userContext = useContext(UserContext);
 
-  const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  let loading = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -25,15 +26,18 @@ const Dashboard = props => {
 
   useEffect(() => {
     return () => {
-      controller.abort();
-      // console.log("fetch прерван");
+      if (loading) {
+        controller.abort();
+        console.log("fetchUser прерван");
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`, {
+      // const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`, {
+      const response = await fetch(`/users/user/${userContext.user.name}`, {
         signal: signal
       });
       console.log(response);
@@ -41,8 +45,9 @@ const Dashboard = props => {
         return props.logoutHandler();
       }
       if (response.status !== 200) {
+        loading = false;
+        setIsLoading(false);
         userContext.setIsError(true);
-        // setIsLoading(false);
         return;
       }
       const resData = await response.json();
@@ -50,9 +55,9 @@ const Dashboard = props => {
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
       setUser(resData);
+      loading = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       if (error.name === "AbortError") {
         return;
       }
