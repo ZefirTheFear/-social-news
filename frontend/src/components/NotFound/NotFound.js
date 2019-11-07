@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import UserContext from "../../context/userContext";
@@ -7,6 +7,11 @@ import "./NotFound.scss";
 
 const NotFound = () => {
   const userContext = useContext(UserContext);
+
+  useEffect(() => {
+    userContext.setIsPageNotFound(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="not-found">
