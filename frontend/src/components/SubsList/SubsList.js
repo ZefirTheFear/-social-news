@@ -12,9 +12,23 @@ const SubsList = () => {
 
   const [subList, setSubList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  let isFetching = true;
+
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   useEffect(() => {
     fetchSubscribeToUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (isFetching) {
+        controller.abort();
+        console.log("fetchSubscribeToUsers прерван");
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -23,19 +37,26 @@ const SubsList = () => {
       const response = await fetch(`${window.domain}/users/get-subscribe-to`, {
         headers: {
           Authorization: userContext.token
-        }
+        },
+        signal: signal
       });
       console.log(response);
       if (response.status !== 200) {
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
       setSubList(resData);
+      isFetching = false;
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      isFetching = false;
+      if (error.name === "AbortError") {
+        return;
+      }
       userContext.setIsError(true);
     }
   };

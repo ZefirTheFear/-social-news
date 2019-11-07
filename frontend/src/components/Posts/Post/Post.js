@@ -19,7 +19,7 @@ const Post = props => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isImgFullScreen, setIsImgFullScreen] = useState(false);
   const [src, setSrc] = useState(null);
-  let loading = null;
+  let isFetching = null;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -31,7 +31,7 @@ const Post = props => {
 
   useEffect(() => {
     return () => {
-      if (loading) {
+      if (isFetching) {
         controller.abort();
         console.log("fetchPost прерван");
       }
@@ -65,25 +65,25 @@ const Post = props => {
 
   const fetchPost = async () => {
     try {
-      loading = true;
+      isFetching = true;
       document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/${post._id}`, { signal: signal });
       console.log(response);
       if (response.status !== 200) {
-        loading = false;
-        userContext.setIsError(true);
+        isFetching = false;
         document.body.style.cursor = "";
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
-      loading = false;
-      setPost(resData);
+      isFetching = false;
       document.body.style.cursor = "";
+      setPost(resData);
     } catch (error) {
       console.log(error);
       document.body.style.cursor = "";
-      loading = false;
+      isFetching = false;
       if (error.name === "AbortError") {
         return;
       }
@@ -226,16 +226,16 @@ const Post = props => {
         <FullScreenImage src={src} clicked={() => setIsImgFullScreen(false)} />
       ) : null}
       <div className="post__rating-block">
-        {userContext.user && post.creator._id !== userContext.user._id ? (
+        {userContext.isAuth && post.creator._id !== userContext.user._id ? (
           <div
             className={
               "post__rating-up" +
-              (userContext.user && post.likes.indexOf(userContext.user._id) > -1
+              (userContext.isAuth && post.likes.indexOf(userContext.user._id) > -1
                 ? " post__rating-up_liked"
                 : "")
             }
             title={
-              userContext.user && post.likes.indexOf(userContext.user._id) > -1
+              userContext.isAuth && post.likes.indexOf(userContext.user._id) > -1
                 ? "Убрать плюсик"
                 : "Поставить плюсик"
             }
@@ -243,16 +243,16 @@ const Post = props => {
           />
         ) : null}
         <div className="post__rating">{post.rating}</div>
-        {userContext.user && post.creator._id !== userContext.user._id ? (
+        {userContext.isAuth && post.creator._id !== userContext.user._id ? (
           <div
             className={
               "post__rating-down" +
-              (userContext.user && post.dislikes.indexOf(userContext.user._id) > -1
+              (userContext.isAuth && post.dislikes.indexOf(userContext.user._id) > -1
                 ? " post__rating-down_disliked"
                 : "")
             }
             title={
-              userContext.user && post.dislikes.indexOf(userContext.user._id) > -1
+              userContext.isAuth && post.dislikes.indexOf(userContext.user._id) > -1
                 ? "Убрать минус"
                 : "Поставить минус"
             }
@@ -282,11 +282,11 @@ const Post = props => {
         <div className="post-inner__footer">
           <div className="post-inner__footer-left-side">
             <div className="post-inner__mobile-rating-block">
-              {userContext.user && post.creator._id !== userContext.user._id ? (
+              {userContext.isAuth && post.creator._id !== userContext.user._id ? (
                 <div
                   className={
                     "post-inner__mobile-rating-up" +
-                    (userContext.user && post.likes.indexOf(userContext.user._id) > -1
+                    (userContext.isAuth && post.likes.indexOf(userContext.user._id) > -1
                       ? " post-inner__mobile-rating-up_liked"
                       : "")
                   }
@@ -295,11 +295,11 @@ const Post = props => {
                 />
               ) : null}
               <div className="post-inner__mobile-rating">{post.rating}</div>
-              {userContext.user && post.creator._id !== userContext.user._id ? (
+              {userContext.isAuth && post.creator._id !== userContext.user._id ? (
                 <div
                   className={
                     "post-inner__mobile-rating-down" +
-                    (userContext.user && post.dislikes.indexOf(userContext.user._id) > -1
+                    (userContext.isAuth && post.dislikes.indexOf(userContext.user._id) > -1
                       ? " post-inner__mobile-rating-down_disliked"
                       : "")
                   }
@@ -308,13 +308,13 @@ const Post = props => {
                 />
               ) : null}
             </div>
-            {userContext.user ? (
+            {userContext.isAuth ? (
               <>
                 <div className="post-inner__footer-saves-amount">{post.saves.length}</div>
                 <div
                   className={
                     "post-inner__footer-save-post" +
-                    (userContext.user && post.saves.indexOf(userContext.user._id) > -1
+                    (userContext.isAuth && post.saves.indexOf(userContext.user._id) > -1
                       ? " post-inner__footer-save-post_saved"
                       : "")
                   }
@@ -350,7 +350,7 @@ const Post = props => {
                 />
               </Link>
             </div>
-            {userContext.user &&
+            {userContext.isAuth &&
             (userContext.user.status === "admin" || userContext.user.status === "moderator") ? (
               <div className="post-inner__admin-btns">
                 <div className="post-inner__edit-post" title="Редактировать пост">

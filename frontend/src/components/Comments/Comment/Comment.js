@@ -27,6 +27,10 @@ const Comment = props => {
   const [isImgFullScreen, setIsImgFullScreen] = useState(false);
   const [src, setSrc] = useState(null);
   const [errors, setErrors] = useState({});
+  let isFetching = null;
+
+  const controller = new AbortController();
+  const signal = controller.signal;
 
   useEffect(() => {
     if (comment) {
@@ -34,6 +38,16 @@ const Comment = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comment]);
+
+  useEffect(() => {
+    return () => {
+      if (isFetching) {
+        controller.abort();
+        console.log("fetchComment прерван");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const createCommentBody = () => {
     return comment.body.map(item => {
@@ -75,26 +89,35 @@ const Comment = props => {
   const fetchComment = async () => {
     try {
       document.body.style.cursor = "wait";
-      const response = await fetch(`${window.domain}/posts/comments/${comment._id}`);
+      const response = await fetch(`${window.domain}/posts/comments/${comment._id}`, {
+        signal: signal
+      });
       console.log(response);
       if (response.status !== 200) {
-        userContext.setIsError(true);
+        isFetching = false;
         document.body.style.cursor = "";
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
-      setComment(resData);
+      isFetching = false;
       document.body.style.cursor = "";
+      setComment(resData);
     } catch (error) {
       console.log(error);
-      userContext.setIsError(true);
       document.body.style.cursor = "";
+      isFetching = false;
+      if (error.name === "AbortError") {
+        return;
+      }
+      userContext.setIsError(true);
     }
   };
 
   const likeComment = async () => {
     try {
+      document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/comments/${comment._id}/like`, {
         headers: {
           Authorization: userContext.token
@@ -103,20 +126,24 @@ const Comment = props => {
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       fetchComment();
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
 
   const dislikeComment = async () => {
     try {
+      document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/comments/${comment._id}/dislike`, {
         headers: {
           Authorization: userContext.token
@@ -125,14 +152,17 @@ const Comment = props => {
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       fetchComment();
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
@@ -246,8 +276,8 @@ const Comment = props => {
       });
       console.log(response);
       if (response.status !== 200) {
-        userContext.setIsError(true);
         document.body.style.cursor = "";
+        userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
@@ -256,6 +286,7 @@ const Comment = props => {
       props.deleteComment(comment._id, comment._id);
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
@@ -287,36 +318,6 @@ const Comment = props => {
         <FullScreenImage src={src} clicked={() => setIsImgFullScreen(false)} />
       ) : null}
       <div className="comment__header">
-        {/* <div className="comment__rating">
-          <div className="comment__rating-value">{comment.rating}</div>
-          {userContext.user && comment.creator._id !== userContext.user._id ? (
-            <div className="comment__rating-up">
-              <div
-                className={
-                  "comment__rating-up-symbol" +
-                  (userContext.user && comment.likes.indexOf(userContext.user._id) > -1
-                    ? " comment__rating-up-symbol_liked"
-                    : "")
-                }
-                onClick={likeComment}
-              />
-            </div>
-          ) : null}
-          {userContext.user && comment.creator._id !== userContext.user._id ? (
-            <div className="comment-rating-down">
-              <div
-                className={
-                  "comment__rating-down-symbol" +
-                  (userContext.user && comment.dislikes.indexOf(userContext.user._id) > -1
-                    ? " comment__rating-up-symbol_disliked"
-                    : "")
-                }
-                onClick={dislikeComment}
-              />
-            </div>
-          ) : null}
-        </div> */}
-
         <div className="comment__user-info">
           <div className="comment__user-avatar">
             <Link to={`/@${comment.creator.name}`} className="comment__user-avatar-link">
@@ -366,17 +367,19 @@ const Comment = props => {
         <>
           <div className="comment__content">{commentBody}</div>
           <div className="comment__footer">
-            <button className="comment__reply-btn" type="button" onClick={relpyFormToggle}>
-              {props.commentIdForReply === comment._id ? "отмена" : "ответить"}
-            </button>
+            {userContext.isAuth ? (
+              <button className="comment__reply-btn" type="button" onClick={relpyFormToggle}>
+                {props.commentIdForReply === comment._id ? "отмена" : "ответить"}
+              </button>
+            ) : null}
             <div className="comment__footer-right-side">
               <div className="comment__rating">
-                {userContext.user && comment.creator._id !== userContext.user._id ? (
+                {userContext.isAuth && comment.creator._id !== userContext.user._id ? (
                   <div className="comment__rating-up">
                     <div
                       className={
                         "comment__rating-up-symbol" +
-                        (userContext.user && comment.likes.indexOf(userContext.user._id) > -1
+                        (userContext.isAuth && comment.likes.indexOf(userContext.user._id) > -1
                           ? " comment__rating-up-symbol_liked"
                           : "")
                       }
@@ -385,12 +388,12 @@ const Comment = props => {
                   </div>
                 ) : null}
                 <div className="comment__rating-value">{comment.rating}</div>
-                {userContext.user && comment.creator._id !== userContext.user._id ? (
+                {userContext.isAuth && comment.creator._id !== userContext.user._id ? (
                   <div className="comment-rating-down">
                     <div
                       className={
                         "comment__rating-down-symbol" +
-                        (userContext.user && comment.dislikes.indexOf(userContext.user._id) > -1
+                        (userContext.isAuth && comment.dislikes.indexOf(userContext.user._id) > -1
                           ? " comment__rating-up-symbol_disliked"
                           : "")
                       }
@@ -399,7 +402,7 @@ const Comment = props => {
                   </div>
                 ) : null}
               </div>
-              {userContext.user &&
+              {userContext.isAuth &&
               (userContext.user.status === "admin" || userContext.user.status === "moderator") ? (
                 <div className="comment__admin-btns">
                   <button

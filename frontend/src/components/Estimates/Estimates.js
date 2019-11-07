@@ -62,9 +62,6 @@ const Estimates = () => {
               <Posts {...propss} requestUrl={`${window.domain}/posts/disliked`} logedIn />
             )}
           />
-          {/* <Route path="/estimates" exact render={props => <EstimatesAll {...props} />} /> */}
-          {/* <Route path="/estimates/liked" exact component={EstimatesLikes} /> */}
-          {/* <Route path="/estimates/disliked" exact component={EstimatesDislikes} /> */}
           <Redirect to="/estimates" />
         </Switch>
       </div>

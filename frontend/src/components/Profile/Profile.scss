@@ -50,7 +50,9 @@
   grid-area: user;
 
   @media (max-width: 767px) {
+    max-width: 80vw;
     margin-top: 1rem;
+    text-align: center;
   }
 }
 

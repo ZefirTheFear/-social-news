@@ -12,6 +12,7 @@ const AnswersComments = () => {
 
   const [answers, setAnswers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  let isFetching = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -24,8 +25,10 @@ const AnswersComments = () => {
   useEffect(() => {
     return () => {
       deleteNewAnswersForComments();
-      controller.abort();
-      console.log("fetch AnswersForComments прерван");
+      if (isFetching) {
+        controller.abort();
+        console.log("fetch AnswersForComments прерван");
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -40,15 +43,18 @@ const AnswersComments = () => {
       });
       console.log(response);
       if (response.status !== 200) {
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
       setAnswers(resData);
+      isFetching = false;
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      isFetching = false;
       if (error.name === "AbortError") {
         return;
       }

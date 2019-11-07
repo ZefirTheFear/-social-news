@@ -29,6 +29,7 @@ const MyComment = props => {
       document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/comments/${myComment[0].parentComment}`);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
@@ -44,6 +45,7 @@ const MyComment = props => {
       document.body.style.cursor = "";
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };

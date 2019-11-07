@@ -110,6 +110,8 @@
 .comment__footer {
   display: flex;
   justify-content: space-between;
+  border-top: 1px solid map-get($colors, border);
+  padding-top: 0.5rem;
 }
 
 .comment__footer-right-side {
@@ -133,6 +135,8 @@
 .comment__rating {
   display: flex;
   align-items: center;
+  color: darken(map-get($colors, app-text), 20);
+  font-size: 0.9rem;
 }
 
 .comment__rating-value {

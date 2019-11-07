@@ -234,7 +234,7 @@ exports.getSubsPosts = async (req, res) => {
 };
 
 exports.getDesiredPosts = async (req, res) => {
-  const desired = req.params.desired;
+  const desired = req.params.desired.toLowerCase();
   try {
     const posts = await Post.find()
       .populate("creator", "name avatar")
@@ -244,7 +244,7 @@ exports.getDesiredPosts = async (req, res) => {
     }
     const desiredPosts = posts.filter(post => {
       for (const tag of post.tags) {
-        if (tag.includes(desired)) {
+        if (tag.toLowerCase().includes(desired)) {
           return true;
         }
       }

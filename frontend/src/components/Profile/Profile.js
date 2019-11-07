@@ -27,7 +27,7 @@ const Profile = props => {
   const [isBlockBtnDisabled, setIsBlockBtnDisabled] = useState(false);
   const [initialUserNote, setInitialUserNote] = useState("");
   const [note, setNote] = useState("");
-  let loading = true;
+  let isFetching = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -71,7 +71,7 @@ const Profile = props => {
       aboutMe.current.style.height = "auto";
       aboutMe.current.style.height = aboutMe.current.scrollHeight + "px";
     }
-    if (user && userContext.user) {
+    if (user && userContext.isAuth) {
       if (userNote.current) {
         userNote.current.style.height = "auto";
         userNote.current.style.height = userNote.current.scrollHeight + "px";
@@ -96,7 +96,7 @@ const Profile = props => {
 
   useEffect(() => {
     return () => {
-      if (loading) {
+      if (isFetching) {
         controller.abort();
         console.log("fetchUserDara прерван");
       }
@@ -111,26 +111,23 @@ const Profile = props => {
       });
       console.log(response);
       if (response.status === 404) {
-        // loading = false;
-        // setIsUserLoading(false);
+        isFetching = false;
         userContext.setIsPageNotFound(true);
         return;
       }
       if (response.status !== 200) {
-        loading = false;
-        setIsUserLoading(false);
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
       setUser(resData);
-      loading = false;
+      isFetching = false;
       setIsUserLoading(false);
     } catch (error) {
       console.log(error);
-      loading = false;
-      setIsUserLoading(false);
+      isFetching = false;
       userContext.setIsError(true);
     }
   };
@@ -212,6 +209,7 @@ const Profile = props => {
       noteBody: note.trim()
     };
     try {
+      document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/users/set-note`, {
         headers: {
           Authorization: userContext.token,
@@ -222,15 +220,18 @@ const Profile = props => {
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       localStorage.setItem("user", JSON.stringify(resData));
       setInitialUserNote(note);
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
@@ -338,7 +339,7 @@ const Profile = props => {
           <div className="profile__status">статус: {user.status}</div>
         </div>
       </div>
-      {userContext.user && userContext.user._id !== user._id ? (
+      {userContext.isAuth && userContext.user._id !== user._id ? (
         <div className="profile__note">
           <textarea
             className="profile__note-textarea"

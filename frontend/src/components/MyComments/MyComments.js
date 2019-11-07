@@ -12,6 +12,7 @@ const MyComments = () => {
 
   const [myComment, setMyComment] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  let isFetching = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -23,8 +24,10 @@ const MyComments = () => {
 
   useEffect(() => {
     return () => {
-      controller.abort();
-      console.log("fetchComments прерван");
+      if (isFetching) {
+        controller.abort();
+        console.log("fetchComments прерван");
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -39,15 +42,18 @@ const MyComments = () => {
       });
       console.log(response);
       if (response.status !== 200) {
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
       setMyComment(resData);
+      isFetching = false;
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      isFetching = false;
       if (error.name === "AbortError") {
         return;
       }

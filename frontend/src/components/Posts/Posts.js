@@ -12,7 +12,7 @@ const Posts = props => {
 
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  let loading = true;
+  let isFetching = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -24,7 +24,7 @@ const Posts = props => {
 
   useEffect(() => {
     return () => {
-      if (loading) {
+      if (isFetching) {
         controller.abort();
         console.log("fetchPosts прерван");
       }
@@ -47,8 +47,7 @@ const Posts = props => {
       );
       console.log(response);
       if (response.status !== 200) {
-        loading = false;
-        setIsLoading(false);
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
@@ -63,12 +62,11 @@ const Posts = props => {
       } else {
         setPosts(resData);
       }
-      loading = false;
+      isFetching = false;
       setIsLoading(false);
     } catch (error) {
       console.log(error);
-      loading = false;
-      setIsLoading(false);
+      isFetching = false;
       if (error.name === "AbortError") {
         return;
       }

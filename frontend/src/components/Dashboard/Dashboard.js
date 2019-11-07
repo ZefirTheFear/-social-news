@@ -14,7 +14,7 @@ const Dashboard = props => {
 
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  let loading = true;
+  let isFetching = true;
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -26,7 +26,7 @@ const Dashboard = props => {
 
   useEffect(() => {
     return () => {
-      if (loading) {
+      if (isFetching) {
         controller.abort();
         console.log("fetchUser прерван");
       }
@@ -36,17 +36,16 @@ const Dashboard = props => {
 
   const fetchUser = async () => {
     try {
-      // const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`, {
-      const response = await fetch(`/users/user/${userContext.user.name}`, {
+      const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`, {
         signal: signal
       });
       console.log(response);
       if (response.status === 404) {
+        isFetching = false;
         return props.logoutHandler();
       }
       if (response.status !== 200) {
-        loading = false;
-        setIsLoading(false);
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
@@ -55,9 +54,11 @@ const Dashboard = props => {
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
       setUser(resData);
-      loading = false;
+      isFetching = false;
       setIsLoading(false);
     } catch (error) {
+      console.log(error);
+      isFetching = false;
       if (error.name === "AbortError") {
         return;
       }
@@ -102,7 +103,12 @@ const Dashboard = props => {
           </div>
         </div>
         <div className="dashboard__settings">
-          <Link to="/settings" className="dashboard__settings-symbol" title="Настройки" />
+          <Link
+            to="/settings"
+            className="dashboard__settings-symbol"
+            title="Настройки"
+            onClick={props.hideDashboard}
+          />
         </div>
       </div>
       <div className="dashboard__profile-info">

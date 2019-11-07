@@ -12,7 +12,7 @@ const Search = props => {
 
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  let loading = true;
+  let isFetching = true;
 
   const desired = props.match.params.desired.trim();
 
@@ -26,7 +26,7 @@ const Search = props => {
 
   useEffect(() => {
     return () => {
-      if (loading) {
+      if (isFetching) {
         controller.abort();
         console.log("searching прерван");
       }
@@ -39,20 +39,18 @@ const Search = props => {
       const response = await fetch(`${window.domain}/posts/desired/${desired}`, { signal: signal });
       console.log(response);
       if (response.status !== 200) {
-        loading = false;
-        setIsLoading(false);
+        isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
       setPosts(resData);
-      loading = false;
+      isFetching = false;
       setIsLoading(false);
     } catch (error) {
       console.log(error);
-      loading = false;
-      setIsLoading(false);
+      isFetching = false;
       userContext.setIsError(true);
     }
   };

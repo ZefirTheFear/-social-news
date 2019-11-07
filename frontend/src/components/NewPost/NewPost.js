@@ -5,8 +5,6 @@ import uniqid from "uniqid";
 import ContentMaker from "../ContentMaker/ContentMaker";
 import NewPostTagContainer from "../NewPostTagContainer/NewPostTagContainer";
 import Spinner from "../Spinner/Spinner";
-// import SomethingWentWrong from "../SomethingWentWrong/SomethingWentWrong";
-// import NotFound from "../NotFound/NotFound";
 
 import UserContext from "../../context/userContext";
 
@@ -20,12 +18,10 @@ const NewPost = props => {
   const [newPostData, setNewPostData] = useState([]);
   const [currentTag, setCurrentTag] = useState("");
   const [tags, setTags] = useState([]);
-  // const [isError, setIsError] = useState(false);
 
   const [fetchedPostBody, setFetchedPostBody] = useState(null);
-  // const [notFound, setNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  let loading = null;
+  let isFetching = null;
 
   const postId = props.match.params.postId;
 
@@ -41,7 +37,7 @@ const NewPost = props => {
 
   useEffect(() => {
     return () => {
-      if (loading) {
+      if (isFetching) {
         controller.abort();
         console.log("fetchPostData прерван");
       }
@@ -54,53 +50,60 @@ const NewPost = props => {
       return props.history.push("/");
     }
 
-    loading = true;
+    isFetching = true;
     setIsLoading(true);
-    const response = await fetch(`${window.domain}/posts/${postId}`, { signal: signal });
-    console.log(response);
-    if (response.status === 404) {
-      userContext.setIsPageNotFound(true);
-      loading = false;
-      setIsLoading(false);
-      return;
-    }
-    if (response.status !== 200) {
-      loading = false;
-      setIsLoading(false);
-      userContext.setIsError(true);
-      return;
-    }
-    const resData = await response.json();
-    console.log(resData);
-
-    setTitle(resData.title);
-
-    const fetchedTags = [];
-    resData.tags.forEach(tag =>
-      fetchedTags.push({ content: tag, key: Date.now() * Math.random() })
-    );
-    setTags(fetchedTags);
-
-    const fetchedOldPostBody = [];
-    resData.body.forEach(bodyItem => {
-      if (bodyItem.type === "text") {
-        fetchedOldPostBody.push({
-          type: "text",
-          content: bodyItem.content,
-          key: bodyItem.key
-        });
-      } else {
-        fetchedOldPostBody.push({
-          type: "image",
-          url: `${window.domain}/${bodyItem.url}`,
-          key: bodyItem.key
-        });
+    try {
+      const response = await fetch(`${window.domain}/posts/${postId}`, { signal: signal });
+      console.log(response);
+      if (response.status === 404) {
+        isFetching = false;
+        userContext.setIsPageNotFound(true);
+        return;
       }
-    });
-    setFetchedPostBody(fetchedOldPostBody);
+      if (response.status !== 200) {
+        isFetching = false;
+        userContext.setIsError(true);
+        return;
+      }
+      const resData = await response.json();
+      console.log(resData);
 
-    loading = false;
-    setIsLoading(false);
+      setTitle(resData.title);
+
+      const fetchedTags = [];
+      resData.tags.forEach(tag =>
+        fetchedTags.push({ content: tag, key: Date.now() * Math.random() })
+      );
+      setTags(fetchedTags);
+
+      const fetchedOldPostBody = [];
+      resData.body.forEach(bodyItem => {
+        if (bodyItem.type === "text") {
+          fetchedOldPostBody.push({
+            type: "text",
+            content: bodyItem.content,
+            key: bodyItem.key
+          });
+        } else {
+          fetchedOldPostBody.push({
+            type: "image",
+            url: `${window.domain}/${bodyItem.url}`,
+            key: bodyItem.key
+          });
+        }
+      });
+      setFetchedPostBody(fetchedOldPostBody);
+
+      isFetching = false;
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      isFetching = false;
+      if (error.name === "AbortError") {
+        return;
+      }
+      userContext.setIsError(true);
+    }
   };
 
   // Title
