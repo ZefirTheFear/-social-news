@@ -33,14 +33,16 @@ app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
 
 // Serve static assets if in production
-if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  app.use(express.static("frontend/build"));
+// if (process.env.NODE_ENV === "production") {
+// Set static folder
+// app.use(express.static("frontend/build"));
+app.use(express.static(path.join(__dirname, "frontend", "build")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname), "frontend", "build", "index.html");
-  });
-}
+app.get("*", (req, res) => {
+  // res.sendFile(path.resolve(__dirname), "frontend", "build", "index.html");
+  res.sendFile(path.join(__dirname), "frontend", "build", "index.html");
+});
+// }
 
 const port = process.env.PORT || 5001;
 
@@ -50,8 +52,6 @@ mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("MongoDb connected");
-    // const server = app.listen(port, () => console.log(`Server running on ${port}`));
+    const server = app.listen(port, () => console.log(`Server running on ${port}`));
   })
   .catch(err => console.log(err));
-
-const server = app.listen(port, () => console.log(`Server running on ${port}`));
