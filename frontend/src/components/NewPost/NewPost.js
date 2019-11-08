@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 
 import uniqid from "uniqid";
+import cloneDeep from "clone-deep";
 
 import ContentMaker from "../ContentMaker/ContentMaker";
 import NewPostTagContainer from "../NewPostTagContainer/NewPostTagContainer";
@@ -87,7 +88,8 @@ const NewPost = props => {
         } else {
           fetchedOldPostBody.push({
             type: "image",
-            url: `${window.domain}/${bodyItem.url}`,
+            url: bodyItem.url,
+            public_id: bodyItem.public_id,
             key: bodyItem.key
           });
         }
@@ -139,6 +141,9 @@ const NewPost = props => {
 
   const createPost = async e => {
     e.preventDefault();
+
+    const postData = cloneDeep(newPostData);
+
     console.log("title", title.trim());
     console.log("content", newPostData);
     console.log("tags", tags);
@@ -149,12 +154,12 @@ const NewPost = props => {
         msg: "Длина заголовка от 1 до 30 символов"
       };
     }
-    if (newPostData.length < 1) {
+    if (postData.length < 1) {
       clientErrors.content = {
         msg: "Нужен контент"
       };
     }
-    if (newPostData.length > 5) {
+    if (postData.length > 5) {
       clientErrors.content = {
         msg: "Максимум 5 блоков"
       };
@@ -182,67 +187,50 @@ const NewPost = props => {
       return;
     }
 
-    const textBlocksArray = [];
-    const imgBlocksArray = [];
-    const oldImgBlocksArray = [];
-    const newImgBlocksArray = [];
-    const dataOrder = [];
+    if (props.editMode) {
+      for (const item of postData) {
+        if (item.type === "image" && item.content) {
+          const data = new FormData();
+          data.append("file", item.content);
+          data.append("upload_preset", "post-imgs");
+          const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
+            method: "POST",
+            body: data
+          });
+          const resData = await response.json();
+          console.log(resData);
+          item.url = resData.secure_url;
+          item.public_id = resData.public_id;
+          delete item.content;
+        }
+      }
+    } else {
+      for (const item of postData) {
+        if (item.type === "image") {
+          const data = new FormData();
+          data.append("file", item.content);
+          data.append("upload_preset", "post-imgs");
+          const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
+            method: "POST",
+            body: data
+          });
+          const resData = await response.json();
+          console.log(resData);
+          item.url = resData.secure_url;
+          item.public_id = resData.public_id;
+          delete item.content;
+        }
+      }
+    }
+
     const postTags = [];
-
-    props.editMode
-      ? newPostData.forEach(item => {
-          if (item.type === "text") {
-            if (item.content !== "") {
-              textBlocksArray.push(item.content.trim());
-              dataOrder.push({ type: "text", key: item.key });
-            }
-          } else if (item.content) {
-            newImgBlocksArray.push(item.content);
-            dataOrder.push({ type: "newImg", key: item.key });
-          } else {
-            oldImgBlocksArray.push(item.url.replace(`${window.domain}/`, ""));
-            dataOrder.push({ type: "oldImg", key: item.key });
-          }
-        })
-      : newPostData.forEach(item => {
-          if (item.type === "text") {
-            if (item.content !== "") {
-              textBlocksArray.push(item.content.trim());
-              dataOrder.push({ type: "text", key: item.key });
-            }
-          } else {
-            imgBlocksArray.push(item.content);
-            dataOrder.push({ type: "img", key: item.key });
-          }
-        });
-
     tags.forEach(item => postTags.push(item.content));
 
-    if (props.editMode) {
-      console.log("textBlocksArray", textBlocksArray);
-      console.log("oldImgBlocksArray", oldImgBlocksArray);
-      console.log("newImgBlocksArray", newImgBlocksArray);
-      console.log("dataOrder", dataOrder);
-    } else {
-      console.log("textBlocksArray", textBlocksArray);
-      console.log("imgBlocksArray", imgBlocksArray);
-      console.log("dataOrder", dataOrder);
-    }
+    console.log("content", postData);
 
     const formData = new FormData();
     formData.append("title", title.trim());
-    formData.append("textBlocksArray", JSON.stringify(textBlocksArray));
-    if (props.editMode) {
-      formData.append("oldImgBlocksArray", JSON.stringify(oldImgBlocksArray));
-      for (let index = 0; index < newImgBlocksArray.length; index++) {
-        formData.append("newImgBlocksArray", newImgBlocksArray[index]);
-      }
-    } else {
-      for (let index = 0; index < imgBlocksArray.length; index++) {
-        formData.append("imgBlocksArray", imgBlocksArray[index]);
-      }
-    }
-    formData.append("content", JSON.stringify(dataOrder));
+    formData.append("content", JSON.stringify(postData));
     formData.append("tags", JSON.stringify(postTags));
 
     try {

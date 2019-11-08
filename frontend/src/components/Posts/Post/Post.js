@@ -52,10 +52,10 @@ const Post = props => {
           <div className="post-inner__content-img" key={item.key}>
             <img
               className="post-inner__img"
-              src={`${window.domain}/${item.url}`}
+              src={item.url}
               alt="img"
               draggable="false"
-              onClick={() => imgFullScreen(`${window.domain}/${item.url}`)}
+              onClick={() => imgFullScreen(item.url)}
             />
           </div>
         );

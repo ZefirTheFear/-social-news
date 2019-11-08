@@ -1,5 +1,9 @@
-const path = require("path");
-const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: "ztf",
+  api_key: "564174154855135",
+  api_secret: "Ac5MrwJ0KmlIp7jw8EW5iR3nPdg"
+});
 
 const { validationResult } = require("express-validator/check");
 
@@ -29,25 +33,7 @@ exports.createPost = async (req, res) => {
     }
 
     const title = req.body.title;
-    const textBlocksArray = JSON.parse(req.body.textBlocksArray);
-    const dataOrder = JSON.parse(req.body.content);
-    const body = [];
-    let textBlockArrayIndex = 0;
-    let imgBlockArrayIndex = 0;
-    dataOrder.forEach(item => {
-      if (item.type === "text") {
-        body.push({ type: "text", content: textBlocksArray[textBlockArrayIndex], key: item.key });
-        textBlockArrayIndex++;
-      } else {
-        // body.push({ type: "img", url: req.files[imgBlockArrayIndex].path.replace(/\\/g, "/") });
-        body.push({
-          type: "img",
-          url: req.files.imgBlocksArray[imgBlockArrayIndex].path,
-          key: item.key
-        });
-        imgBlockArrayIndex++;
-      }
-    });
+    const body = JSON.parse(req.body.content);
     const tags = JSON.parse(req.body.tags);
 
     const newPost = new Post({
@@ -92,42 +78,28 @@ exports.editPost = async (req, res) => {
     }
 
     const title = req.body.title;
-    const textBlocksArray = JSON.parse(req.body.textBlocksArray);
-    const oldImgBlocksArray = JSON.parse(req.body.oldImgBlocksArray);
-    const dataOrder = JSON.parse(req.body.content);
-    const body = [];
-    let textBlockArrayIndex = 0;
-    let oldImgBlockArrayIndex = 0;
-    let newImgBlockArrayIndex = 0;
-    dataOrder.forEach(item => {
-      if (item.type === "text") {
-        body.push({ type: "text", content: textBlocksArray[textBlockArrayIndex], key: item.key });
-        textBlockArrayIndex++;
-      } else if (item.type === "newImg") {
-        // body.push({ type: "img", url: req.files[imgBlockArrayIndex].path.replace(/\\/g, "/") });
-        body.push({
-          type: "img",
-          url: req.files.newImgBlocksArray[newImgBlockArrayIndex].path,
-          key: item.key
-        });
-        newImgBlockArrayIndex++;
-      } else {
-        body.push({ type: "img", url: oldImgBlocksArray[oldImgBlockArrayIndex], key: item.key });
-        oldImgBlockArrayIndex++;
-      }
-    });
-
+    const body = JSON.parse(req.body.content);
     const tags = JSON.parse(req.body.tags);
 
     const oldImgs = [];
     post.body.forEach(item => {
-      if (item.type === "img") {
-        oldImgs.push(item.url);
+      if (item.type === "image") {
+        oldImgs.push(item.public_id);
       }
     });
+    console.log("oldImgs", oldImgs);
+    const newImgs = [];
+    body.forEach(item => {
+      if (item.type === "image") {
+        newImgs.push(item.public_id);
+      }
+    });
+    console.log("newImgs", newImgs);
     oldImgs.forEach(item => {
-      if (oldImgBlocksArray.indexOf(item) === -1) {
-        clearImage(item);
+      if (newImgs.indexOf(item) === -1) {
+        cloudinary.api.delete_resources([item], function(error, result) {
+          console.log(result);
+        });
       }
     });
 
@@ -532,11 +504,14 @@ exports.deletePost = async (req, res) => {
     });
 
     post.body.forEach(item => {
-      if (item.type === "img") {
-        clearImage(item.url);
+      if (item.type === "image") {
+        cloudinary.api.delete_resources([item.public_id], function(error, result) {
+          console.log(result);
+        });
+        // clearImage(item.url);
       }
     });
-    console.log("post img cleared");
+    console.log("post imgs cleared");
 
     const postCreator = await User.findById(post.creator);
     postCreator.posts.pull(post._id);
