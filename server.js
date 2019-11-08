@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
+const cors = require("cors");
 
 const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
@@ -10,13 +11,15 @@ const commentRoutes = require("./routes/commentRoutes");
 const app = express();
 
 // Для CORS и cookies
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
+//   next();
+// });
+
+app.use(cors());
 
 app.use(bodyparser.text());
 // app.use(bodyparser.urlencoded({ extended: false })); // x-www-form-urlencoded <form>
