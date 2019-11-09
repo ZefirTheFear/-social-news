@@ -154,7 +154,7 @@ const SinglePost = props => {
     }
   };
 
-  const addComment = comment => {
+  const addComment = () => {
     fetchComments();
   };
 

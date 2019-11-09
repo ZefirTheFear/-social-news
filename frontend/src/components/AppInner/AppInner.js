@@ -17,8 +17,6 @@ import IgnoreList from "../IgnoreList/IgnoreList";
 import Notes from "../Notes/Notes";
 import Settings from "../ProfileSettings/ProfileSettings";
 
-import Cloudinary from "../Cloudinary/Cloudinary";
-
 const AppInner = props => {
   return (
     <div className="app-inner">
@@ -77,7 +75,6 @@ const AppInner = props => {
           {props.isAuth ? <Route path="/ignore-list" exact component={IgnoreList} /> : null}
           {props.isAuth ? <Route path="/notes" exact component={Notes} /> : null}
 
-          {props.isAuth ? <Route path="/cloud" exact component={Cloudinary} /> : null}
           <Route component={NotFound} />
         </Switch>
       </div>

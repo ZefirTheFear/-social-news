@@ -72,29 +72,10 @@ const NewPost = props => {
       setTitle(resData.title);
 
       const fetchedTags = [];
-      resData.tags.forEach(tag =>
-        fetchedTags.push({ content: tag, key: Date.now() * Math.random() })
-      );
+      resData.tags.forEach(tag => fetchedTags.push({ content: tag, key: uniqid() }));
       setTags(fetchedTags);
 
-      const fetchedOldPostBody = [];
-      resData.body.forEach(bodyItem => {
-        if (bodyItem.type === "text") {
-          fetchedOldPostBody.push({
-            type: "text",
-            content: bodyItem.content,
-            key: bodyItem.key
-          });
-        } else {
-          fetchedOldPostBody.push({
-            type: "image",
-            url: bodyItem.url,
-            public_id: bodyItem.public_id,
-            key: bodyItem.key
-          });
-        }
-      });
-      setFetchedPostBody(fetchedOldPostBody);
+      setFetchedPostBody(resData.body);
 
       isFetching = false;
       setIsLoading(false);
@@ -128,7 +109,6 @@ const NewPost = props => {
       setTags([...tags, { content: currentTag.trim(), key: uniqid() }]);
       setCurrentTag("");
     } else if (currentTag.trim().length > 30) {
-      // setCurrentTag("");
       setErrors({ ...errors, tags: { msg: "Нe более 30 символов в теге" } });
     }
   };
@@ -142,7 +122,7 @@ const NewPost = props => {
   const createPost = async e => {
     e.preventDefault();
 
-    const postData = cloneDeep(newPostData);
+    let postData = cloneDeep(newPostData);
 
     console.log("title", title.trim());
     console.log("content", newPostData);
@@ -154,6 +134,9 @@ const NewPost = props => {
         msg: "Длина заголовка от 1 до 30 символов"
       };
     }
+    postData = postData.filter(
+      item => item.type === "image" || (item.type === "text" && item.content.length !== 0)
+    );
     if (postData.length < 1) {
       clientErrors.content = {
         msg: "Нужен контент"
@@ -183,8 +166,7 @@ const NewPost = props => {
     }
 
     if (Object.keys(clientErrors).length > 0) {
-      setErrors(clientErrors);
-      return;
+      return setErrors(clientErrors);
     }
 
     if (props.editMode) {

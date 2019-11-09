@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import parse from "html-react-parser";
 import uniqid from "uniqid";
+import cloneDeep from "clone-deep";
 
 import Confirm from "../../Confirm/Confirm";
 import FullScreenImage from "../../FullScreenImage/FullScreenImage";
@@ -62,10 +63,10 @@ const Comment = props => {
           <div className="comment__img-block" key={uniqid()}>
             <img
               className="comment__img-block-img"
-              src={`${window.domain}/` + item.url}
+              src={item.url}
               alt="img"
               draggable="false"
-              onClick={() => imgFullScreen(`${window.domain}/${item.url}`)}
+              onClick={() => imgFullScreen(item.url)}
             />
           </div>
         );
@@ -168,24 +169,11 @@ const Comment = props => {
   };
 
   const editCommentHandler = () => {
-    console.log(comment.body);
     setEditMode(true);
-    const comBody = [];
-
-    comment.body.forEach(item => {
-      if (item.type === "text") {
-        comBody.push(item);
-      } else {
-        comBody.push({ ...item, url: `${window.domain}/${item.url}` });
-      }
-    });
-    console.log(comBody);
-
-    setCommentBodyForEditing(comBody);
+    setCommentBodyForEditing(comment.body);
   };
 
   const cancelEditModeHandler = () => {
-    console.log("cancelEditModeHandler");
     setEditMode(false);
   };
 
@@ -193,46 +181,39 @@ const Comment = props => {
     e.preventDefault();
     console.log("content", editCommentData);
 
-    if (editCommentData.length === 0) {
+    let commentData = cloneDeep(editCommentData);
+
+    commentData = commentData.filter(
+      item => item.type === "image" || (item.type === "text" && item.content.length !== 0)
+    );
+    if (commentData.length === 0) {
       return setErrors({ content: { msg: "Нужен контент" } });
     }
-    if (editCommentData.length > 5) {
+    if (commentData.length > 5) {
       return setErrors({ content: { msg: "Максимум 5 блоков" } });
     }
 
-    const textBlocksArray = [];
-    const oldImgBlocksArray = [];
-    const newImgBlocksArray = [];
-    const dataOrder = [];
-
-    editCommentData.forEach(item => {
-      if (item.type === "text") {
-        if (item.content !== "") {
-          textBlocksArray.push(item.content);
-          dataOrder.push({ type: "text", key: item.key });
-        }
-      } else if (item.content) {
-        newImgBlocksArray.push(item.content);
-        dataOrder.push({ type: "newImg", key: item.key });
-      } else {
-        oldImgBlocksArray.push(item.url.replace(`${window.domain}/`, ""));
-        dataOrder.push({ type: "oldImg", key: item.key });
+    for (const item of commentData) {
+      if (item.type === "image" && item.content) {
+        const data = new FormData();
+        data.append("file", item.content);
+        data.append("upload_preset", "comment-imgs");
+        const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
+          method: "POST",
+          body: data
+        });
+        const resData = await response.json();
+        console.log(resData);
+        item.url = resData.secure_url;
+        item.public_id = resData.public_id;
+        delete item.content;
       }
-    });
+    }
 
-    console.log("textBlocksArray", textBlocksArray);
-    console.log("oldImgBlocksArray", oldImgBlocksArray);
-    console.log("newImgBlocksArray", newImgBlocksArray);
-    console.log("dataOrder", dataOrder);
+    console.log("content", commentData);
 
     const formData = new FormData();
-    formData.append("textBlocksArray", JSON.stringify(textBlocksArray));
-    formData.append("oldImgBlocksArray", JSON.stringify(oldImgBlocksArray));
-    for (let index = 0; index < newImgBlocksArray.length; index++) {
-      // formData.append("imgBlocksArray", newImgBlocksArray[index]);
-      formData.append("newImgBlocksArray", newImgBlocksArray[index]);
-    }
-    formData.append("content", JSON.stringify(dataOrder));
+    formData.append("content", JSON.stringify(commentData));
 
     try {
       const response = await fetch(`${window.domain}/posts/comments/${comment._id}/edit`, {

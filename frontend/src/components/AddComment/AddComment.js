@@ -1,5 +1,8 @@
 import React, { useState, useContext } from "react";
 
+import uniqid from "uniqid";
+import cloneDeep from "clone-deep";
+
 import ContentMaker from "../ContentMaker/ContentMaker";
 
 import UserContext from "../../context/userContext";
@@ -13,44 +16,45 @@ const AddComment = props => {
   const [errors, setErrors] = useState({});
   const [isContentMakerReseted, setIsContentMakerReseted] = useState(null);
 
-  const createCommentHandler = async e => {
+  const createComment = async e => {
     e.preventDefault();
+
+    let commentData = cloneDeep(newCommentData);
+
     console.log("content", newCommentData);
 
-    if (newCommentData.length === 0) {
+    commentData = commentData.filter(
+      item => item.type === "image" || (item.type === "text" && item.content.length !== 0)
+    );
+    if (commentData.length === 0) {
       return setErrors({ content: { msg: "Нужен контент" } });
     }
-    if (newCommentData.length > 5) {
+    if (commentData.length > 5) {
       return setErrors({ content: { msg: "Максимум 5 блоков" } });
     }
 
-    const textBlocksArray = [];
-    const imgBlocksArray = [];
-    const dataOrder = [];
-
-    newCommentData.forEach(item => {
-      if (item.type === "text") {
-        if (item.content !== "") {
-          textBlocksArray.push(item.content);
-          dataOrder.push({ type: "text", key: item.key });
-        }
-      } else {
-        imgBlocksArray.push(item.content);
-        dataOrder.push({ type: "img", key: item.key });
+    for (const item of commentData) {
+      if (item.type === "image") {
+        const data = new FormData();
+        data.append("file", item.content);
+        data.append("upload_preset", "comment-imgs");
+        const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
+          method: "POST",
+          body: data
+        });
+        const resData = await response.json();
+        console.log(resData);
+        item.url = resData.secure_url;
+        item.public_id = resData.public_id;
+        delete item.content;
       }
-    });
+    }
 
-    console.log("textBlocksArray", textBlocksArray);
-    console.log("imgBlocksArray", imgBlocksArray);
-    console.log("dataOrder", dataOrder);
+    console.log("content", commentData);
     console.log("parentCommentId", props.parentCommentId);
 
     const formData = new FormData();
-    formData.append("textBlocksArray", JSON.stringify(textBlocksArray));
-    for (let index = 0; index < imgBlocksArray.length; index++) {
-      formData.append("imgBlocksArray", imgBlocksArray[index]);
-    }
-    formData.append("content", JSON.stringify(dataOrder));
+    formData.append("content", JSON.stringify(commentData));
 
     if (props.parentCommentId) {
       formData.append("parentCommentId", props.parentCommentId);
@@ -74,8 +78,8 @@ const AddComment = props => {
       if (resData.errors) {
         setErrors(resData.errors);
       } else if (props.mode === "answerForPost") {
-        props.addComment(resData);
-        setIsContentMakerReseted(Date.now());
+        props.addComment();
+        setIsContentMakerReseted(uniqid());
       } else {
         props.addComment(resData);
       }
@@ -98,7 +102,7 @@ const AddComment = props => {
       <div className="add-comment__offer">Добавьте комментарий, используя форму ниже...</div>
       <form
         className={"add-comment__form" + (errors.content ? " add-comment__form_invalid" : "")}
-        onSubmit={createCommentHandler}
+        onSubmit={createComment}
         onClick={focusForm}
         noValidate
       >

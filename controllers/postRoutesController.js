@@ -1,28 +1,13 @@
-const cloudinary = require("cloudinary").v2;
-cloudinary.config({
-  cloud_name: "ztf",
-  api_key: "564174154855135",
-  api_secret: "Ac5MrwJ0KmlIp7jw8EW5iR3nPdg"
-});
-
 const { validationResult } = require("express-validator/check");
 
 const Post = require("../models/Post");
 const User = require("../models/User");
 const Comment = require("../models/Comment");
-const clearImage = require("../utils/clearImage");
+const deleteImgFromCloud = require("../utils/deleteImgFromCloud");
 
 exports.createPost = async (req, res) => {
-  // console.log(req.files);
-  // console.log(req.body);
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    if (req.files.length) {
-      req.files.imgBlocksArray.forEach(item => {
-        clearImage(item.path);
-      });
-    }
     return res.status(422).json({ errors: errors.mapped() });
   }
 
@@ -56,11 +41,6 @@ exports.createPost = async (req, res) => {
 exports.editPost = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    if (req.files.length) {
-      req.files.newImgBlocksArray.forEach(item => {
-        clearImage(item.path);
-      });
-    }
     return res.status(422).json({ errors: errors.mapped() });
   }
 
@@ -95,11 +75,9 @@ exports.editPost = async (req, res) => {
       }
     });
     console.log("newImgs", newImgs);
-    oldImgs.forEach(item => {
-      if (newImgs.indexOf(item) === -1) {
-        cloudinary.api.delete_resources([item], function(error, result) {
-          console.log(result);
-        });
+    oldImgs.forEach(public_id => {
+      if (newImgs.indexOf(public_id) === -1) {
+        deleteImgFromCloud(public_id);
       }
     });
 
@@ -471,8 +449,8 @@ exports.deletePost = async (req, res) => {
 
     post.comments.forEach(async comment => {
       comment.body.forEach(item => {
-        if (item.type === "img") {
-          clearImage(item.url);
+        if (item.type === "image") {
+          deleteImgFromCloud(item.public_id);
         }
       });
       console.log("cmt img cleared");
@@ -505,10 +483,7 @@ exports.deletePost = async (req, res) => {
 
     post.body.forEach(item => {
       if (item.type === "image") {
-        cloudinary.api.delete_resources([item.public_id], function(error, result) {
-          console.log(result);
-        });
-        // clearImage(item.url);
+        deleteImgFromCloud(item.public_id);
       }
     });
     console.log("post imgs cleared");
@@ -560,37 +535,26 @@ exports.createComment = async (req, res) => {
 
   const postId = req.params.postId;
 
-  const textBlocksArray = JSON.parse(req.body.textBlocksArray);
-  const dataOrder = JSON.parse(req.body.content);
-  const body = [];
-  let textBlockArrayIndex = 0;
-  let imgBlockArrayIndex = 0;
-  dataOrder.forEach(item => {
-    if (item.type === "text") {
-      body.push({ type: "text", content: textBlocksArray[textBlockArrayIndex], key: item.key });
-      textBlockArrayIndex++;
-    } else {
-      // body.push({ type: "img", url: req.files[imgBlockArrayIndex].path.replace(/\\/g, "/") });
-      body.push({
-        type: "img",
-        url: req.files.imgBlocksArray[imgBlockArrayIndex].path,
-        key: item.key
-      });
-      imgBlockArrayIndex++;
-    }
-  });
-
-  const newComment = new Comment({
-    body: body,
-    creator: req.userId,
-    postId: postId,
-    parentComment: req.body.parentCommentId ? req.body.parentCommentId : null
-  });
-
   try {
-    const createdComment = await newComment.save();
-    const comment = await Comment.findById(createdComment.id).populate("creator", "name avatar");
     const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ error: "There is no such user" });
+    }
+
+    const body = JSON.parse(req.body.content);
+
+    const newComment = new Comment({
+      body: body,
+      creator: req.userId,
+      postId: postId,
+      parentComment: req.body.parentCommentId ? req.body.parentCommentId : null
+    });
+
+    const createdComment = await newComment.save();
+    const createdCommentExtra = await Comment.findById(createdComment._id).populate(
+      "creator",
+      "name avatar"
+    );
     user.comments.push(newComment);
     await user.save();
     const post = await Post.findById(postId);
@@ -613,10 +577,9 @@ exports.createComment = async (req, res) => {
       await creator.save();
     }
     // ----------
-    // res.status(201).json(newComment);
-    return res.status(201).json(comment);
+    res.status(201).json(createdCommentExtra);
   } catch (error) {
-    // console.log(error);
+    console.log(error._doc);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -642,40 +605,25 @@ exports.editComment = async (req, res) => {
       return res.status(404).json({ error: "There is no such comment" });
     }
 
-    const textBlocksArray = JSON.parse(req.body.textBlocksArray);
-    const oldImgBlocksArray = JSON.parse(req.body.oldImgBlocksArray);
-    const dataOrder = JSON.parse(req.body.content);
-    const body = [];
-    let textBlockArrayIndex = 0;
-    let oldImgBlockArrayIndex = 0;
-    let newImgBlockArrayIndex = 0;
-    dataOrder.forEach(item => {
-      if (item.type === "text") {
-        body.push({ type: "text", content: textBlocksArray[textBlockArrayIndex], key: item.key });
-        textBlockArrayIndex++;
-      } else if (item.type === "newImg") {
-        // body.push({ type: "img", url: req.files[imgBlockArrayIndex].path.replace(/\\/g, "/") });
-        body.push({
-          type: "img",
-          url: req.files.newImgBlocksArray[newImgBlockArrayIndex].path,
-          key: item.key
-        });
-        newImgBlockArrayIndex++;
-      } else {
-        body.push({ type: "img", url: oldImgBlocksArray[oldImgBlockArrayIndex], key: item.key });
-        oldImgBlockArrayIndex++;
-      }
-    });
+    const body = JSON.parse(req.body.content);
 
     const oldImgs = [];
     comment.body.forEach(item => {
-      if (item.type === "img") {
-        oldImgs.push(item.url);
+      if (item.type === "image") {
+        oldImgs.push(item.public_id);
       }
     });
-    oldImgs.forEach(item => {
-      if (oldImgBlocksArray.indexOf(item) === -1) {
-        clearImage(item);
+    console.log("oldImgs", oldImgs);
+    const newImgs = [];
+    body.forEach(item => {
+      if (item.type === "image") {
+        newImgs.push(item.public_id);
+      }
+    });
+    console.log("newImgs", newImgs);
+    oldImgs.forEach(public_id => {
+      if (newImgs.indexOf(public_id) === -1) {
+        deleteImgFromCloud(public_id);
       }
     });
 
@@ -713,8 +661,8 @@ exports.deleteComment = async (req, res) => {
         });
       } else {
         comment.body.forEach(item => {
-          if (item.type === "img") {
-            clearImage(item.url);
+          if (item.type === "image") {
+            deleteImgFromCloud(item.public_id);
           }
         });
         console.log("img cleared");
@@ -901,8 +849,3 @@ exports.dislikeComment = async (req, res) => {
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
-
-// const clearImage = filePath => {
-//   filePath = path.join(__dirname, "..", filePath);
-//   fs.unlink(filePath, err => console.log(err));
-// };

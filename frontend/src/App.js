@@ -58,10 +58,10 @@ const App = () => {
   // }, [])
 
   useEffect(() => {
-    // console.log(
-    //   "%c+",
-    //   `font-size: 1px; padding: 150px 87px; line-height: 0; background: url(${window.domain}/uploads/general/dev.png); background-size: 175px 300px; color: transparent; background-repeat: no-repeat;`
-    // );
+    console.log(
+      "%c+",
+      `font-size: 1px; padding: 150px 87px; line-height: 0; background: url(https://res.cloudinary.com/ztf/image/upload/v1573314232/social-news/general/console.png); background-size: 175px 300px; color: transparent; background-repeat: no-repeat;`
+    );
     if (
       !localStorage.getItem("token") ||
       !localStorage.getItem("isAuth") ||
