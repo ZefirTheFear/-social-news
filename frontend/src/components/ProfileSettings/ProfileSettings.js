@@ -10,6 +10,7 @@ const ProfileSettings = () => {
   const textarea = useRef();
   const inputEl = useRef();
 
+  // const [avatar, setAvatar] = useState(userContext.user.avatar.url);
   const [note, setNote] = useState(userContext.user.aboutMe);
 
   useEffect(() => {
@@ -28,28 +29,52 @@ const ProfileSettings = () => {
   };
 
   const changeAvatarHandler = async e => {
-    const formData = new FormData();
-    formData.append("avatar", e.target.files[0]);
-    e.target.value = null;
+    const avatar = {};
     try {
+      document.body.style.cursor = "wait";
+      const data = new FormData();
+      data.append("file", e.target.files[0]);
+      data.append("upload_preset", "avatars");
+      const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
+        method: "POST",
+        body: data
+      });
+      const resData = await response.json();
+      console.log(resData);
+      avatar.url = resData.secure_url;
+      avatar.public_id = resData.public_id;
+      document.body.style.cursor = "";
+    } catch (error) {
+      console.log(error);
+      document.body.style.cursor = "";
+      userContext.setIsError(true);
+    }
+
+    try {
+      document.body.style.cursor = "wait";
+      const data = new FormData();
+      data.append("avatar", JSON.stringify(avatar));
       const response = await fetch(`${window.domain}/users/change-avatar`, {
         headers: {
           Authorization: userContext.token
         },
         method: "POST",
-        body: formData
+        body: data
       });
       console.log(response);
       if (response.status !== 200) {
+        document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
       console.log(resData);
+      document.body.style.cursor = "";
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
     } catch (error) {
       console.log(error);
+      document.body.style.cursor = "";
       userContext.setIsError(true);
     }
   };
@@ -134,17 +159,14 @@ const ProfileSettings = () => {
     <div className="settings">
       <div className="settings__name">{userContext.user.name}</div>
       <div className="settings__image-block">
-        <img
-          className="settings__img"
-          src={`${window.domain}/` + userContext.user.avatar}
-          alt="ava"
-        />
+        <img className="settings__img" src={userContext.user.avatar.url} alt="ava" />
         <button
           className="settings__change-img-btn"
           title="сменить аватарку"
           onClick={clickImgInput}
         ></button>
-        {userContext.user.avatar !== "uploads/avatars/default_avatar.png" ? (
+        {userContext.user.avatar.url !==
+        "https://res.cloudinary.com/ztf/image/upload/v1573335637/social-news/avatars/default_avatar.png" ? (
           <button
             className="settings__delete-img-btn"
             title="удалить аватарку"

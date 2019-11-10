@@ -17,8 +17,12 @@ const userSchema = new Schema(
       required: true
     },
     avatar: {
-      type: String,
-      default: "uploads/avatars/default_avatar.png"
+      type: Object,
+      default: {
+        url:
+          "https://res.cloudinary.com/ztf/image/upload/v1573335637/social-news/avatars/default_avatar.png",
+        public_id: null
+      }
     },
     status: {
       type: String,

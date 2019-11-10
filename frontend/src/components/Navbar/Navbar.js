@@ -210,7 +210,7 @@ const Navbar = props => {
                 >
                   <img
                     className="header-right-menu__img"
-                    src={`${window.domain}/` + props.user.avatar}
+                    src={props.user.avatar.url}
                     alt="avatar"
                   />
                 </div>

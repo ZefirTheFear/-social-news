@@ -243,7 +243,7 @@ const Profile = props => {
       <div className="porfile__info">
         <div className="profile__header">
           <div className="profile__avatar">
-            <img className="profile__img" src={`${window.domain}/` + user.avatar} alt="avatar" />
+            <img className="profile__img" src={user.avatar.url} alt="avatar" />
           </div>
           <div className="profile__user">
             <div className="profile__nickname">{user.name}</div>

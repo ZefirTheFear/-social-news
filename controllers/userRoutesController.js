@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
-const clearImage = require("../utils/clearImage");
+const deleteImgFromCloud = require("../utils/deleteImgFromCloud");
 const secretOrPrivateKey = require("../config/keys").secretOrKey;
 
 exports.registerUser = async (req, res) => {
@@ -265,10 +265,14 @@ exports.changeAvatar = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
     }
-    if (user.avatar !== "uploads/avatars/default_avatar.png") {
-      clearImage(user.avatar);
+    if (
+      user.avatar.url !==
+      "https://res.cloudinary.com/ztf/image/upload/v1573335637/social-news/avatars/default_avatar.png"
+    ) {
+      deleteImgFromCloud(user.avatar.public_id);
     }
-    user.avatar = req.file.path;
+    const avatar = JSON.parse(req.body.avatar);
+    user.avatar = avatar;
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
@@ -283,10 +287,17 @@ exports.deleteAvatar = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
     }
-    if (user.avatar !== "uploads/avatars/default_avatar.png") {
-      clearImage(user.avatar);
+    if (
+      user.avatar.url !==
+      "https://res.cloudinary.com/ztf/image/upload/v1573335637/social-news/avatars/default_avatar.png"
+    ) {
+      deleteImgFromCloud(user.avatar.public_id);
     }
-    user.avatar = "uploads/avatars/default_avatar.png";
+    user.avatar = {
+      url:
+        "https://res.cloudinary.com/ztf/image/upload/v1573335637/social-news/avatars/default_avatar.png",
+      public_id: null
+    };
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {

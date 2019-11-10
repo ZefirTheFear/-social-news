@@ -345,7 +345,7 @@ const Post = props => {
               <Link className="post-inner__avatar-link" to={`/@${post.creator.name}`}>
                 <img
                   className="post-inner__avatar-img"
-                  src={`${window.domain}/` + post.creator.avatar}
+                  src={post.creator.avatar.url}
                   alt="avatar"
                 />
               </Link>

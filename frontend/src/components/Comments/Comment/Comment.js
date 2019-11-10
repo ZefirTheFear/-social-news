@@ -194,19 +194,24 @@ const Comment = props => {
     }
 
     for (const item of commentData) {
-      if (item.type === "image" && item.content) {
-        const data = new FormData();
-        data.append("file", item.content);
-        data.append("upload_preset", "comment-imgs");
-        const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
-          method: "POST",
-          body: data
-        });
-        const resData = await response.json();
-        console.log(resData);
-        item.url = resData.secure_url;
-        item.public_id = resData.public_id;
-        delete item.content;
+      try {
+        if (item.type === "image" && item.content) {
+          const data = new FormData();
+          data.append("file", item.content);
+          data.append("upload_preset", "comment-imgs");
+          const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
+            method: "POST",
+            body: data
+          });
+          const resData = await response.json();
+          console.log(resData);
+          item.url = resData.secure_url;
+          item.public_id = resData.public_id;
+          delete item.content;
+        }
+      } catch (error) {
+        console.log(error);
+        userContext.setIsError(true);
       }
     }
 
@@ -303,7 +308,7 @@ const Comment = props => {
           <div className="comment__user-avatar">
             <Link to={`/@${comment.creator.name}`} className="comment__user-avatar-link">
               <img
-                src={`${window.domain}/` + comment.creator.avatar}
+                src={comment.creator.avatar.url}
                 className="comment__user-avatar-link-img"
                 alt="avatar"
               />
