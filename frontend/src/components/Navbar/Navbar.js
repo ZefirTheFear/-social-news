@@ -128,7 +128,7 @@ const Navbar = props => {
                 activeClassName="header-menu__item-link_active"
                 className="header-menu__item-link"
               >
-                Горячее
+                Свежее
               </NavLink>
             </div>
             <div className="header-menu__item">
@@ -142,11 +142,11 @@ const Navbar = props => {
             </div>
             <div className="header-menu__item">
               <NavLink
-                to="/new"
+                to="/hot"
                 activeClassName="header-menu__item-link_active"
                 className="header-menu__item-link"
               >
-                Свежее
+                Горячее
               </NavLink>
             </div>
             {props.isAuth ? (

@@ -8,7 +8,7 @@ const MenuMobile = props => {
     <div className="menu-mobile">
       <div className="menu-mobile__item">
         <Link to="/" className="menu-mobile__item-link" onClick={props.hideMenuMobile}>
-          Горячее
+          Свежее
         </Link>
       </div>
       <div className="menu-mobile__item">
@@ -17,8 +17,8 @@ const MenuMobile = props => {
         </Link>
       </div>
       <div className="menu-mobile__item">
-        <Link to="/new" className="menu-mobile__item-link" onClick={props.hideMenuMobile}>
-          Свежее
+        <Link to="/hot" className="menu-mobile__item-link" onClick={props.hideMenuMobile}>
+          Горячее
         </Link>
       </div>
       {props.isAuth ? (

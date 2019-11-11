@@ -33,7 +33,7 @@ const fileFilter = (req, file, cb) => {
 };
 const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 
-router.get("/", postRoutesController.getPosts);
+router.get("/hot", postRoutesController.getHotPosts);
 
 router.get("/best", postRoutesController.getBestPosts);
 

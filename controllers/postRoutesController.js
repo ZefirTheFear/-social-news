@@ -92,9 +92,41 @@ exports.editPost = async (req, res) => {
   }
 };
 
-exports.getPosts = async (req, res) => {
+exports.getNewPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("creator", "name avatar");
+    const posts = await Post.find()
+      .populate("creator", "name avatar")
+      .sort({ createdAt: -1 });
+    if (!posts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(posts);
+  } catch (error) {
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
+  }
+};
+
+exports.getBestPosts = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("creator", "name avatar")
+      .sort({ rating: -1 });
+    if (!posts) {
+      return res.status(200).json([]);
+    }
+    return res.status(200).json(posts);
+  } catch (error) {
+    // console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
+  }
+};
+
+exports.getHotPosts = async (req, res) => {
+  try {
+    const posts = await Post.find({
+      createdAt: { $gte: new Date(new Date() - 3 * 24 * 60 * 60 * 1000) }
+    }).populate("creator", "name avatar");
     if (!posts) {
       return res.status(200).json([]);
     }
@@ -127,36 +159,6 @@ exports.getPosts = async (req, res) => {
     });
     hotPosts.sort((a, b) => b.hot - a.hot);
     return res.status(200).json(hotPosts);
-  } catch (error) {
-    // console.log(error);
-    return res.status(503).json({ error: "oops. some problems" });
-  }
-};
-
-exports.getBestPosts = async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .populate("creator", "name avatar")
-      .sort({ rating: -1 });
-    if (!posts) {
-      return res.status(200).json([]);
-    }
-    return res.status(200).json(posts);
-  } catch (error) {
-    // console.log(error);
-    return res.status(503).json({ error: "oops. some problems" });
-  }
-};
-
-exports.getNewPosts = async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .populate("creator", "name avatar")
-      .sort({ createdAt: -1 });
-    if (!posts) {
-      return res.status(200).json([]);
-    }
-    return res.status(200).json(posts);
   } catch (error) {
     // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });

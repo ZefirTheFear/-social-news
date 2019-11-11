@@ -29,7 +29,7 @@ const AppInner = props => {
               <Posts
                 {...propss}
                 isLogoClicked={props.isLogoClicked}
-                requestUrl={`${window.domain}/posts`}
+                requestUrl={`${window.domain}/posts/new`}
               />
             )}
           />
@@ -39,9 +39,9 @@ const AppInner = props => {
             render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/best`} />}
           />
           <Route
-            path="/new"
+            path="/hot"
             exact
-            render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/new`} />}
+            render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/hot`} />}
           />
           {props.isAuth ? (
             <Route
