@@ -14,3 +14,26 @@
     margin-left: 70px;
   }
 }
+
+.posts__more-posts {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.posts__more-posts-btn {
+  color: #fff;
+  background: map-get($colors, app-secondary);
+  border: 0;
+  outline: 0;
+  padding: 6px;
+  border-radius: map-get($border-radii, main);
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: darken(map-get($colors, app-secondary), 10%);
+  }
+}

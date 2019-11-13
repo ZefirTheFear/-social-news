@@ -36,19 +36,36 @@ const AppInner = props => {
           <Route
             path="/best"
             exact
-            render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/best`} />}
+            render={propss => (
+              <Posts
+                {...propss}
+                isLogoClicked={props.isLogoClicked}
+                requestUrl={`${window.domain}/posts/best`}
+              />
+            )}
           />
           <Route
             path="/hot"
             exact
-            render={propss => <Posts {...propss} requestUrl={`${window.domain}/posts/hot`} />}
+            render={propss => (
+              <Posts
+                {...propss}
+                isLogoClicked={props.isLogoClicked}
+                requestUrl={`${window.domain}/posts/hot`}
+              />
+            )}
           />
           {props.isAuth ? (
             <Route
               path="/subs"
               exact
               render={propss => (
-                <Posts {...propss} requestUrl={`${window.domain}/posts/subs`} logedIn />
+                <Posts
+                  {...propss}
+                  isLogoClicked={props.isLogoClicked}
+                  requestUrl={`${window.domain}/posts/subs`}
+                  logedIn
+                />
               )}
             />
           ) : null}
@@ -67,7 +84,12 @@ const AppInner = props => {
               path="/saved"
               exact
               render={propss => (
-                <Posts {...propss} requestUrl={`${window.domain}/posts/saved`} logedIn />
+                <Posts
+                  {...propss}
+                  isLogoClicked={props.isLogoClicked}
+                  requestUrl={`${window.domain}/posts/saved`}
+                  logedIn
+                />
               )}
             />
           ) : null}

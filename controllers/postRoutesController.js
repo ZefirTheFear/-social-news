@@ -93,10 +93,14 @@ exports.editPost = async (req, res) => {
 };
 
 exports.getNewPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const posts = await Post.find()
       .populate("creator", "name avatar")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!posts) {
       return res.status(200).json([]);
     }
@@ -108,10 +112,14 @@ exports.getNewPosts = async (req, res) => {
 };
 
 exports.getBestPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const posts = await Post.find()
       .populate("creator", "name avatar")
-      .sort({ rating: -1 });
+      .sort({ rating: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!posts) {
       return res.status(200).json([]);
     }
@@ -125,7 +133,7 @@ exports.getBestPosts = async (req, res) => {
 exports.getHotPosts = async (req, res) => {
   try {
     const posts = await Post.find({
-      createdAt: { $gte: new Date(new Date() - 3 * 24 * 60 * 60 * 1000) }
+      createdAt: { $gte: new Date(new Date() - 5 * 24 * 60 * 60 * 1000) }
     }).populate("creator", "name avatar");
     if (!posts) {
       return res.status(200).json([]);
@@ -166,15 +174,18 @@ exports.getHotPosts = async (req, res) => {
 };
 
 exports.getSubsPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const user = await User.findById(req.userId);
     if (!user) {
       return res.status(404).json({ error: "There is no such user" });
     }
-    const posts = await Post.find({ creator: { $in: user.subscribeTo } }).populate(
-      "creator",
-      "name avatar"
-    );
+    const posts = await Post.find({ creator: { $in: user.subscribeTo } })
+      .populate("creator", "name avatar")
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!posts) {
       return res.status(200).json([]);
     }
@@ -210,8 +221,13 @@ exports.getDesiredPosts = async (req, res) => {
 
 exports.getPostsByUser = async (req, res) => {
   const userId = req.params.userId;
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
-    const posts = await Post.find({ creator: userId }).populate("creator", "name avatar");
+    const posts = await Post.find({ creator: userId })
+      .populate("creator", "name avatar")
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!posts) {
       return res.status(200).json([]);
     }
@@ -223,6 +239,8 @@ exports.getPostsByUser = async (req, res) => {
 };
 
 exports.getEstimatedPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const user = await User.findById(req.userId);
     if (!user) {
@@ -232,7 +250,9 @@ exports.getEstimatedPosts = async (req, res) => {
       _id: { $in: [...user.likedPosts, ...user.dislikedPosts] }
     })
       .sort({ createdAt: -1 })
-      .populate("creator", "name avatar");
+      .populate("creator", "name avatar")
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!estimatedPosts) {
       return res.status(200).json([]);
     }
@@ -244,6 +264,8 @@ exports.getEstimatedPosts = async (req, res) => {
 };
 
 exports.getLikedPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const user = await User.findById(req.userId);
     if (!user) {
@@ -251,7 +273,9 @@ exports.getLikedPosts = async (req, res) => {
     }
     const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
       .sort({ createdAt: -1 })
-      .populate("creator", "name avatar");
+      .populate("creator", "name avatar")
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!likedPosts) {
       return res.status(200).json([]);
     }
@@ -263,6 +287,8 @@ exports.getLikedPosts = async (req, res) => {
 };
 
 exports.getDislikedPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const user = await User.findById(req.userId);
     if (!user) {
@@ -270,7 +296,9 @@ exports.getDislikedPosts = async (req, res) => {
     }
     const dislikedPosts = await Post.find({ _id: { $in: user.dislikedPosts } })
       .sort({ createdAt: -1 })
-      .populate("creator", "name avatar");
+      .populate("creator", "name avatar")
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!dislikedPosts) {
       return res.status(200).json([]);
     }
@@ -282,6 +310,8 @@ exports.getDislikedPosts = async (req, res) => {
 };
 
 exports.getSavedPosts = async (req, res) => {
+  const currentPage = req.get("Page");
+  const perPage = 5;
   try {
     const user = await User.findById(req.userId);
     if (!user) {
@@ -291,7 +321,9 @@ exports.getSavedPosts = async (req, res) => {
       _id: { $in: user.savedPosts }
     })
       .populate("creator", "name avatar")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     if (!savedPosts) {
       return res.status(200).json([]);
     }
