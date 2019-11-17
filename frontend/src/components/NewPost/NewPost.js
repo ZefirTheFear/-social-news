@@ -6,6 +6,7 @@ import cloneDeep from "clone-deep";
 import ContentMaker from "../ContentMaker/ContentMaker";
 import NewPostTagContainer from "../NewPostTagContainer/NewPostTagContainer";
 import Spinner from "../Spinner/Spinner";
+import Loading from "../Loading/Loading";
 
 import UserContext from "../../context/userContext";
 
@@ -22,6 +23,7 @@ const NewPost = props => {
 
   const [fetchedPostBody, setFetchedPostBody] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isNeedToWait, setIsNeedToWait] = useState(false);
   let isFetching = null;
 
   const postId = props.match.params.postId;
@@ -121,6 +123,7 @@ const NewPost = props => {
 
   const createPost = async e => {
     e.preventDefault();
+    setIsNeedToWait(true);
 
     let postData = cloneDeep(newPostData);
 
@@ -166,6 +169,7 @@ const NewPost = props => {
     }
 
     if (Object.keys(clientErrors).length > 0) {
+      setIsNeedToWait(false);
       return setErrors(clientErrors);
     }
 
@@ -343,6 +347,7 @@ const NewPost = props => {
           {props.editMode ? "Сохранить" : "Добавить пост"}
         </button>
       </form>
+      {isNeedToWait ? <Loading /> : null}
     </div>
   );
 };

@@ -36,9 +36,9 @@ const Register = props => {
     e.preventDefault();
 
     const clientErrors = {};
-    if (!validator.isLength(name, { min: 1, max: 15 })) {
+    if (!validator.isLength(name, { min: 1, max: 25 })) {
       clientErrors.name = {
-        msg: "Надо от 1 до 15 символов"
+        msg: "Надо от 1 до 25 символов"
       };
     }
     const normalizedEmail = validator.normalizeEmail(email);
@@ -47,14 +47,19 @@ const Register = props => {
         msg: "Введите email"
       };
     }
+    if (!validator.isLength(password, { min: 8, max: 20 })) {
+      clientErrors.password = {
+        msg: "От 8 до 20 символов. 1 заглавный и 1 спецсимвол"
+      };
+    }
     if (validator.isAlphanumeric(password)) {
       clientErrors.password = {
-        msg: "Минимум 1 спецсимвол и 1 заглавный символ"
+        msg: "От 8 до 20 символов. 1 заглавный и 1 спецсимвол"
       };
     }
     if (validator.isLowercase(password)) {
       clientErrors.password = {
-        msg: "Минимум 1 спецсимвол и 1 заглавный символ"
+        msg: "От 8 до 20 символов. 1 заглавный и 1 спецсимвол"
       };
     }
     if (password !== confirmPassword) {

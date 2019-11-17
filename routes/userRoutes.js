@@ -34,8 +34,8 @@ const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 router.post(
   "/register",
   [
-    body("name", "Надо от 1 до 15 символов")
-      .isLength({ min: 1, max: 15 })
+    body("name", "Надо от 1 до 25 символов")
+      .isLength({ min: 1, max: 25 })
       .custom(async value => {
         const user = await User.findOne({
           name: { $regex: new RegExp("^" + value + "$", "i") }
@@ -53,7 +53,7 @@ router.post(
           return Promise.reject("Пользователь с таким email уже есть");
         }
       }),
-    body("password", "Минимум 1 спецсимвол и 1 заглавный символ")
+    body("password", "От 8 до 20 символов. 1 заглавный и 1 спецсимвол")
       .not()
       .isAlphanumeric()
       .not()

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 
+import Loading from "../Loading/Loading";
+
 import UserContext from "../../context/userContext";
 
 import "./ProfileSettings.scss";
@@ -10,8 +12,8 @@ const ProfileSettings = () => {
   const textarea = useRef();
   const inputEl = useRef();
 
-  // const [avatar, setAvatar] = useState(userContext.user.avatar.url);
   const [note, setNote] = useState(userContext.user.aboutMe);
+  const [isNeedToWait, setIsNeedToWait] = useState(false);
 
   useEffect(() => {
     window.onresize = () => {
@@ -29,6 +31,7 @@ const ProfileSettings = () => {
   };
 
   const changeAvatarHandler = async e => {
+    setIsNeedToWait(true);
     const avatar = {};
     try {
       document.body.style.cursor = "wait";
@@ -72,6 +75,7 @@ const ProfileSettings = () => {
       document.body.style.cursor = "";
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
+      setIsNeedToWait(false);
     } catch (error) {
       console.log(error);
       document.body.style.cursor = "";
@@ -80,6 +84,7 @@ const ProfileSettings = () => {
   };
 
   const deleteAvatar = async () => {
+    setIsNeedToWait(true);
     try {
       const response = await fetch(`${window.domain}/users/delete-avatar`, {
         headers: {
@@ -95,6 +100,7 @@ const ProfileSettings = () => {
       console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
+      setIsNeedToWait(false);
     } catch (error) {
       console.log(error);
       userContext.setIsError(true);
@@ -200,6 +206,7 @@ const ProfileSettings = () => {
         />
       </div>
       <input type="file" accept="image/*" hidden onChange={changeAvatarHandler} ref={inputEl} />
+      {isNeedToWait ? <Loading /> : null}
     </div>
   );
 };

@@ -96,11 +96,7 @@ const SubsList = () => {
                 &times;
               </div>
               <Link to={`/@${user.name}`}>
-                <img
-                  className="subs-list__user-avatar"
-                  src={`${window.domain}/` + user.avatar}
-                  alt="ava"
-                />
+                <img className="subs-list__user-avatar" src={user.avatar.url} alt="ava" />
               </Link>
               <Link className="subs-list__username" to={`/@${user.name}`}>
                 {user.name}

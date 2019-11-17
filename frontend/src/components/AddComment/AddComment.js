@@ -4,6 +4,7 @@ import uniqid from "uniqid";
 import cloneDeep from "clone-deep";
 
 import ContentMaker from "../ContentMaker/ContentMaker";
+import Loading from "../Loading/Loading";
 
 import UserContext from "../../context/userContext";
 
@@ -15,9 +16,11 @@ const AddComment = props => {
   const [newCommentData, setNewCommentData] = useState([]);
   const [errors, setErrors] = useState({});
   const [isContentMakerReseted, setIsContentMakerReseted] = useState(null);
+  const [isNeedToWait, setIsNeedToWait] = useState(false);
 
   const createComment = async e => {
     e.preventDefault();
+    setIsNeedToWait(true);
 
     let commentData = cloneDeep(newCommentData);
 
@@ -27,9 +30,11 @@ const AddComment = props => {
       item => item.type === "image" || (item.type === "text" && item.content.length !== 0)
     );
     if (commentData.length === 0) {
+      setIsNeedToWait(false);
       return setErrors({ content: { msg: "Нужен контент" } });
     }
     if (commentData.length > 5) {
+      setIsNeedToWait(false);
       return setErrors({ content: { msg: "Максимум 5 блоков" } });
     }
 
@@ -81,12 +86,15 @@ const AddComment = props => {
       const resData = await response.json();
       console.log(resData);
       if (resData.errors) {
+        setIsNeedToWait(false);
         setErrors(resData.errors);
       } else if (props.mode === "answerForPost") {
         props.addComment();
         setIsContentMakerReseted(uniqid());
+        setIsNeedToWait(false);
       } else {
         props.addComment(resData);
+        setIsNeedToWait(false);
       }
     } catch (error) {
       console.log(error);
@@ -122,6 +130,7 @@ const AddComment = props => {
       {errors.content ? (
         <div className="add-comment__form__invalid-feedback">{errors.content.msg}</div>
       ) : null}
+      {isNeedToWait ? <Loading /> : null}
     </div>
   );
 };

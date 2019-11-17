@@ -88,7 +88,6 @@ const Posts = props => {
         return;
       }
       if (resData.length < 5) {
-        console.log("yes");
         setIsMorePosts(false);
       }
       if (userContext.user) {

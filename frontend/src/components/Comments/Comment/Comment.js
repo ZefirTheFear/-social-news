@@ -51,27 +51,35 @@ const Comment = props => {
   }, []);
 
   const createCommentBody = () => {
-    return comment.body.map(item => {
-      if (item.type === "text") {
-        return (
-          <div className="comment__text-block" key={uniqid()}>
-            {parse(item.content)}
-          </div>
-        );
-      } else {
-        return (
-          <div className="comment__img-block" key={uniqid()}>
-            <img
-              className="comment__img-block-img"
-              src={item.url}
-              alt="img"
-              draggable="false"
-              onClick={() => imgFullScreen(item.url)}
-            />
-          </div>
-        );
-      }
-    });
+    if (userContext.user.ignoreList.includes(comment.creator._id)) {
+      return (
+        <div className="comment__text-block" key={uniqid()}>
+          Коммент от игнорируемого пользователя
+        </div>
+      );
+    } else {
+      return comment.body.map(item => {
+        if (item.type === "text") {
+          return (
+            <div className="comment__text-block" key={uniqid()}>
+              {parse(item.content)}
+            </div>
+          );
+        } else {
+          return (
+            <div className="comment__img-block" key={uniqid()}>
+              <img
+                className="comment__img-block-img"
+                src={item.url}
+                alt="img"
+                draggable="false"
+                onClick={() => imgFullScreen(item.url)}
+              />
+            </div>
+          );
+        }
+      });
+    }
   };
 
   const imgFullScreen = src => {
