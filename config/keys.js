@@ -1,7 +1,4 @@
 module.exports = {
-  mongoURI: process.env.MONGO_URI,
-  // mongoURI:
-  //   "mongodb+srv://ZefirTheFear:Nerzul969@cluster0-zygzu.mongodb.net/blog2?retryWrites=true",
+  mongoURI: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-zygzu.mongodb.net/${process.env.MONGO_DATABASE}?retryWrites=true`,
   secretOrKey: process.env.SECRET_OR_KEY
-  // secretOrKey: "supersecretkey"
 };
