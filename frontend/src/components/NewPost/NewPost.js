@@ -42,7 +42,6 @@ const NewPost = props => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchPostData прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,7 +56,6 @@ const NewPost = props => {
     setIsLoading(true);
     try {
       const response = await fetch(`${window.domain}/posts/${postId}`, { signal: signal });
-      console.log(response);
       if (response.status === 404) {
         isFetching = false;
         userContext.setIsPageNotFound(true);
@@ -69,7 +67,6 @@ const NewPost = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
 
       setTitle(resData.title);
 
@@ -82,7 +79,6 @@ const NewPost = props => {
       isFetching = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       if (error.name === "AbortError") {
         return;
@@ -91,12 +87,10 @@ const NewPost = props => {
     }
   };
 
-  // Title
   const onChangeTitle = e => {
     setTitle(e.target.value);
   };
 
-  // Tags
   const onChangeCurrentTag = e => {
     setCurrentTag(e.target.value);
   };
@@ -126,10 +120,6 @@ const NewPost = props => {
     setIsNeedToWait(true);
 
     let postData = cloneDeep(newPostData);
-
-    console.log("title", title.trim());
-    console.log("content", newPostData);
-    console.log("tags", tags);
 
     const clientErrors = {};
     if (title.trim().length < 1 || title.trim().length > 30) {
@@ -185,13 +175,11 @@ const NewPost = props => {
               body: data
             });
             const resData = await response.json();
-            console.log(resData);
             item.url = resData.secure_url;
             item.public_id = resData.public_id;
             delete item.content;
           }
         } catch (error) {
-          console.log(error);
           userContext.setIsError(true);
         }
       }
@@ -207,13 +195,11 @@ const NewPost = props => {
               body: data
             });
             const resData = await response.json();
-            console.log(resData);
             item.url = resData.secure_url;
             item.public_id = resData.public_id;
             delete item.content;
           }
         } catch (error) {
-          console.log(error);
           userContext.setIsError(true);
         }
       }
@@ -221,8 +207,6 @@ const NewPost = props => {
 
     const postTags = [];
     tags.forEach(item => postTags.push(item.content));
-
-    console.log("content", postData);
 
     const formData = new FormData();
     formData.append("title", title.trim());
@@ -243,14 +227,12 @@ const NewPost = props => {
           body: formData
         }
       );
-      console.log(response);
       if (response.status !== 200 && response.status !== 201 && response.status !== 422) {
         setIsLoading(false);
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       if (resData.errors) {
         setErrors(resData.errors);
         setIsLoading(false);
@@ -258,7 +240,6 @@ const NewPost = props => {
         return props.history.push("/");
       }
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
       userContext.setIsError(true);
     }

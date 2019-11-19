@@ -24,8 +24,6 @@ const AddComment = props => {
 
     let commentData = cloneDeep(newCommentData);
 
-    console.log("content", newCommentData);
-
     commentData = commentData.filter(
       item => item.type === "image" || (item.type === "text" && item.content.length !== 0)
     );
@@ -49,19 +47,14 @@ const AddComment = props => {
             body: data
           });
           const resData = await response.json();
-          console.log(resData);
           item.url = resData.secure_url;
           item.public_id = resData.public_id;
           delete item.content;
         }
       } catch (error) {
-        console.log(error);
         userContext.setIsError(true);
       }
     }
-
-    console.log("content", commentData);
-    console.log("parentCommentId", props.parentCommentId);
 
     const formData = new FormData();
     formData.append("content", JSON.stringify(commentData));
@@ -78,13 +71,11 @@ const AddComment = props => {
         method: "POST",
         body: formData
       });
-      console.log(response);
       if (response.status !== 201 && response.status !== 422) {
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       if (resData.errors) {
         setIsNeedToWait(false);
         setErrors(resData.errors);
@@ -97,7 +88,6 @@ const AddComment = props => {
         setIsNeedToWait(false);
       }
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };

@@ -132,7 +132,6 @@ const Comments = props => {
   };
 
   const mountCommentsHandler = (comments, array) => {
-    console.log(comments);
     return comments.map(comment => {
       if (array.indexOf(comment._id) === -1) {
         array.push(comment._id);

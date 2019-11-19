@@ -44,7 +44,6 @@ const Comment = props => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchComment прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,7 +100,6 @@ const Comment = props => {
       const response = await fetch(`${window.domain}/posts/comments/${comment._id}`, {
         signal: signal
       });
-      console.log(response);
       if (response.status !== 200) {
         isFetching = false;
         document.body.style.cursor = "";
@@ -109,12 +107,10 @@ const Comment = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       isFetching = false;
       document.body.style.cursor = "";
       setComment(resData);
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       isFetching = false;
       if (error.name === "AbortError") {
@@ -133,18 +129,15 @@ const Comment = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       fetchComment();
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -159,18 +152,15 @@ const Comment = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       fetchComment();
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -187,7 +177,6 @@ const Comment = props => {
 
   const sendEditedCommentHandler = async e => {
     e.preventDefault();
-    console.log("content", editCommentData);
 
     let commentData = cloneDeep(editCommentData);
 
@@ -212,18 +201,14 @@ const Comment = props => {
             body: data
           });
           const resData = await response.json();
-          console.log(resData);
           item.url = resData.secure_url;
           item.public_id = resData.public_id;
           delete item.content;
         }
       } catch (error) {
-        console.log(error);
         userContext.setIsError(true);
       }
     }
-
-    console.log("content", commentData);
 
     const formData = new FormData();
     formData.append("content", JSON.stringify(commentData));
@@ -236,13 +221,11 @@ const Comment = props => {
         method: "PATCH",
         body: formData
       });
-      console.log(response);
       if (response.status !== 200 && response.status !== 422) {
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       if (resData.errors) {
         setErrors(resData.errors);
       } else {
@@ -250,7 +233,6 @@ const Comment = props => {
         setComment(resData);
       }
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };
@@ -268,18 +250,15 @@ const Comment = props => {
         },
         method: "DELETE"
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       props.deleteComment(comment._id, comment._id);
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }

@@ -69,13 +69,11 @@ const Login = props => {
         },
         body: JSON.stringify(userData)
       });
-      console.log(response);
       if (response.status !== 200 && response.status !== 404 && response.status !== 422) {
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       if (resData.errors) {
         setErrors(resData.errors);
         return;
@@ -87,7 +85,6 @@ const Login = props => {
         return;
       }
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };

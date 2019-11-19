@@ -26,7 +26,6 @@ const IgnoreList = () => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchIgnoredUsers прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,19 +39,16 @@ const IgnoreList = () => {
         },
         signal: signal
       });
-      console.log(response);
       if (response.status !== 200) {
         isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setIgnoreList(resData);
       isFetching = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       if (error.name === "AbortError") {
         return;
@@ -69,17 +65,14 @@ const IgnoreList = () => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       setIgnoreList([...ignoreList].filter(item => item._id !== userId));
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };

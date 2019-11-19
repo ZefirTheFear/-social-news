@@ -21,7 +21,6 @@ exports.getPostsAnswers = async (req, res) => {
     }
     return res.status(200).json(answersWithChildren);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -29,7 +28,6 @@ exports.getPostsAnswers = async (req, res) => {
 exports.getCommentsAnswers = async (req, res) => {
   try {
     const commentsWithChildren = [];
-    // const comments = await Comment.find({ creator: req.userId, children: { $size: !0 } })
     const comments = await Comment.find({ creator: req.userId, "children.0": { $exists: true } })
       .sort({ createdAt: -1 })
       .populate("postId", "title")
@@ -43,7 +41,6 @@ exports.getCommentsAnswers = async (req, res) => {
     }
     return res.status(200).json(commentsWithChildren);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -64,7 +61,6 @@ exports.getMyComments = async (req, res) => {
     }
     return res.status(200).json(commentsWithChildren);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };

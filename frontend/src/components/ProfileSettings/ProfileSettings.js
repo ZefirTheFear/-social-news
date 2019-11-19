@@ -43,12 +43,10 @@ const ProfileSettings = () => {
         body: data
       });
       const resData = await response.json();
-      console.log(resData);
       avatar.url = resData.secure_url;
       avatar.public_id = resData.public_id;
       document.body.style.cursor = "";
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -64,20 +62,17 @@ const ProfileSettings = () => {
         method: "POST",
         body: data
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       document.body.style.cursor = "";
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
       setIsNeedToWait(false);
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -97,12 +92,10 @@ const ProfileSettings = () => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
       setIsNeedToWait(false);
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };
@@ -121,11 +114,9 @@ const ProfileSettings = () => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };
@@ -153,10 +144,8 @@ const ProfileSettings = () => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };

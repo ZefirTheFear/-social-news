@@ -7,8 +7,6 @@
 html {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
-  // line-height: 22px;
-  // font-weight: 400;
 }
 
 body {
@@ -25,27 +23,3 @@ a {
 ::selection {
   background-color: map-get($colors, text-selection);
 }
-
-/* --- для scrollbar --- */
-#root {
-  height: 100vh;
-}
-.scrollbarContainer {
-  height: inherit;
-}
-.simplebar-scrollbar:before {
-  background: #bfbfbf !important;
-}
-.simplebar-scrollbar {
-  margin-right: 2px;
-}
-/* --------------------- */
-
-// @media (max-width: 1199px) {
-// }
-// @media (max-width: 991px) {
-// }
-// @media (max-width: 767px) {
-// }
-// @media (max-width: 575px) {
-// }

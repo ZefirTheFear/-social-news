@@ -16,7 +16,6 @@ const ContentMaker = props => {
 
   useEffect(() => {
     if (props.contentData) {
-      console.log(props.contentData);
       setNewContentData(props.contentData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

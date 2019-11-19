@@ -28,7 +28,6 @@ const Search = props => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("searching прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,19 +36,16 @@ const Search = props => {
   const fetchPosts = async () => {
     try {
       const response = await fetch(`${window.domain}/posts/desired/${desired}`, { signal: signal });
-      console.log(response);
       if (response.status !== 200) {
         isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setPosts(resData);
       isFetching = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       userContext.setIsError(true);
     }

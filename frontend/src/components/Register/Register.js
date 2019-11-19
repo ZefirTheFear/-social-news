@@ -87,13 +87,11 @@ const Register = props => {
         },
         body: JSON.stringify(newUserData)
       });
-      console.log(response);
       if (response.status !== 201 && response.status !== 422) {
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       if (resData.errors) {
         setErrors(resData.errors);
         return;
@@ -102,7 +100,6 @@ const Register = props => {
         return;
       }
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };

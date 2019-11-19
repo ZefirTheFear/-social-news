@@ -7,31 +7,7 @@ const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
-// Для multer
-const fileStorage = multer.diskStorage({
-  // конфижим multer.
-  destination: (req, file, cb) => {
-    // фция, которая определяет где сохраняем
-    cb(null, "uploads/images/");
-  },
-  filename: (req, file, cb) => {
-    // фция, которая определяет как сохраняем (название)
-    cb(null, new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname); // дата для уникальности + оригинильное имя файла
-  }
-});
-const fileFilter = (req, file, cb) => {
-  // фция, которая определяет файлы какого типа сохраняем
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
+const upload = multer();
 
 router.get("/new", postRoutesController.getNewPosts);
 
@@ -56,7 +32,7 @@ router.get("/saved", isAuth, postRoutesController.getSavedPosts);
 router.post(
   "/new-post",
   isAuth,
-  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
+  upload.none(),
   [
     body("title", "Длина заголовка от 1 до 30 символов")
       .trim()
@@ -93,7 +69,7 @@ router.post(
 router.patch(
   "/:postId/edit",
   isAuth,
-  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
+  upload.none(),
   [
     body("title", "Длина заголовка от 1 до 30 символов")
       .trim()
@@ -142,7 +118,7 @@ router.get("/:postId/comments", postRoutesController.getComments);
 router.post(
   "/:postId/add-comment",
   isAuth,
-  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
+  upload.none(),
   [
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);
@@ -167,7 +143,7 @@ router.patch("/comments/:commentId/dislike", isAuth, postRoutesController.dislik
 router.patch(
   "/comments/:commentId/edit",
   isAuth,
-  upload.fields([{ name: "imgBlocksArray" }, { name: "newImgBlocksArray" }]),
+  upload.none(),
   [
     body("content").custom((value, { req }) => {
       const content = JSON.parse(value);

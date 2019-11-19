@@ -26,7 +26,6 @@ const MyComments = () => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchComments прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,19 +39,16 @@ const MyComments = () => {
         },
         signal: signal
       });
-      console.log(response);
       if (response.status !== 200) {
         isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setMyComment(resData);
       isFetching = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       if (error.name === "AbortError") {
         return;

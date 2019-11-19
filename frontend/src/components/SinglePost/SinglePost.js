@@ -50,11 +50,9 @@ const SinglePost = props => {
     return () => {
       if (isFetchingPost) {
         controllerForPost.abort();
-        console.log("fetchSinglePost-post прерван");
       }
       if (isFetchingComments) {
         controllerForComments.abort();
-        console.log("fetchSinglePost-comments прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,7 +61,6 @@ const SinglePost = props => {
   const fetchPost = async () => {
     try {
       const response = await fetch(`${window.domain}/posts/${postId}`, { signal: signalForPost });
-      console.log(response);
       if (response.status === 404) {
         isFetchingPost = false;
         userContext.setIsPageNotFound(true);
@@ -75,12 +72,10 @@ const SinglePost = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setPost(resData);
       isFetchingPost = false;
       setIsLoadingPost(false);
     } catch (error) {
-      console.log(error);
       isFetchingPost = false;
       if (error.name === "AbortError") {
         return;
@@ -95,19 +90,16 @@ const SinglePost = props => {
       const response = await fetch(`${window.domain}/posts/${postId}/comments`, {
         signal: signalForComments
       });
-      console.log(response);
       if (response.status !== 200) {
         isFetchingComments = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setComments(resData);
       isFetchingComments = false;
       setIsLoadingComments(false);
     } catch (error) {
-      console.log(error);
       isFetchingComments = false;
       if (error.name === "AbortError") {
         return;
@@ -123,7 +115,6 @@ const SinglePost = props => {
         setTimeout(() => {
           if (observer) {
             observer.disconnect();
-            // console.log("reseted");
           }
         }, 500);
       };
@@ -132,7 +123,6 @@ const SinglePost = props => {
 
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
-          // element.scrollIntoView();
           reset();
 
           return true;

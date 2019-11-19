@@ -33,7 +33,6 @@ exports.createPost = async (req, res) => {
     await user.save();
     return res.status(201).json(newPost);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -67,14 +66,12 @@ exports.editPost = async (req, res) => {
         oldImgs.push(item.public_id);
       }
     });
-    console.log("oldImgs", oldImgs);
     const newImgs = [];
     body.forEach(item => {
       if (item.type === "image") {
         newImgs.push(item.public_id);
       }
     });
-    console.log("newImgs", newImgs);
     oldImgs.forEach(public_id => {
       if (newImgs.indexOf(public_id) === -1) {
         deleteImgFromCloud(public_id);
@@ -87,7 +84,6 @@ exports.editPost = async (req, res) => {
     await post.save();
     return res.status(200).json(post);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -106,7 +102,6 @@ exports.getNewPosts = async (req, res) => {
     }
     return res.status(200).json(posts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -125,7 +120,6 @@ exports.getBestPosts = async (req, res) => {
     }
     return res.status(200).json(posts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -168,7 +162,6 @@ exports.getHotPosts = async (req, res) => {
     hotPosts.sort((a, b) => b.hot - a.hot);
     return res.status(200).json(hotPosts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -191,7 +184,6 @@ exports.getSubsPosts = async (req, res) => {
     }
     return res.status(200).json(posts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -214,7 +206,6 @@ exports.getDesiredPosts = async (req, res) => {
     });
     return res.status(200).json(desiredPosts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -233,7 +224,6 @@ exports.getPostsByUser = async (req, res) => {
     }
     return res.status(200).json(posts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -258,7 +248,6 @@ exports.getEstimatedPosts = async (req, res) => {
     }
     return res.status(200).json(estimatedPosts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -281,7 +270,6 @@ exports.getLikedPosts = async (req, res) => {
     }
     return res.status(200).json(likedPosts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -304,7 +292,6 @@ exports.getDislikedPosts = async (req, res) => {
     }
     return res.status(200).json(dislikedPosts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -329,7 +316,6 @@ exports.getSavedPosts = async (req, res) => {
     }
     return res.status(200).json(savedPosts);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -343,7 +329,6 @@ exports.getPost = async (req, res) => {
     }
     return res.status(200).json(post);
   } catch (error) {
-    // console.log(error);
     if (error.name === "CastError") {
       return res.status(404).json({ error: "There is no such post" });
     }
@@ -389,7 +374,6 @@ exports.likePost = async (req, res) => {
       return res.status(200).json("unliked");
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -432,7 +416,6 @@ exports.dislikePost = async (req, res) => {
       return res.status(200).json("undisliked");
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -459,7 +442,6 @@ exports.savePost = async (req, res) => {
       return res.status(200).json("unsaved");
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -487,19 +469,16 @@ exports.deletePost = async (req, res) => {
           deleteImgFromCloud(item.public_id);
         }
       });
-      console.log("cmt img cleared");
 
       const commentCreator = await User.findById(comment.creator);
       commentCreator.comments.pull(comment._id);
       await commentCreator.save();
-      console.log("com creator cleared");
 
       if (comment.likes.length > 0) {
         comment.likes.forEach(async like => {
           const user = await User.findById(like);
           user.likedComments.pull(comment._id);
           await user.save();
-          console.log("com liked cleared");
         });
       }
       if (comment.dislikes.length > 0) {
@@ -507,12 +486,10 @@ exports.deletePost = async (req, res) => {
           const user = await User.findById(dislike);
           user.dislikedComments.pull(comment._id);
           await user.save();
-          console.log("com disliked cleared");
         });
       }
 
       await Comment.findByIdAndDelete(comment._id);
-      console.log(comment._id, "com deleted");
     });
 
     post.body.forEach(item => {
@@ -520,19 +497,16 @@ exports.deletePost = async (req, res) => {
         deleteImgFromCloud(item.public_id);
       }
     });
-    console.log("post imgs cleared");
 
     const postCreator = await User.findById(post.creator);
     postCreator.posts.pull(post._id);
     await postCreator.save();
-    console.log("post creator cleared");
 
     if (post.likes.length > 0) {
       post.likes.forEach(async like => {
         const user = await User.findById(like);
         user.likedPosts.pull(post._id);
         await user.save();
-        console.log("post liked cleared");
       });
     }
     if (post.dislikes.length > 0) {
@@ -540,7 +514,6 @@ exports.deletePost = async (req, res) => {
         const user = await User.findById(dislike);
         user.dislikedPosts.pull(post._id);
         await user.save();
-        console.log("post disliked cleared");
       });
     }
     if (post.saves.length > 0) {
@@ -548,15 +521,12 @@ exports.deletePost = async (req, res) => {
         const user = await User.findById(save);
         user.savedPosts.pull(post._id);
         await user.save();
-        console.log("post saved cleared");
       });
     }
 
     await Post.findByIdAndDelete(post._id);
-    console.log(post._id, "post deleted");
     return res.status(200).json("post deleted");
   } catch (error) {
-    // console.log(error);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -599,7 +569,7 @@ exports.createComment = async (req, res) => {
       comment.children.push(newComment);
       await comment.save();
     }
-    // ----------
+
     if (newComment.parentComment) {
       const parentComment = await Comment.findById(newComment.parentComment);
       const creator = await User.findById(parentComment.creator);
@@ -610,10 +580,9 @@ exports.createComment = async (req, res) => {
       creator.newAnswers.push({ type: "answerForPost" });
       await creator.save();
     }
-    // ----------
+
     res.status(201).json(createdCommentExtra);
   } catch (error) {
-    console.log(error._doc);
     return res.status(503).json("oops. some problems");
   }
 };
@@ -647,14 +616,12 @@ exports.editComment = async (req, res) => {
         oldImgs.push(item.public_id);
       }
     });
-    console.log("oldImgs", oldImgs);
     const newImgs = [];
     body.forEach(item => {
       if (item.type === "image") {
         newImgs.push(item.public_id);
       }
     });
-    console.log("newImgs", newImgs);
     oldImgs.forEach(public_id => {
       if (newImgs.indexOf(public_id) === -1) {
         deleteImgFromCloud(public_id);
@@ -665,7 +632,6 @@ exports.editComment = async (req, res) => {
     await comment.save();
     return res.status(200).json(comment);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -688,7 +654,6 @@ exports.deleteComment = async (req, res) => {
         return res.status(404).json({ error: "There is no such comment" });
       }
 
-      console.log(comment.children.length);
       if (comment.children.length > 0) {
         comment.children.forEach(async childCom => {
           await delCom(childCom, targetComId);
@@ -699,24 +664,20 @@ exports.deleteComment = async (req, res) => {
             deleteImgFromCloud(item.public_id);
           }
         });
-        console.log("img cleared");
 
         const creator = await User.findById(comment.creator);
         creator.comments.pull(comId);
         await creator.save();
-        console.log("creator cleared");
 
         const post = await Post.findById(comment.postId);
         post.comments.pull(comId);
         await post.save();
-        console.log("post cleared");
 
         if (comment.likes.length > 0) {
           comment.likes.forEach(async like => {
             const user = await User.findById(like);
             user.likedComments.pull(comId);
             await user.save();
-            console.log("liked cleared");
           });
         }
         if (comment.dislikes.length > 0) {
@@ -724,7 +685,6 @@ exports.deleteComment = async (req, res) => {
             const user = await User.findById(dislike);
             user.dislikedComments.pull(comId);
             await user.save();
-            console.log("disliked cleared");
           });
         }
 
@@ -733,24 +693,15 @@ exports.deleteComment = async (req, res) => {
         if (parentCommentId) {
           const parentComment = await Comment.findById(parentCommentId);
 
-          console.log(parentComment.children);
-          console.log("comId index", parentComment.children.indexOf(comId));
-          console.log("last index", parentComment.children.length - 1);
           if (parentComment.children.indexOf(comId) === parentComment.children.length - 1) {
             delParent = true;
           }
 
           parentComment.children.pull(comId);
           await parentComment.save();
-          console.log("parentComment cleared");
         }
         await Comment.findByIdAndDelete(comId);
-        console.log(comId, "deleted");
-        console.log("comId", comId);
-        console.log("targetComId", targetComId);
-        console.log(comId.toString() === targetComId.toString());
         if (comId.toString() === targetComId.toString()) {
-          console.log("response");
           return res.status(200).json("deleted");
         } else {
           if (delParent) {
@@ -761,7 +712,6 @@ exports.deleteComment = async (req, res) => {
     };
     delCom(commentId, commentId);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -776,7 +726,6 @@ exports.getComments = async (req, res) => {
     }
     return res.status(200).json(comments);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -793,7 +742,6 @@ exports.getComment = async (req, res) => {
     }
     return res.status(200).json(comment);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -836,7 +784,6 @@ exports.likeComment = async (req, res) => {
       return res.status(200).json("unliked comment");
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -879,7 +826,6 @@ exports.dislikeComment = async (req, res) => {
       return res.status(200).json("undisliked comment");
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };

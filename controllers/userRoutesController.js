@@ -26,7 +26,6 @@ exports.registerUser = async (req, res) => {
     await newUser.save();
     return res.status(201).json(newUser);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -59,7 +58,6 @@ exports.loginUser = async (req, res) => {
       return res.status(404).json({ errors: { password: { msg: "Неверный пароль" } } });
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -75,7 +73,6 @@ exports.getUser = async (req, res) => {
     }
     return res.status(200).json(user);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -114,7 +111,6 @@ exports.toggleSubscribeToUser = async (req, res) => {
       return res.status(200).json(user);
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -151,7 +147,6 @@ exports.toggleIgnoreUser = async (req, res) => {
       return res.status(200).json(user);
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -181,7 +176,6 @@ exports.setNoteAboutUser = async (req, res) => {
       return res.status(200).json(user);
     }
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -195,7 +189,7 @@ exports.removeNoteAboutUser = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    return res.status(503).json({ error: "oops. some problems" });
   }
 };
 
@@ -213,7 +207,6 @@ exports.getSubscribeTo = async (req, res) => {
     }).select("name avatar");
     return res.status(200).json(users);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -232,7 +225,6 @@ exports.getIgnoreList = async (req, res) => {
     }).select("name avatar");
     return res.status(200).json(users);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -254,7 +246,6 @@ exports.getNotes = async (req, res) => {
     }
     return res.status(200).json(notes);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -276,7 +267,6 @@ exports.changeAvatar = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -301,7 +291,6 @@ exports.deleteAvatar = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -316,7 +305,6 @@ exports.changeSex = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -331,7 +319,6 @@ exports.setAboutMeNote = async (req, res) => {
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -346,7 +333,6 @@ exports.deleteNewAnswersForPost = async (req, res) => {
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser._doc);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -361,7 +347,6 @@ exports.deleteNewAnswersForComment = async (req, res) => {
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser._doc);
   } catch (error) {
-    // console.log(error);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };

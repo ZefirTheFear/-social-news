@@ -98,7 +98,6 @@ const Profile = props => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchUserDara прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,7 +108,6 @@ const Profile = props => {
       const response = await fetch(`${window.domain}/users/user/${props.match.params.username}`, {
         signal: signal
       });
-      console.log(response);
       if (response.status === 404) {
         isFetching = false;
         userContext.setIsPageNotFound(true);
@@ -121,12 +119,10 @@ const Profile = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setUser(resData);
       isFetching = false;
       setIsUserLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       userContext.setIsError(true);
     }
@@ -142,7 +138,6 @@ const Profile = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         setIsSubscribeBtnDisabled(false);
         setIsBlockBtnDisabled(false);
@@ -150,13 +145,11 @@ const Profile = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       setIsSubscribed(!isSubscribed);
       setIsSubscribeBtnDisabled(false);
       setIsBlockBtnDisabled(false);
     } catch (error) {
-      console.log(error);
       setIsSubscribeBtnDisabled(false);
       setIsBlockBtnDisabled(false);
       userContext.setIsError(true);
@@ -173,7 +166,6 @@ const Profile = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         setIsBlockBtnDisabled(false);
         setIsSubscribeBtnDisabled(false);
@@ -181,13 +173,11 @@ const Profile = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       setIsBlocked(!isBlocked);
       setIsBlockBtnDisabled(false);
       setIsSubscribeBtnDisabled(false);
     } catch (error) {
-      console.log(error);
       setIsBlockBtnDisabled(false);
       setIsSubscribeBtnDisabled(false);
       userContext.setIsError(true);
@@ -218,19 +208,16 @@ const Profile = props => {
         method: "PATCH",
         body: JSON.stringify(noteData)
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       document.body.style.cursor = "";
       localStorage.setItem("user", JSON.stringify(resData));
       setInitialUserNote(note);
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }

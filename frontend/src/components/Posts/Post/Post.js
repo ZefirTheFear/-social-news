@@ -33,7 +33,6 @@ const Post = props => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchPost прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -68,7 +67,6 @@ const Post = props => {
       isFetching = true;
       document.body.style.cursor = "wait";
       const response = await fetch(`${window.domain}/posts/${post._id}`, { signal: signal });
-      console.log(response);
       if (response.status !== 200) {
         isFetching = false;
         document.body.style.cursor = "";
@@ -76,12 +74,10 @@ const Post = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       isFetching = false;
       document.body.style.cursor = "";
       setPost(resData);
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       isFetching = false;
       if (error.name === "AbortError") {
@@ -105,18 +101,15 @@ const Post = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       fetchPost();
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -131,18 +124,15 @@ const Post = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       fetchPost();
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -157,18 +147,15 @@ const Post = props => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         document.body.style.cursor = "";
         userContext.setIsError(true);
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       fetchPost();
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -187,21 +174,18 @@ const Post = props => {
         },
         method: "DELETE"
       });
-      console.log(response);
       if (response.status !== 200) {
         userContext.setIsError(true);
         document.body.style.cursor = "";
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      await response.json();
       document.body.style.cursor = "";
       if (props.match.params.postTitle) {
         return props.history.push("/");
       }
       return props.deletePost(post._id);
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
       document.body.style.cursor = "";
     }

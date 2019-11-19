@@ -27,7 +27,6 @@ const AnswersComments = () => {
       deleteNewAnswersForComments();
       if (isFetching) {
         controller.abort();
-        console.log("fetch AnswersForComments прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,19 +40,16 @@ const AnswersComments = () => {
         },
         signal: signal
       });
-      console.log(response);
       if (response.status !== 200) {
         isFetching = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       setAnswers(resData);
       isFetching = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       if (error.name === "AbortError") {
         return;
@@ -70,17 +66,14 @@ const AnswersComments = () => {
         },
         method: "PATCH"
       });
-      console.log(response);
       if (response.status !== 200) {
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
     } catch (error) {
-      console.log(error);
       userContext.setIsError(true);
     }
   };

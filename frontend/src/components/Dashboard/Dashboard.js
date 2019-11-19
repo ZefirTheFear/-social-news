@@ -28,7 +28,6 @@ const Dashboard = props => {
     return () => {
       if (isFetching) {
         controller.abort();
-        console.log("fetchUser прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,7 +38,6 @@ const Dashboard = props => {
       const response = await fetch(`${window.domain}/users/user/${userContext.user.name}`, {
         signal: signal
       });
-      console.log(response);
       if (response.status === 404) {
         isFetching = false;
         return props.logoutHandler();
@@ -50,14 +48,12 @@ const Dashboard = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       localStorage.setItem("user", JSON.stringify(resData));
       userContext.setUser(resData);
       setUser(resData);
       isFetching = false;
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching = false;
       if (error.name === "AbortError") {
         return;

@@ -30,12 +30,10 @@ const Navbar = props => {
 
   const searchBlockOnClick = e => {
     disturbSearchInput(e);
-    console.log("clicked");
   };
 
   const searchBlockEnter = e => {
     disturbSearchInput(e);
-    console.log("entered");
   };
 
   const searchBlockLeave = e => {
@@ -63,7 +61,7 @@ const Navbar = props => {
   const searchHandler = e => {
     e.preventDefault();
     if (!searchInputValue.trim()) {
-      return console.log("empty");
+      return;
     }
     props.history.push(`/search/${searchInputValue}`);
   };

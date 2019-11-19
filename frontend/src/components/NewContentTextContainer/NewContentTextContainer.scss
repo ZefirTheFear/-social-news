@@ -14,7 +14,6 @@ div[contenteditable="true"] {
   align-items: center;
   max-width: calc(100% - 27.25px);
   flex: 1;
-  // word-wrap: break-word;
 
   b {
     font-weight: bold;
@@ -38,8 +37,6 @@ div[contenteditable="true"] {
   flex: 1;
   padding: 3px 0;
   word-wrap: break-word;
-  // word-break: break-all;
-  // white-space: pre-wrap;
   background-color: map-get($colors, app-main);
   color: map-get($colors, app-text);
   text-align: left;
@@ -51,7 +48,6 @@ div[contenteditable="true"] {
 }
 
 .content-text-container__txt_is-dragging {
-  // background-color: darken(map-get($colors, app-main), 10%);
   border-radius: map-get($border-radii, main);
   border: 2px solid map-get($colors, border);
 }

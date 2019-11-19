@@ -34,17 +34,14 @@ const MyComment = props => {
         return;
       }
       const resData = await response.json();
-      console.log(resData);
       const parentComment = { ...resData };
       parentComment.children = [myComment[0]._id];
       const newMyComment = [...myComment];
       newMyComment.unshift(parentComment);
-      console.log(newMyComment);
       setMyComment(newMyComment);
       setIsParentShown(true);
       document.body.style.cursor = "";
     } catch (error) {
-      console.log(error);
       document.body.style.cursor = "";
       userContext.setIsError(true);
     }
@@ -53,7 +50,6 @@ const MyComment = props => {
   const hideParentHandler = () => {
     const newMyComment = [...myComment];
     newMyComment.shift();
-    console.log(newMyComment);
     setMyComment(newMyComment);
     setIsParentShown(false);
   };

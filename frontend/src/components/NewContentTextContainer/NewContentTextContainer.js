@@ -60,24 +60,7 @@ const NewContentTextContainer = props => {
 
     const content = e.clipboardData.getData("text/plain");
 
-    // const str = String.fromCharCode(13) + String.fromCharCode(10);
-    // const regExp = new RegExp(str, "g");
-    // const contentFormatted = content.replace(regExp, "<br/>");
-
     document.execCommand("insertText", false, content);
-
-    // if (window.clipboardData) {
-    //   const content = window.clipboardData.getData("Text");
-    //   if (window.getSelection) {
-    //     var selObj = window.getSelection();
-    //     var selRange = selObj.getRangeAt(0);
-    //     selRange.deleteContents();
-    //     selRange.insertNode(document.createTextNode(content));
-    //   }
-    // } else if (e.clipboardData) {
-    //   const content = e.clipboardData.getData("text/plain");
-    //   document.execCommand("insertText", false, content);
-    // }
   };
 
   const onSelectInput = () => {

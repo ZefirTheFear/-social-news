@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-// import SimpleBar from "simplebar-react";
-// import "simplebar/dist/simplebar.min.css";
-
 import UserContext from "./context/userContext";
 
 import "./App.scss";
@@ -14,48 +11,16 @@ import NewPost from "./components/NewPost/NewPost";
 import SomethingWentWrong from "./components/SomethingWentWrong/SomethingWentWrong";
 import NotFound from "./components/NotFound/NotFound";
 
-// import TestComponent from "./components/TestComponent/TestComponent";
-// import DnDMouseNTouch from "./components/DnDMouseNTouch/DnDMouseNTouch";
-
 const App = () => {
   const [isAuth, setIsAuth] = useState(localStorage.getItem("isAuth") ? true : false);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-  // const [isAuth, setIsAuth] = useState(false);
-  // const [token, setToken] = useState(null);
-  // const [user, setUser] = useState(null);
 
   const [isLogoClicked, setIsLogoClicked] = useState(null);
   const [isError, setIsError] = useState(false);
   const [isPageNotFound, setIsPageNotFound] = useState(false);
 
-  // window.domain = "http://localhost:5001";
   window.domain = "";
-
-  // componentDidMount
-  // useEffect(() => {
-  //   effect
-  // }, [])
-
-  // componentDidUpdate
-  // useEffect(() => {
-  //   effect
-  // }, [input])
-
-  // componentDidUpdate with cleaning fnc
-  // useEffect(() => {
-  //   effect
-  //   return () => {
-  //     cleaning
-  //   };
-  // }, [input])
-
-  // componentWillUnmount
-  // useEffect(() => {
-  //   return () => {
-  //     effect
-  //   };
-  // }, [])
 
   useEffect(() => {
     console.log(
@@ -70,9 +35,6 @@ const App = () => {
     ) {
       return logoutHandler();
     }
-    // setIsAuth(localStorage.getItem("isAuth"));
-    // setToken(localStorage.getItem("token"));
-    // setUser(JSON.parse(localStorage.getItem("user")));
     setAutoLogoutHandler();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuth]);
@@ -85,13 +47,11 @@ const App = () => {
     setIsAuth(false);
     setToken(null);
     setUser(null);
-    console.log("logouting");
   };
 
   const setAutoLogoutHandler = () => {
     const expiryDate = localStorage.getItem("expiryDate");
     const delayInms = new Date(new Date(expiryDate).getTime() - new Date());
-    console.log(delayInms / 1000 / 60 + " min left");
     setTimeout(() => {
       logoutHandler();
     }, delayInms);
@@ -102,7 +62,6 @@ const App = () => {
   };
 
   return (
-    // <SimpleBar className="scrollbarContainer" data-simplebar-auto-hide="false">
     <UserContext.Provider
       value={{
         isAuth: isAuth,
@@ -131,9 +90,6 @@ const App = () => {
                 logoClicked={logoClicked}
               />
               <Switch>
-                {/* <Route path="/test" component={TestComponent} /> */}
-                {/* <Route path="/test" component={DnDMouseNTouch} /> */}
-
                 {isAuth ? <Route exact path="/new-post" component={NewPost} /> : null}
                 {isAuth ? (
                   <Route
@@ -159,7 +115,6 @@ const App = () => {
         </div>
       </BrowserRouter>
     </UserContext.Provider>
-    // </SimpleBar>
   );
 };
 

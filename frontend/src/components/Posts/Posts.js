@@ -48,14 +48,12 @@ const Posts = props => {
     return () => {
       if (isFetching.current) {
         currentController.abort();
-        console.log("fetchPosts прерван");
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPosts = async () => {
-    console.log("fetching...");
     if (!isLoading) {
       setIsFetchingMorePosts(true);
     }
@@ -71,15 +69,12 @@ const Posts = props => {
         },
         signal: signal
       });
-      console.log(response);
       if (response.status !== 200) {
         isFetching.current = false;
         userContext.setIsError(true);
         return;
       }
       const resData = await response.json();
-      console.log(resData);
-      console.log(resData.length);
       if (resData.length === 0) {
         isFetching.current = false;
         setIsMorePosts(false);
@@ -94,7 +89,6 @@ const Posts = props => {
         const fetchedPosts = resData.filter(
           post => !userContext.user.ignoreList.includes(post.creator._id)
         );
-        console.log(fetchedPosts);
         let newPosts;
         if (isNewRequestUrl.current) {
           newPosts = fetchedPosts;
@@ -122,13 +116,11 @@ const Posts = props => {
         setPosts(newPosts);
       }
       isFetching.current = false;
-      // setIsMorePosts(true);
       if (!isLoading) {
         setIsFetchingMorePosts(false);
       }
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       isFetching.current = false;
       if (error.name === "AbortError") {
         return;
@@ -138,15 +130,12 @@ const Posts = props => {
   };
 
   const componentDidMount = async () => {
-    console.log("props", props);
     await fetchPosts();
-    console.log("mounted");
     didMountRef.current = true;
     urlRef.current = props.history.location.pathname;
   };
 
   const changeRequestUrl = () => {
-    console.log("url changed");
     isNewRequestUrl.current = true;
     page.current = 1;
     setIsLoading(true);
@@ -156,9 +145,7 @@ const Posts = props => {
   };
 
   const morePosts = () => {
-    console.log("more posts");
     page.current++;
-    console.log(page);
     fetchPosts();
   };
 
