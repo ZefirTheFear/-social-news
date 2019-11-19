@@ -9,6 +9,7 @@ import Confirm from "../../Confirm/Confirm";
 import FullScreenImage from "../../FullScreenImage/FullScreenImage";
 import ContentMaker from "../../ContentMaker/ContentMaker";
 import AddComment from "../../AddComment/AddComment";
+import Loading from "../../Loading/Loading";
 
 import UserContext from "../../../context/userContext";
 
@@ -28,6 +29,7 @@ const Comment = props => {
   const [isImgFullScreen, setIsImgFullScreen] = useState(false);
   const [src, setSrc] = useState(null);
   const [errors, setErrors] = useState({});
+  const [isNeedToWait, setIsNeedToWait] = useState(false);
   let isFetching = null;
 
   const controller = new AbortController();
@@ -177,6 +179,7 @@ const Comment = props => {
 
   const sendEditedCommentHandler = async e => {
     e.preventDefault();
+    setIsNeedToWait(true);
 
     let commentData = cloneDeep(editCommentData);
 
@@ -184,9 +187,11 @@ const Comment = props => {
       item => item.type === "image" || (item.type === "text" && item.content.length !== 0)
     );
     if (commentData.length === 0) {
+      setIsNeedToWait(false);
       return setErrors({ content: { msg: "Нужен контент" } });
     }
     if (commentData.length > 5) {
+      setIsNeedToWait(false);
       return setErrors({ content: { msg: "Максимум 5 блоков" } });
     }
 
@@ -227,10 +232,12 @@ const Comment = props => {
       }
       const resData = await response.json();
       if (resData.errors) {
+        setIsNeedToWait(false);
         setErrors(resData.errors);
       } else {
         cancelEditModeHandler();
         setComment(resData);
+        setIsNeedToWait(false);
       }
     } catch (error) {
       userContext.setIsError(true);
@@ -272,7 +279,9 @@ const Comment = props => {
     setErrors({});
   };
 
-  return comment ? (
+  return isNeedToWait ? (
+    <Loading />
+  ) : comment ? (
     <div className="comment">
       {isDeleting ? (
         <Confirm
