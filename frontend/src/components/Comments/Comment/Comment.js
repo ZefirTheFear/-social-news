@@ -52,7 +52,7 @@ const Comment = props => {
   }, []);
 
   const createCommentBody = () => {
-    if (userContext.user.ignoreList.includes(comment.creator._id)) {
+    if (userContext.user && userContext.user.ignoreList.includes(comment.creator._id)) {
       return (
         <div className="comment__text-block" key={uniqid()}>
           Коммент от игнорируемого пользователя
