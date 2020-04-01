@@ -26,7 +26,6 @@ const Modal = props => {
       <div className="modal__inner" ref={props.modalInnerRef}>
         {props.children}
       </div>
-      ;
     </div>
   );
 };
