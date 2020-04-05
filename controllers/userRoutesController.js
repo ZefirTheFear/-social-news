@@ -21,7 +21,7 @@ exports.registerUser = async (req, res) => {
     const newUser = new User({
       name: name,
       email: email,
-      password: hashedPassword
+      password: hashedPassword,
     });
     await newUser.save();
     return res.status(201).json(newUser);
@@ -48,7 +48,7 @@ exports.loginUser = async (req, res) => {
     if (result) {
       const token = jwt.sign(
         {
-          userId: user._id
+          userId: user._id,
         },
         secretOrPrivateKey,
         { expiresIn: 3600 * 24 }
@@ -66,7 +66,7 @@ exports.getUser = async (req, res) => {
   const username = req.params.username;
   try {
     const user = await User.findOne({
-      name: { $regex: new RegExp("^" + username + "$", "i") }
+      name: { $regex: new RegExp("^" + username + "$", "i") },
     });
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
@@ -90,12 +90,12 @@ exports.toggleSubscribeToUser = async (req, res) => {
       return res.status(404).json({ error: "there is no such user" });
     }
 
-    if (user.ignoreList.find(item => item.toString() === subscribeToUserId)) {
+    if (user.ignoreList.find((item) => item.toString() === subscribeToUserId)) {
       return res.status(403).json("u cant do this");
     }
 
     const subscribe = user.subscribeTo.find(
-      subscribe => subscribe.toString() === subscribeToUserId
+      (subscribe) => subscribe.toString() === subscribeToUserId
     );
     if (!subscribe) {
       user.subscribeTo.push(subscribeToUserId);
@@ -128,11 +128,11 @@ exports.toggleIgnoreUser = async (req, res) => {
       return res.status(404).json({ error: "there is no such user" });
     }
 
-    if (user.subscribeTo.find(item => item.toString() === ignoredUserId)) {
+    if (user.subscribeTo.find((item) => item.toString() === ignoredUserId)) {
       return res.status(403).json("u cant do this");
     }
 
-    const ignore = user.ignoreList.find(ignore => ignore.toString() === ignoredUserId);
+    const ignore = user.ignoreList.find((ignore) => ignore.toString() === ignoredUserId);
     if (!ignore) {
       user.ignoreList.push(ignoredUserId);
       user = await user.save();
@@ -160,7 +160,7 @@ exports.setNoteAboutUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
     }
-    const note = user.notesAboutUsers.find(note => note.userId === notedUserId);
+    const note = user.notesAboutUsers.find((note) => note.userId === notedUserId);
     if (!note) {
       user.notesAboutUsers.push({ userId: notedUserId, body: noteBody });
       user = await user.save();
@@ -185,7 +185,7 @@ exports.removeNoteAboutUser = async (req, res) => {
 
   try {
     let user = await User.findById(req.userId);
-    user.notesAboutUsers = user.notesAboutUsers.filter(note => note.userId !== userId);
+    user.notesAboutUsers = user.notesAboutUsers.filter((note) => note.userId !== userId);
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
@@ -203,7 +203,7 @@ exports.getSubscribeTo = async (req, res) => {
       return res.status(200).json([]);
     }
     const users = await User.find({
-      _id: { $in: [...user.subscribeTo] }
+      _id: { $in: [...user.subscribeTo] },
     }).select("name avatar");
     return res.status(200).json(users);
   } catch (error) {
@@ -221,7 +221,7 @@ exports.getIgnoreList = async (req, res) => {
       return res.status(200).json([]);
     }
     const users = await User.find({
-      _id: { $in: [...user.ignoreList] }
+      _id: { $in: [...user.ignoreList] },
     }).select("name avatar");
     return res.status(200).json(users);
   } catch (error) {
@@ -263,10 +263,12 @@ exports.changeAvatar = async (req, res) => {
       deleteImgFromCloud(user.avatar.public_id);
     }
     const avatar = JSON.parse(req.body.avatar);
+    console.log(avatar);
     user.avatar = avatar;
     user = await user.save();
     return res.status(200).json(user);
   } catch (error) {
+    console.log(error.message);
     return res.status(503).json({ error: "oops. some problems" });
   }
 };
@@ -286,7 +288,7 @@ exports.deleteAvatar = async (req, res) => {
     user.avatar = {
       url:
         "https://res.cloudinary.com/ztf/image/upload/v1573335637/social-news/avatars/default_avatar.png",
-      public_id: null
+      public_id: null,
     };
     user = await user.save();
     return res.status(200).json(user);
@@ -329,7 +331,7 @@ exports.deleteNewAnswersForPost = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
     }
-    user.newAnswers = user.newAnswers.filter(answer => answer.type !== "answerForPost");
+    user.newAnswers = user.newAnswers.filter((answer) => answer.type !== "answerForPost");
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser._doc);
   } catch (error) {
@@ -343,7 +345,7 @@ exports.deleteNewAnswersForComment = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "there is no such user" });
     }
-    user.newAnswers = user.newAnswers.filter(answer => answer.type !== "answerForComment");
+    user.newAnswers = user.newAnswers.filter((answer) => answer.type !== "answerForComment");
     const updatedUser = await user.save();
     return res.status(200).json(updatedUser._doc);
   } catch (error) {

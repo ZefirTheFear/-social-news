@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const { body } = require("express-validator/check");
 
 const User = require("../models/User");
@@ -9,14 +10,16 @@ const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
+const upload = multer();
+
 router.post(
   "/register",
   [
     body("name", "Надо от 1 до 25 символов")
       .isLength({ min: 1, max: 25 })
-      .custom(async value => {
+      .custom(async (value) => {
         const user = await User.findOne({
-          name: { $regex: new RegExp("^" + value + "$", "i") }
+          name: { $regex: new RegExp("^" + value + "$", "i") },
         });
         if (user) {
           return Promise.reject("Пользователь с таким именем уже есть");
@@ -25,7 +28,7 @@ router.post(
     body("email", "Введите email")
       .normalizeEmail()
       .isEmail()
-      .custom(async value => {
+      .custom(async (value) => {
         const user = await User.findOne({ email: value });
         if (user) {
           return Promise.reject("Пользователь с таким email уже есть");
@@ -42,18 +45,14 @@ router.post(
         throw new Error("Пароль должен совпадать");
       }
       return true;
-    })
+    }),
   ],
   userRoutesController.registerUser
 );
 
 router.post(
   "/login",
-  [
-    body("email", "Введите email")
-      .normalizeEmail()
-      .isEmail()
-  ],
+  [body("email", "Введите email").normalizeEmail().isEmail()],
   userRoutesController.loginUser
 );
 
@@ -77,7 +76,7 @@ router.get("/get-ignore-list", isAuth, userRoutesController.getIgnoreList);
 
 router.get("/get-notes", isAuth, userRoutesController.getNotes);
 
-router.post("/change-avatar", isAuth, userRoutesController.changeAvatar);
+router.post("/change-avatar", isAuth, upload.none(), userRoutesController.changeAvatar);
 
 router.patch("/delete-avatar", isAuth, userRoutesController.deleteAvatar);
 

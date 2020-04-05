@@ -30,7 +30,7 @@ const ProfileSettings = () => {
     inputEl.current.click();
   };
 
-  const changeAvatarHandler = async e => {
+  const changeAvatarHandler = async (e) => {
     setIsNeedToWait(true);
     const avatar = {};
     try {
@@ -40,7 +40,7 @@ const ProfileSettings = () => {
       data.append("upload_preset", "avatars");
       const response = await fetch("https://api.cloudinary.com/v1_1/ztf/upload", {
         method: "POST",
-        body: data
+        body: data,
       });
       const resData = await response.json();
       avatar.url = resData.secure_url;
@@ -54,13 +54,15 @@ const ProfileSettings = () => {
     try {
       document.body.style.cursor = "wait";
       const data = new FormData();
+      console.log(avatar);
       data.append("avatar", JSON.stringify(avatar));
       const response = await fetch(`${window.domain}/users/change-avatar`, {
         headers: {
-          Authorization: userContext.token
+          Authorization: userContext.token,
         },
         method: "POST",
-        body: data
+        body: data,
+        // body: JSON.stringify(avatar),
       });
       if (response.status !== 200) {
         document.body.style.cursor = "";
@@ -83,9 +85,9 @@ const ProfileSettings = () => {
     try {
       const response = await fetch(`${window.domain}/users/delete-avatar`, {
         headers: {
-          Authorization: userContext.token
+          Authorization: userContext.token,
         },
-        method: "PATCH"
+        method: "PATCH",
       });
       if (response.status !== 200) {
         userContext.setIsError(true);
@@ -100,14 +102,14 @@ const ProfileSettings = () => {
     }
   };
 
-  const changeSexHandler = async e => {
+  const changeSexHandler = async (e) => {
     try {
       const response = await fetch(`${window.domain}/users/change-sex`, {
         headers: {
-          Authorization: userContext.token
+          Authorization: userContext.token,
         },
         method: "PATCH",
-        body: e.target.value
+        body: e.target.value,
       });
       if (response.status !== 200) {
         userContext.setIsError(true);
@@ -121,7 +123,7 @@ const ProfileSettings = () => {
     }
   };
 
-  const onChangeNote = e => {
+  const onChangeNote = (e) => {
     setNote(e.target.value);
     textarea.current.style.height = "auto";
     textarea.current.style.height = e.currentTarget.scrollHeight + "px";
@@ -134,10 +136,10 @@ const ProfileSettings = () => {
     try {
       const response = await fetch(`${window.domain}/users/set-about-me-note`, {
         headers: {
-          Authorization: userContext.token
+          Authorization: userContext.token,
         },
         method: "PATCH",
-        body: note.trim()
+        body: note.trim(),
       });
       if (response.status !== 200) {
         userContext.setIsError(true);
